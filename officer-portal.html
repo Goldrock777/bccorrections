@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Officer Portal — BC Corrections UMS</title>
+<style>
+  :root {
+    --primary: #003d7a;
+    --primary-dark: #002a56;
+    --accent: #ffc72c;
+    --success: #2e7d32;
+    --warning: #e65100;
+    --danger: #c62828;
+    --text: #1a1a2e;
+    --text-light: #4a5568;
+    --bg: #f1f5f9;
+    --white: #ffffff;
+    --border: #e2e8f0;
+    --shadow: 0 2px 12px rgba(0,61,122,0.08);
+    --shadow-lg: 0 8px 32px rgba(0,61,122,0.14);
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --primary: #4a9eff;
+      --primary-dark: #1d4ed8;
+      --accent: #ffc72c;
+      --success: #4ade80;
+      --warning: #fb923c;
+      --danger: #f87171;
+      --text: #f1f5f9;
+      --text-light: #94a3b8;
+      --bg: #0f172a;
+      --white: #1e293b;
+      --border: #334155;
+      --shadow: 0 2px 12px rgba(0,0,0,0.3);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+
+  /* LOGIN */
+  #login-screen {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #002a56 0%, #003d7a 60%, #0056a8 100%);
+    display: flex; align-items: center; justify-content: center; padding: 2rem;
+  }
+  .login-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 48px 40px;
+    width: 100%; max-width: 420px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+  }
+  .login-logo {
+    text-align: center; margin-bottom: 32px;
+  }
+  .login-logo .badge {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: linear-gradient(135deg, #002a56, #003d7a);
+    margin: 0 auto 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+  }
+  .login-logo h1 { font-size: 1.4rem; font-weight: 800; }
+  .login-logo p { font-size: 0.85rem; color: var(--text-light); margin-top: 4px; }
+  .form-group { margin-bottom: 20px; }
+  .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em; }
+  .form-group input {
+    width: 100%; padding: 12px 14px;
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 1rem; background: var(--bg); color: var(--text);
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,61,122,0.1); }
+  .login-hint { background: #e8f0fe; border-radius: 8px; padding: 10px 14px; font-size: 0.8rem; color: #1a56db; margin-bottom: 20px; }
+  @media (prefers-color-scheme: dark) { .login-hint { background: rgba(74,158,255,0.15); color: #93c5fd; } }
+  .btn-full {
+    width: 100%; padding: 14px;
+    background: linear-gradient(135deg, #003d7a, #0056a8);
+    color: #fff; border: none; border-radius: 8px;
+    font-size: 1rem; font-weight: 700; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-full:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,61,122,0.4); }
+  .login-error { color: var(--danger); font-size: 0.85rem; text-align: center; margin-top: 12px; }
+
+  /* APP SHELL */
+  #app { display: none; }
+  header {
+    background: linear-gradient(135deg, #002a56, #003d7a);
+    color: #fff;
+    padding: 0 2rem;
+    height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .hdr-left { display: flex; align-items: center; gap: 12px; }
+  .hdr-logo { font-size: 22px; }
+  .hdr-title { font-weight: 700; font-size: 1rem; }
+  .hdr-sub { font-size: 0.75rem; opacity: 0.7; }
+  .hdr-right { display: flex; align-items: center; gap: 12px; }
+  .hdr-officer { text-align: right; font-size: 0.85rem; }
+  .hdr-officer strong { display: block; }
+  .hdr-officer span { opacity: 0.7; font-size: 0.75rem; }
+  .btn-logout {
+    background: rgba(255,255,255,0.15); color: #fff;
+    border: 1px solid rgba(255,255,255,0.3); border-radius: 6px;
+    padding: 6px 14px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-logout:hover { background: rgba(255,255,255,0.25); }
+
+  /* NAV TABS */
+  .app-nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; gap: 4px; overflow-x: auto;
+  }
+  .app-nav button {
+    padding: 16px 20px; border: none; background: none;
+    font-size: 0.9rem; font-weight: 600; color: var(--text-light);
+    cursor: pointer; border-bottom: 3px solid transparent;
+    transition: all 0.2s; white-space: nowrap; margin-bottom: -1px;
+  }
+  .app-nav button:hover { color: var(--primary); }
+  .app-nav button.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+  /* MAIN */
+  main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+  /* TABS */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* DASHBOARD */
+  .points-hero {
+    background: linear-gradient(135deg, #002a56, #003d7a);
+    border-radius: 16px; padding: 32px;
+    color: #fff; margin-bottom: 24px;
+  }
+  .points-hero h2 { font-size: 1rem; opacity: 0.8; margin-bottom: 8px; }
+  .points-big { font-size: 3.5rem; font-weight: 900; color: var(--accent); line-height: 1; }
+  .points-sub { font-size: 0.9rem; opacity: 0.7; margin-top: 6px; }
+  .points-bar-wrap { margin-top: 20px; }
+  .points-bar-label { display: flex; justify-content: space-between; font-size: 0.8rem; opacity: 0.8; margin-bottom: 6px; }
+  .points-bar { height: 10px; background: rgba(255,255,255,0.2); border-radius: 999px; overflow: hidden; }
+  .points-bar-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.8s ease; }
+
+  .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .dash-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+    transition: box-shadow 0.2s;
+  }
+  .dash-card:hover { box-shadow: var(--shadow); }
+  .dash-card .dc-val { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
+  .dash-card .dc-lbl { font-size: 0.8rem; color: var(--text-light); margin-top: 4px; }
+
+  /* TABLES */
+  .card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; margin-bottom: 24px;
+  }
+  .card-header {
+    padding: 18px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-header h3 { font-size: 1rem; font-weight: 700; }
+  .card-body { padding: 0; }
+  table { width: 100%; border-collapse: collapse; }
+  th { padding: 12px 16px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light); background: var(--bg); text-align: left; }
+  td { padding: 14px 16px; font-size: 0.9rem; border-top: 1px solid var(--border); }
+  tr:hover td { background: rgba(0,61,122,0.03); }
+
+  /* STATUS BADGES */
+  .badge {
+    padding: 3px 10px; border-radius: 999px;
+    font-size: 0.75rem; font-weight: 700; display: inline-block;
+  }
+  .badge-pending { background: #fef3cd; color: #92400e; }
+  .badge-shipped { background: #dbeafe; color: #1e40af; }
+  .badge-delivered { background: #dcfce7; color: #166534; }
+  .badge-credit { background: #dcfce7; color: #166534; }
+  .badge-debit { background: #fee2e2; color: #991b1b; }
+  @media (prefers-color-scheme: dark) {
+    .badge-pending { background: rgba(251,191,36,0.2); color: #fbbf24; }
+    .badge-shipped { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    .badge-delivered { background: rgba(74,222,128,0.2); color: #4ade80; }
+    .badge-credit { background: rgba(74,222,128,0.2); color: #4ade80; }
+    .badge-debit { background: rgba(248,113,113,0.2); color: #f87171; }
+  }
+
+  /* CATALOGUE */
+  .catalogue-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+  .catalogue-item {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+    transition: all 0.2s; cursor: pointer;
+  }
+  .catalogue-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+  .catalogue-item.disabled { opacity: 0.5; cursor: not-allowed; }
+  .catalogue-item.disabled:hover { transform: none; box-shadow: none; border-color: var(--border); }
+  .ci-image {
+    height: 120px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px;
+    background: linear-gradient(135deg, #e8f0fe, #f1f5f9);
+  }
+  .ci-body { padding: 16px; }
+  .ci-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; }
+  .ci-desc { font-size: 0.8rem; color: var(--text-light); margin-bottom: 12px; }
+  .ci-footer { display: flex; align-items: center; justify-content: space-between; }
+  .ci-points {
+    background: linear-gradient(135deg, #003d7a, #0056a8);
+    color: #fff; padding: 4px 12px; border-radius: 999px;
+    font-size: 0.8rem; font-weight: 700;
+  }
+  .ci-btn {
+    background: var(--accent); color: var(--primary-dark);
+    border: none; border-radius: 6px; padding: 6px 14px;
+    font-size: 0.8rem; font-weight: 700; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .ci-btn:hover { background: #ffdb6b; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--white); border-radius: 20px;
+    padding: 40px; max-width: 480px; width: 100%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+    transform: translateY(20px); transition: transform 0.2s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-item-icon { font-size: 48px; margin-bottom: 12px; }
+  .modal h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; }
+  .modal .modal-pts { color: var(--primary); font-weight: 700; font-size: 0.9rem; margin-bottom: 20px; }
+  .modal .form-group select {
+    width: 100%; padding: 10px 12px;
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 0.95rem; background: var(--bg); color: var(--text);
+  }
+  .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
+  .btn-confirm {
+    flex: 1; padding: 12px;
+    background: linear-gradient(135deg, #003d7a, #0056a8);
+    color: #fff; border: none; border-radius: 8px;
+    font-weight: 700; font-size: 0.95rem; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-confirm:hover { box-shadow: 0 4px 16px rgba(0,61,122,0.4); }
+  .btn-cancel {
+    flex: 1; padding: 12px;
+    background: var(--bg); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    font-weight: 600; font-size: 0.95rem; cursor: pointer;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 300;
+    background: #1e293b; color: #fff;
+    padding: 14px 20px; border-radius: 10px;
+    font-size: 0.9rem; font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    transform: translateY(80px); opacity: 0;
+    transition: all 0.3s;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-left: 4px solid var(--success); }
+  .toast.error { border-left: 4px solid var(--danger); }
+
+  /* INVENTORY TABLE */
+  .inv-centre { font-weight: 600; }
+  .stock-ok { color: var(--success); font-weight: 700; }
+  .stock-low { color: var(--warning); font-weight: 700; }
+  .stock-crit { color: var(--danger); font-weight: 700; }
+
+  @media (max-width: 768px) {
+    main { padding: 1rem; }
+    .points-big { font-size: 2.5rem; }
+    header { padding: 0 1rem; }
+    .hdr-sub { display: none; }
+    .app-nav { padding: 0 1rem; }
+    table { font-size: 0.8rem; }
+    th, td { padding: 10px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="badge">👮</div>
+      <h1>BC Corrections UMS</h1>
+      <p>Officer Self-Service Portal</p>
+    </div>
+    <div class="login-hint">Demo: Badge ID <strong>A2847</strong> — any password</div>
+    <div class="form-group">
+      <label>Badge ID</label>
+      <input type="text" id="badge-input" placeholder="e.g. A2847" value="A2847">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="pw-input" placeholder="Enter password" value="password">
+    </div>
+    <button class="btn-full" onclick="doLogin()">Sign In to Portal</button>
+    <div class="login-error" id="login-error"></div>
+    <div style="text-align:center;margin-top:20px;">
+      <a href="index.html" style="color:var(--text-light);font-size:0.85rem;">← Back to Home</a>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header>
+    <div class="hdr-left">
+      <div class="hdr-logo">🛡️</div>
+      <div>
+        <div class="hdr-title">BC Corrections UMS</div>
+        <div class="hdr-sub">Officer Self-Service Portal</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div class="hdr-officer">
+        <strong id="hdr-name">Officer</strong>
+        <span id="hdr-badge"></span>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+    </div>
+  </header>
+
+  <nav class="app-nav">
+    <button class="active" onclick="switchTab('dashboard', this)">📊 Dashboard</button>
+    <button onclick="switchTab('catalogue', this)">🛒 Order Uniforms</button>
+    <button onclick="switchTab('orders', this)">📦 My Orders</button>
+    <button onclick="switchTab('ledger', this)">💳 Points Ledger</button>
+    <button onclick="switchTab('inventory', this)">🏢 Centre Inventory</button>
+  </nav>
+
+  <main>
+
+    <!-- DASHBOARD TAB -->
+    <div class="tab-panel active" id="tab-dashboard">
+      <div class="points-hero">
+        <h2>Your Annual Points Balance</h2>
+        <div class="points-big" id="pts-available">500</div>
+        <div class="points-sub">Points available this year (resets annually)</div>
+        <div class="points-bar-wrap">
+          <div class="points-bar-label">
+            <span>Used: <strong id="pts-used-lbl">0</strong></span>
+            <span>Annual allotment: <strong>500</strong></span>
+          </div>
+          <div class="points-bar">
+            <div class="points-bar-fill" id="pts-bar" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dc-val" id="dc-available">500</div>
+          <div class="dc-lbl">Points Available</div>
+        </div>
+        <div class="dash-card">
+          <div class="dc-val" id="dc-used">0</div>
+          <div class="dc-lbl">Points Used This Year</div>
+        </div>
+        <div class="dash-card">
+          <div class="dc-val" id="dc-orders">0</div>
+          <div class="dc-lbl">Total Orders Placed</div>
+        </div>
+        <div class="dash-card">
+          <div class="dc-val" id="dc-pending">0</div>
+          <div class="dc-lbl">Orders Pending</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Recent Orders</h3>
+          <button class="ci-btn" onclick="switchTab('orders', document.querySelector('.app-nav button:nth-child(3)'))">View All</button>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Order ID</th><th>Item</th><th>Date</th><th>Points</th><th>Status</th></tr></thead>
+            <tbody id="recent-orders-tbody"><tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:32px">No orders yet. Visit the Order Uniforms tab to place your first order.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATALOGUE TAB -->
+    <div class="tab-panel" id="tab-catalogue">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <div>
+          <h2 style="font-size:1.3rem;font-weight:800">Uniform Catalogue</h2>
+          <p style="color:var(--text-light);font-size:0.9rem">Click any item to order. Points deducted upon confirmation.</p>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:12px 20px;text-align:center;">
+          <div style="font-size:0.75rem;color:var(--text-light);font-weight:600;text-transform:uppercase">Points Remaining</div>
+          <div style="font-size:1.6rem;font-weight:800;color:var(--primary)" id="cat-pts">500</div>
+        </div>
+      </div>
+      <div class="catalogue-grid" id="catalogue-grid"></div>
+    </div>
+
+    <!-- ORDERS TAB -->
+    <div class="tab-panel" id="tab-orders">
+      <div style="margin-bottom:20px;">
+        <h2 style="font-size:1.3rem;font-weight:800">My Orders</h2>
+        <p style="color:var(--text-light);font-size:0.9rem">Track the status of all your uniform orders.</p>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Order ID</th><th>Item</th><th>Size</th><th>Colour</th><th>Qty</th><th>Points</th><th>Date</th><th>Status</th></tr></thead>
+            <tbody id="orders-tbody"><tr><td colspan="8" style="text-align:center;color:var(--text-light);padding:32px">No orders placed yet.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEDGER TAB -->
+    <div class="tab-panel" id="tab-ledger">
+      <div style="margin-bottom:20px;">
+        <h2 style="font-size:1.3rem;font-weight:800">Points Ledger</h2>
+        <p style="color:var(--text-light);font-size:0.9rem">Complete history of all point transactions.</p>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Date</th><th>Description</th><th>Points</th><th>Balance</th><th>Type</th></tr></thead>
+            <tbody id="ledger-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVENTORY TAB -->
+    <div class="tab-panel" id="tab-inventory">
+      <div style="margin-bottom:20px;">
+        <h2 style="font-size:1.3rem;font-weight:800">Centre Inventory Status</h2>
+        <p style="color:var(--text-light);font-size:0.9rem">Live stock levels across all 10 BC Corrections centres.</p>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Centre</th><th>Shirts</th><th>Pants</th><th>Boots</th><th>Jackets</th><th>Belts</th><th>Total Units</th><th>Status</th></tr></thead>
+            <tbody id="inv-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ORDER MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-item-icon" id="modal-icon">👕</div>
+    <h2 id="modal-name">Uniform Shirt</h2>
+    <div class="modal-pts" id="modal-pts">40 points</div>
+    <div class="form-group">
+      <label>Size</label>
+      <select id="modal-size">
+        <option>XS</option><option>S</option><option selected>M</option>
+        <option>L</option><option>XL</option><option>2XL</option><option>3XL</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Colour</label>
+      <select id="modal-colour">
+        <option>Navy Blue</option><option>Black</option><option>Khaki</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Quantity</label>
+      <select id="modal-qty">
+        <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+      </select>
+    </div>
+    <div id="modal-total-line" style="background:var(--bg);border-radius:8px;padding:12px;font-size:0.9rem;margin-bottom:4px;">
+      Total cost: <strong id="modal-total">40 pts</strong> — Remaining after: <strong id="modal-after">460 pts</strong>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-confirm" onclick="confirmOrder()">Confirm Order</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+const CATALOGUE = [
+  { id: 'shirt',    name: 'Uniform Shirt',     pts: 40,  icon: '👕', desc: 'Standard duty shirt, polyester-cotton blend' },
+  { id: 'pants',    name: 'Uniform Pants',     pts: 50,  icon: '👖', desc: 'Tactical cargo pants, ripstop fabric' },
+  { id: 'boots',    name: 'Duty Boots',        pts: 120, icon: '👢', desc: 'Composite toe, slip-resistant, polishable' },
+  { id: 'jacket',   name: 'Outerwear Jacket',  pts: 100, icon: '🧥', desc: 'Waterproof, windproof, fleece-lined' },
+  { id: 'belt',     name: 'Duty Belt',         pts: 80,  icon: '⬜', desc: 'Nylon duty belt with keeper loops' },
+  { id: 'badge',    name: 'Badge & Insignia',  pts: 20,  icon: '🏅', desc: 'Officer badge and rank insignia set' },
+  { id: 'holster',  name: 'Tactical Holster',  pts: 85,  icon: '🔫', desc: 'Level-II retention, adjustable cant' },
+  { id: 'gloves',   name: 'Tactical Gloves',   pts: 25,  icon: '🧤', desc: 'Cut-resistant, touchscreen compatible' },
+  { id: 'cap',      name: 'Duty Cap',          pts: 30,  icon: '🧢', desc: 'Structured cap with embroidered crest' },
+  { id: 'lsshirt',  name: 'Long Sleeve Shirt', pts: 45,  icon: '👔', desc: 'Long-sleeve duty shirt, uniform fabric' },
+];
+
+const CENTRES = [
+  'Surrey', 'Coquitlam', 'Maple Ridge', 'Victoria', 'Nanaimo',
+  'Kamloops', 'Prince George', 'Chilliwack', 'Oliver', 'Kelowna'
+];
+
+const ANNUAL_POINTS = 500;
+let currentOfficer = null;
+let selectedItem = null;
+
+// ─── STORAGE HELPERS ──────────────────────────────────────────────────────────
+function load(key, def) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch { return def; }
+}
+function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+function getOfficerData(badgeId) {
+  const key = 'officer_' + badgeId;
+  return load(key, {
+    badgeId,
+    name: 'Officer ' + badgeId,
+    centre: CENTRES[Math.floor(Math.random() * CENTRES.length)],
+    pointsUsed: 0,
+    orders: [],
+    ledger: [{
+      date: new Date().toISOString().split('T')[0],
+      desc: 'Annual allotment credited',
+      delta: ANNUAL_POINTS,
+      balance: ANNUAL_POINTS,
+      type: 'credit'
+    }]
+  });
+}
+function saveOfficerData(data) { save('officer_' + data.badgeId, data); }
+
+// ─── AUTH ──────────────────────────────────────────────────────────────────────
+function doLogin() {
+  const badge = document.getElementById('badge-input').value.trim().toUpperCase();
+  const pw = document.getElementById('pw-input').value;
+  if (!badge) { document.getElementById('login-error').textContent = 'Please enter your Badge ID.'; return; }
+  if (!pw) { document.getElementById('login-error').textContent = 'Please enter your password.'; return; }
+  currentOfficer = getOfficerData(badge);
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('hdr-name').textContent = currentOfficer.name;
+  document.getElementById('hdr-badge').textContent = 'Badge: ' + badge + ' · ' + currentOfficer.centre;
+  renderAll();
+}
+document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('badge-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+function doLogout() {
+  currentOfficer = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+// ─── TABS ──────────────────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.app-nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (name === 'inventory') renderInventory();
+}
+
+// ─── RENDER ALL ───────────────────────────────────────────────────────────────
+function renderAll() {
+  renderDashboard();
+  renderCatalogue();
+  renderOrders();
+  renderLedger();
+}
+
+function pointsAvailable() { return ANNUAL_POINTS - (currentOfficer.pointsUsed || 0); }
+
+function renderDashboard() {
+  const avail = pointsAvailable();
+  const used = currentOfficer.pointsUsed || 0;
+  document.getElementById('pts-available').textContent = avail;
+  document.getElementById('pts-used-lbl').textContent = used;
+  document.getElementById('pts-bar').style.width = Math.min(100, (used / ANNUAL_POINTS) * 100) + '%';
+  document.getElementById('dc-available').textContent = avail;
+  document.getElementById('dc-used').textContent = used;
+  document.getElementById('dc-orders').textContent = currentOfficer.orders.length;
+  document.getElementById('dc-pending').textContent = currentOfficer.orders.filter(o => o.status === 'Pending').length;
+
+  const tbody = document.getElementById('recent-orders-tbody');
+  const recent = [...currentOfficer.orders].reverse().slice(0, 5);
+  if (!recent.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:32px">No orders yet.</td></tr>';
+  } else {
+    tbody.innerHTML = recent.map(o => `
+      <tr>
+        <td><code style="font-size:0.8rem">${o.id}</code></td>
+        <td>${o.item}</td>
+        <td>${o.date}</td>
+        <td><strong>${o.totalPts}</strong> pts</td>
+        <td><span class="badge badge-${o.status.toLowerCase()}">${o.status}</span></td>
+      </tr>`).join('');
+  }
+}
+
+function renderCatalogue() {
+  const avail = pointsAvailable();
+  document.getElementById('cat-pts').textContent = avail;
+  const grid = document.getElementById('catalogue-grid');
+  grid.innerHTML = CATALOGUE.map(item => {
+    const canAfford = avail >= item.pts;
+    return `
+    <div class="catalogue-item ${!canAfford ? 'disabled' : ''}" onclick="${canAfford ? `openModal('${item.id}')` : "showToast('Insufficient points for this item.','error')"}">
+      <div class="ci-image">${item.icon}</div>
+      <div class="ci-body">
+        <div class="ci-name">${item.name}</div>
+        <div class="ci-desc">${item.desc}</div>
+        <div class="ci-footer">
+          <span class="ci-points">⭐ ${item.pts} pts</span>
+          <button class="ci-btn" ${!canAfford ? 'disabled' : ''}>Order</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderOrders() {
+  const tbody = document.getElementById('orders-tbody');
+  if (!currentOfficer.orders.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-light);padding:32px">No orders placed yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = [...currentOfficer.orders].reverse().map(o => `
+    <tr>
+      <td><code style="font-size:0.8rem">${o.id}</code></td>
+      <td>${o.item}</td>
+      <td>${o.size}</td>
+      <td>${o.colour}</td>
+      <td>${o.qty}</td>
+      <td><strong>${o.totalPts}</strong></td>
+      <td>${o.date}</td>
+      <td><span class="badge badge-${o.status.toLowerCase()}">${o.status}</span></td>
+    </tr>`).join('');
+}
+
+function renderLedger() {
+  const tbody = document.getElementById('ledger-tbody');
+  tbody.innerHTML = [...currentOfficer.ledger].reverse().map(l => `
+    <tr>
+      <td>${l.date}</td>
+      <td>${l.desc}</td>
+      <td><strong>${l.type === 'credit' ? '+' : '-'}${Math.abs(l.delta)}</strong></td>
+      <td>${l.balance}</td>
+      <td><span class="badge badge-${l.type}">${l.type}</span></td>
+    </tr>`).join('');
+}
+
+function renderInventory() {
+  const tbody = document.getElementById('inv-tbody');
+  tbody.innerHTML = CENTRES.map(c => {
+    const s = rand(80, 200), p = rand(60, 180), b = rand(20, 100);
+    const j = rand(30, 120), belt = rand(40, 150);
+    const total = s + p + b + j + belt;
+    const statusClass = total < 200 ? 'stock-crit' : total < 350 ? 'stock-low' : 'stock-ok';
+    const statusLabel = total < 200 ? '⚠ Critical' : total < 350 ? '↓ Low' : '✓ OK';
+    return `<tr>
+      <td class="inv-centre">${c}</td>
+      <td class="${s<40?'stock-crit':s<80?'stock-low':'stock-ok'}">${s}</td>
+      <td class="${p<40?'stock-crit':p<80?'stock-low':'stock-ok'}">${p}</td>
+      <td class="${b<20?'stock-crit':b<40?'stock-low':'stock-ok'}">${b}</td>
+      <td class="${j<30?'stock-crit':j<60?'stock-low':'stock-ok'}">${j}</td>
+      <td class="${belt<40?'stock-crit':belt<80?'stock-low':'stock-ok'}">${belt}</td>
+      <td><strong>${total}</strong></td>
+      <td class="${statusClass}">${statusLabel}</td>
+    </tr>`;
+  }).join('');
+}
+
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+// ─── MODAL ─────────────────────────────────────────────────────────────────────
+function openModal(itemId) {
+  selectedItem = CATALOGUE.find(i => i.id === itemId);
+  if (!selectedItem) return;
+  document.getElementById('modal-icon').textContent = selectedItem.icon;
+  document.getElementById('modal-name').textContent = selectedItem.name;
+  document.getElementById('modal-pts').textContent = selectedItem.pts + ' points each';
+  updateModalTotal();
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function updateModalTotal() {
+  if (!selectedItem) return;
+  const qty = parseInt(document.getElementById('modal-qty').value);
+  const total = selectedItem.pts * qty;
+  const after = pointsAvailable() - total;
+  document.getElementById('modal-total').textContent = total + ' pts';
+  document.getElementById('modal-after').textContent = (after >= 0 ? after : '⚠ ' + after) + ' pts';
+}
+
+document.getElementById('modal-qty').addEventListener('change', updateModalTotal);
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  selectedItem = null;
+}
+
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+function confirmOrder() {
+  if (!selectedItem) return;
+  const qty = parseInt(document.getElementById('modal-qty').value);
+  const total = selectedItem.pts * qty;
+  const avail = pointsAvailable();
+  if (total > avail) { showToast('Insufficient points.', 'error'); return; }
+
+  const size = document.getElementById('modal-size').value;
+  const colour = document.getElementById('modal-colour').value;
+  const date = new Date().toISOString().split('T')[0];
+  const orderId = 'ORD-' + Date.now().toString(36).toUpperCase();
+
+  currentOfficer.pointsUsed = (currentOfficer.pointsUsed || 0) + total;
+  currentOfficer.orders.push({
+    id: orderId,
+    item: selectedItem.name,
+    itemId: selectedItem.id,
+    size, colour, qty,
+    totalPts: total,
+    date,
+    status: 'Pending',
+    centre: currentOfficer.centre
+  });
+  currentOfficer.ledger.push({
+    date,
+    desc: `Order ${orderId} — ${selectedItem.name} ×${qty}`,
+    delta: total,
+    balance: ANNUAL_POINTS - currentOfficer.pointsUsed,
+    type: 'debit'
+  });
+
+  // Simulate status progression after delays
+  setTimeout(() => {
+    const o = currentOfficer.orders.find(x => x.id === orderId);
+    if (o) { o.status = 'Shipped'; saveOfficerData(currentOfficer); }
+  }, 8000);
+  setTimeout(() => {
+    const o = currentOfficer.orders.find(x => x.id === orderId);
+    if (o) { o.status = 'Delivered'; saveOfficerData(currentOfficer); }
+  }, 20000);
+
+  saveOfficerData(currentOfficer);
+
+  // Broadcast to admin
+  broadcastOrder(currentOfficer, orderId, selectedItem, qty, total, size, colour, date);
+
+  closeModal();
+  renderAll();
+  showToast(`✓ Order placed! ${total} points deducted.`, 'success');
+}
+
+function broadcastOrder(officer, orderId, item, qty, total, size, colour, date) {
+  const adminOrders = load('admin_orders', []);
+  adminOrders.push({
+    id: orderId,
+    officer: officer.name,
+    badgeId: officer.badgeId,
+    centre: officer.centre,
+    item: item.name,
+    itemId: item.id,
+    qty, total, size, colour, date,
+    status: 'Pending'
+  });
+  save('admin_orders', adminOrders);
+
+  const stats = load('admin_stats', { totalOrders: 0, totalPtsUsed: 0 });
+  stats.totalOrders++;
+  stats.totalPtsUsed += total;
+  save('admin_stats', stats);
+}
+
+// ─── TOAST ─────────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>

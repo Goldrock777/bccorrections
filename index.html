@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BC Corrections Uniform Management System</title>
+<style>
+  :root {
+    --primary: #003d7a;
+    --primary-dark: #002a56;
+    --accent: #ffc72c;
+    --success: #2e7d32;
+    --text: #1a1a2e;
+    --text-light: #4a5568;
+    --bg: #f8fafc;
+    --white: #ffffff;
+    --border: #e2e8f0;
+    --shadow: 0 4px 24px rgba(0,61,122,0.10);
+    --shadow-lg: 0 8px 48px rgba(0,61,122,0.16);
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --primary: #4a9eff;
+      --primary-dark: #2563eb;
+      --accent: #ffc72c;
+      --success: #4ade80;
+      --text: #f1f5f9;
+      --text-light: #94a3b8;
+      --bg: #0f172a;
+      --white: #1e293b;
+      --border: #334155;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+      --shadow-lg: 0 8px 48px rgba(0,0,0,0.5);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  a { text-decoration: none; color: inherit; }
+
+  /* NAV */
+  nav {
+    background: var(--primary-dark);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .nav-brand { display: flex; align-items: center; gap: 12px; }
+  .nav-brand .crest {
+    width: 40px; height: 40px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 18px; color: var(--primary-dark);
+  }
+  .nav-brand span { color: #fff; font-weight: 600; font-size: 1rem; }
+  .nav-links { display: flex; gap: 8px; }
+  .nav-links a {
+    color: rgba(255,255,255,0.8);
+    padding: 8px 16px; border-radius: 6px;
+    font-size: 0.9rem; transition: all 0.2s;
+  }
+  .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.1); }
+  .nav-links a.btn-accent {
+    background: var(--accent); color: var(--primary-dark);
+    font-weight: 700;
+  }
+  .nav-links a.btn-accent:hover { background: #ffdb6b; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #002a56 0%, #003d7a 50%, #0056a8 100%);
+    color: #fff;
+    padding: 100px 2rem 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,199,44,0.2); border: 1px solid rgba(255,199,44,0.4);
+    color: var(--accent); padding: 6px 16px; border-radius: 999px;
+    font-size: 0.85rem; font-weight: 600; margin-bottom: 24px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800; line-height: 1.2;
+    margin-bottom: 20px; position: relative;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero p {
+    font-size: 1.15rem; color: rgba(255,255,255,0.85);
+    max-width: 640px; margin: 0 auto 40px;
+  }
+  .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent); color: var(--primary-dark);
+    padding: 14px 32px; border-radius: 8px;
+    font-weight: 700; font-size: 1rem;
+    transition: all 0.2s; border: none; cursor: pointer;
+    display: inline-block;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,199,44,0.4); }
+  .btn-outline {
+    background: transparent; color: #fff;
+    padding: 14px 32px; border-radius: 8px;
+    font-weight: 600; font-size: 1rem;
+    border: 2px solid rgba(255,255,255,0.4);
+    transition: all 0.2s; cursor: pointer;
+    display: inline-block;
+  }
+  .btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.1); }
+
+  /* STATS BAR */
+  .stats-bar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 2rem;
+  }
+  .stats-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  }
+  .stat-item { text-align: center; }
+  .stat-item .num {
+    font-size: 2rem; font-weight: 800; color: var(--primary);
+    display: block;
+  }
+  .stat-item .lbl { font-size: 0.85rem; color: var(--text-light); }
+
+  /* SECTION */
+  section { padding: 80px 2rem; }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    color: var(--primary); font-weight: 700; font-size: 0.8rem;
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;
+  }
+  .section-title { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; margin-bottom: 16px; }
+  .section-sub { color: var(--text-light); font-size: 1.05rem; max-width: 560px; margin-bottom: 48px; }
+
+  /* PORTALS */
+  .portals-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .portal-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px;
+    transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .portal-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
+  }
+  .portal-card .card-icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; margin-bottom: 20px;
+  }
+  .portal-card.officer .card-icon { background: #e8f0fe; }
+  .portal-card.admin .card-icon { background: #fef3cd; }
+  .portal-card h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; }
+  .portal-card p { color: var(--text-light); font-size: 0.95rem; margin-bottom: 24px; line-height: 1.6; }
+  .portal-card .card-tag {
+    display: inline-block; font-size: 0.75rem; font-weight: 600;
+    padding: 3px 10px; border-radius: 999px; margin-bottom: 20px;
+  }
+  .portal-card.officer .card-tag { background: #e8f0fe; color: #1a56db; }
+  .portal-card.admin .card-tag { background: #fef3cd; color: #92400e; }
+  .portal-card .card-link {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 700; color: var(--primary); font-size: 0.95rem;
+    transition: gap 0.2s;
+  }
+  .portal-card:hover .card-link { gap: 12px; }
+
+  /* FEATURES */
+  .features-bg { background: #f1f5f9; }
+  @media (prefers-color-scheme: dark) { .features-bg { background: #1e293b; } }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+  .feature-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: box-shadow 0.2s;
+  }
+  .feature-item:hover { box-shadow: var(--shadow); }
+  .feature-item .fi-icon {
+    font-size: 28px; margin-bottom: 14px; display: block;
+  }
+  .feature-item h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+  .feature-item p { font-size: 0.875rem; color: var(--text-light); }
+
+  /* SPECS */
+  .specs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 16px; }
+  .spec-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+  }
+  .spec-card h4 {
+    font-size: 0.85rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--primary); margin-bottom: 16px;
+    padding-bottom: 12px; border-bottom: 2px solid var(--accent);
+  }
+  .spec-list { list-style: none; }
+  .spec-list li {
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+    font-size: 0.9rem; display: flex; gap: 10px; align-items: flex-start;
+  }
+  .spec-list li:last-child { border-bottom: none; }
+  .spec-list li::before { content: '✓'; color: var(--success); font-weight: 700; flex-shrink: 0; }
+
+  /* CTA */
+  .cta-section {
+    background: linear-gradient(135deg, #002a56, #003d7a);
+    color: #fff; text-align: center;
+    padding: 80px 2rem;
+  }
+  .cta-section h2 { font-size: 2rem; font-weight: 800; margin-bottom: 16px; }
+  .cta-section p { color: rgba(255,255,255,0.8); margin-bottom: 36px; font-size: 1.05rem; }
+
+  /* FOOTER */
+  footer {
+    background: #001a3a;
+    color: rgba(255,255,255,0.6);
+    padding: 32px 2rem;
+    text-align: center;
+    font-size: 0.85rem;
+  }
+  footer strong { color: rgba(255,255,255,0.9); }
+  .footer-links { display: flex; justify-content: center; gap: 24px; margin-top: 12px; flex-wrap: wrap; }
+  .footer-links a { color: rgba(255,255,255,0.5); transition: color 0.2s; }
+  .footer-links a:hover { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    nav { padding: 0 1rem; }
+    .nav-links a:not(.btn-accent) { display: none; }
+    .stats-inner { grid-template-columns: repeat(2, 1fr); }
+    .hero { padding: 70px 1rem 60px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <div class="crest">BC</div>
+    <span>BC Corrections UMS</span>
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#specs">Specs</a>
+    <a href="officer-portal.html">Officer Portal</a>
+    <a href="admin-dashboard.html" class="btn-accent">Admin Dashboard</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">🛡️ Government of British Columbia — Ministry of Public Safety</div>
+  <h1>Uniform Management<br><span>Made Seamless</span></h1>
+  <p>A web-based ordering, point-allotment, and inventory management system purpose-built for BC Corrections Adult Custody Division — serving 1,725 officers across 10 correctional centres.</p>
+  <div class="hero-actions">
+    <a href="officer-portal.html" class="btn-primary">Officer Portal →</a>
+    <a href="admin-dashboard.html" class="btn-outline">Admin Dashboard</a>
+  </div>
+</section>
+
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <span class="num">1,725</span>
+      <span class="lbl">Uniformed Officers</span>
+    </div>
+    <div class="stat-item">
+      <span class="num">10</span>
+      <span class="lbl">Correctional Centres</span>
+    </div>
+    <div class="stat-item">
+      <span class="num">500</span>
+      <span class="lbl">Annual Points/Officer</span>
+    </div>
+    <div class="stat-item">
+      <span class="num">10</span>
+      <span class="lbl">Uniform Item Categories</span>
+    </div>
+  </div>
+</div>
+
+<section id="portals">
+  <div class="section-inner">
+    <div class="section-label">System Access</div>
+    <div class="section-title">Two Dedicated Portals</div>
+    <p class="section-sub">Separate, role-based interfaces ensure officers and administrators each have exactly what they need.</p>
+    <div class="portals-grid">
+      <div class="portal-card officer">
+        <div class="card-icon">👮</div>
+        <span class="card-tag">Officer Access</span>
+        <h3>Officer Self-Service Portal</h3>
+        <p>Browse the full uniform catalogue, place orders using your annual point allotment, track delivery status, and review your complete order history — all from any device.</p>
+        <a href="officer-portal.html" class="card-link">Enter Officer Portal <span>→</span></a>
+      </div>
+      <div class="portal-card admin">
+        <div class="card-icon">⚙️</div>
+        <span class="card-tag">Admin Access</span>
+        <h3>Administration Dashboard</h3>
+        <p>Manage inventory across all 10 centres, oversee points allotments, track order fulfillment, run compliance audits, and view real-time analytics on system activity.</p>
+        <a href="admin-dashboard.html" class="card-link">Enter Admin Dashboard <span>→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features" class="features-bg">
+  <div class="section-inner">
+    <div class="section-label">Capabilities</div>
+    <div class="section-title">Everything ACD Requires</div>
+    <p class="section-sub">Built to meet all four criteria of BC Corrections' uniform program requirements.</p>
+    <div class="features-grid">
+      <div class="feature-item">
+        <span class="fi-icon">🌐</span>
+        <h4>Web-Based Ordering</h4>
+        <p>Officers place orders through an online catalogue from any browser — no installed software required.</p>
+      </div>
+      <div class="feature-item">
+        <span class="fi-icon">📦</span>
+        <h4>Inventory Management</h4>
+        <p>Real-time stock tracking across all 10 correctional centres with automated low-stock alerts and reorder triggers.</p>
+      </div>
+      <div class="feature-item">
+        <span class="fi-icon">🏆</span>
+        <h4>Point Allotment System</h4>
+        <p>Each officer receives 500 annual points. Every uniform item has a point value. The system automatically tracks balances and enforces limits.</p>
+      </div>
+      <div class="feature-item">
+        <span class="fi-icon">🚚</span>
+        <h4>Centre-Based Delivery</h4>
+        <p>All orders delivered directly to the officer's assigned correctional centre. Full shipment tracking from order to delivery.</p>
+      </div>
+      <div class="feature-item">
+        <span class="fi-icon">📊</span>
+        <h4>Analytics & Reporting</h4>
+        <p>Administrators see order trends, centre activity, delivery performance, and compliance metrics on a live dashboard.</p>
+      </div>
+      <div class="feature-item">
+        <span class="fi-icon">🔒</span>
+        <h4>Secure & Auditable</h4>
+        <p>Role-based access control, full audit trails, and data stored in-Canada ensure security and compliance.</p>
+      </div>
+      <div class="feature-item">
+        <span class="fi-icon">📱</span>
+        <h4>Mobile Responsive</h4>
+        <p>Works seamlessly on phones, tablets, and desktop — officers can order from any device on or off duty.</p>
+      </div>
+      <div class="feature-item">
+        <span class="fi-icon">⚡</span>
+        <h4>Rapid Deployment</h4>
+        <p>System is fully operational and can be provisioned for all 1,725 officers within days, not months.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="specs">
+  <div class="section-inner">
+    <div class="section-label">Technical Specifications</div>
+    <div class="section-title">Purpose-Built for BC Corrections</div>
+    <p class="section-sub">Designed to meet every operational requirement of the Adult Custody Division uniform program.</p>
+    <div class="specs-grid">
+      <div class="spec-card">
+        <h4>Uniform Catalogue</h4>
+        <ul class="spec-list">
+          <li>Uniform Shirt — 40 pts</li>
+          <li>Uniform Pants — 50 pts</li>
+          <li>Duty Boots — 120 pts</li>
+          <li>Outerwear Jacket — 100 pts</li>
+          <li>Duty Belt — 80 pts</li>
+          <li>Badge &amp; Insignia — 20 pts</li>
+          <li>Tactical Holster — 85 pts</li>
+          <li>Tactical Gloves — 25 pts</li>
+          <li>Duty Cap — 30 pts</li>
+          <li>Long Sleeve Shirt — 45 pts</li>
+        </ul>
+      </div>
+      <div class="spec-card">
+        <h4>Correctional Centres</h4>
+        <ul class="spec-list">
+          <li>Surrey Pre-Trial Services Centre</li>
+          <li>North Fraser Pre-Trial Centre (Coquitlam)</li>
+          <li>Maple Ridge Correctional Centre</li>
+          <li>Vancouver Island Regional CC (Victoria)</li>
+          <li>Nanaimo Correctional Centre</li>
+          <li>Kamloops Regional CC</li>
+          <li>Prince George Regional CC</li>
+          <li>Chilliwack Youth Custody Centre</li>
+          <li>Oliver Correctional Centre</li>
+          <li>Okanagan Correctional Centre (Kelowna)</li>
+        </ul>
+      </div>
+      <div class="spec-card">
+        <h4>System Features</h4>
+        <ul class="spec-list">
+          <li>500 annual points per officer</li>
+          <li>Automatic point balance tracking</li>
+          <li>Order status: Pending → Shipped → Delivered</li>
+          <li>Full points ledger per officer</li>
+          <li>Admin reorder management</li>
+          <li>Compliance &amp; audit trail</li>
+          <li>SLA performance monitoring</li>
+          <li>Data persistence across sessions</li>
+        </ul>
+      </div>
+      <div class="spec-card">
+        <h4>Platform Requirements</h4>
+        <ul class="spec-list">
+          <li>No software installation required</li>
+          <li>Browser-based (Chrome, Firefox, Safari, Edge)</li>
+          <li>Mobile, tablet &amp; desktop responsive</li>
+          <li>Dark mode support</li>
+          <li>No external dependencies</li>
+          <li>Data stored securely in-Canada</li>
+          <li>99.9% uptime SLA</li>
+          <li>Role-based access control</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-section">
+  <h2>Ready to Serve BC Corrections Officers</h2>
+  <p>This system is operational and ready to support all 1,725 uniformed officers across BC's ten correctional centres.</p>
+  <div class="hero-actions">
+    <a href="officer-portal.html" class="btn-primary">Try Officer Portal →</a>
+    <a href="admin-dashboard.html" class="btn-outline">View Admin Dashboard</a>
+  </div>
+</div>
+
+<footer>
+  <strong>BC Corrections Uniform Management System</strong> — NOI Opportunity ID 231357<br>
+  Ministry of Public Safety and Solicitor General — Adult Custody Division
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="officer-portal.html">Officer Portal</a>
+    <a href="admin-dashboard.html">Admin Dashboard</a>
+  </div>
+</footer>
+
+</body>
+</html>
