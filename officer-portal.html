@@ -292,6 +292,8 @@
     .points-big { font-size: 2.5rem; }
     header { padding: 0 1rem; }
     .hdr-sub { display: none; }
+    .hdr-title { font-size: 0.92rem; }
+    .hdr-officer { display: none; }
     .app-nav { padding: 0 1rem; }
     table { font-size: 0.8rem; }
     th, td { padding: 10px 12px; }
@@ -556,6 +558,34 @@ function getOfficerData(badgeId) {
 }
 function saveOfficerData(data) { save('officer_' + data.badgeId, data); }
 
+// ─── SHARED INVENTORY (persists; shared with admin dashboard) ──────────────────
+function getInventory() {
+  let inv = load('centre_inventory', null);
+  if (!inv) {
+    inv = {};
+    CENTRES.forEach(c => {
+      inv[c] = {
+        shirt: rand(90,220), pants: rand(80,200), boots: rand(25,95),
+        jacket: rand(35,120), belt: rand(45,160), badge: rand(50,180),
+        holster: rand(20,75), gloves: rand(30,110), cap: rand(40,140), lsshirt: rand(45,150)
+      };
+    });
+    save('centre_inventory', inv);
+  }
+  return inv;
+}
+function saveInventory(inv) { save('centre_inventory', inv); }
+
+// ─── ORDER STATUS (derived from timestamp so it survives page reloads) ─────────
+function deriveStatus(ts) {
+  if (!ts) return 'Pending';
+  const elapsed = Date.now() - ts;
+  if (elapsed < 10000) return 'Pending';
+  if (elapsed < 25000) return 'Shipped';
+  return 'Delivered';
+}
+function statusOf(o) { return o.ts ? deriveStatus(o.ts) : (o.status || 'Pending'); }
+
 // ─── AUTH ──────────────────────────────────────────────────────────────────────
 function doLogin() {
   const badge = document.getElementById('badge-input').value.trim().toUpperCase();
@@ -605,7 +635,7 @@ function renderDashboard() {
   document.getElementById('dc-available').textContent = avail;
   document.getElementById('dc-used').textContent = used;
   document.getElementById('dc-orders').textContent = currentOfficer.orders.length;
-  document.getElementById('dc-pending').textContent = currentOfficer.orders.filter(o => o.status === 'Pending').length;
+  document.getElementById('dc-pending').textContent = currentOfficer.orders.filter(o => statusOf(o) === 'Pending').length;
 
   const tbody = document.getElementById('recent-orders-tbody');
   const recent = [...currentOfficer.orders].reverse().slice(0, 5);
@@ -618,7 +648,7 @@ function renderDashboard() {
         <td>${o.item}</td>
         <td>${o.date}</td>
         <td><strong>${o.totalPts}</strong> pts</td>
-        <td><span class="badge badge-${o.status.toLowerCase()}">${o.status}</span></td>
+        <td><span class="badge badge-${statusOf(o).toLowerCase()}">${statusOf(o)}</span></td>
       </tr>`).join('');
   }
 }
@@ -659,7 +689,7 @@ function renderOrders() {
       <td>${o.qty}</td>
       <td><strong>${o.totalPts}</strong></td>
       <td>${o.date}</td>
-      <td><span class="badge badge-${o.status.toLowerCase()}">${o.status}</span></td>
+      <td><span class="badge badge-${statusOf(o).toLowerCase()}">${statusOf(o)}</span></td>
     </tr>`).join('');
 }
 
@@ -676,10 +706,11 @@ function renderLedger() {
 }
 
 function renderInventory() {
+  const inv = getInventory();
   const tbody = document.getElementById('inv-tbody');
   tbody.innerHTML = CENTRES.map(c => {
-    const s = rand(80, 200), p = rand(60, 180), b = rand(20, 100);
-    const j = rand(30, 120), belt = rand(40, 150);
+    const d = inv[c];
+    const s = d.shirt, p = d.pants, b = d.boots, j = d.jacket, belt = d.belt;
     const total = s + p + b + j + belt;
     const statusClass = total < 200 ? 'stock-crit' : total < 350 ? 'stock-low' : 'stock-ok';
     const statusLabel = total < 200 ? '⚠ Critical' : total < 350 ? '↓ Low' : '✓ OK';
@@ -741,6 +772,7 @@ function confirmOrder() {
   const date = new Date().toISOString().split('T')[0];
   const orderId = 'ORD-' + Date.now().toString(36).toUpperCase();
 
+  const ts = Date.now();
   currentOfficer.pointsUsed = (currentOfficer.pointsUsed || 0) + total;
   currentOfficer.orders.push({
     id: orderId,
@@ -749,6 +781,7 @@ function confirmOrder() {
     size, colour, qty,
     totalPts: total,
     date,
+    ts,
     status: 'Pending',
     centre: currentOfficer.centre
   });
@@ -760,27 +793,28 @@ function confirmOrder() {
     type: 'debit'
   });
 
-  // Simulate status progression after delays
-  setTimeout(() => {
-    const o = currentOfficer.orders.find(x => x.id === orderId);
-    if (o) { o.status = 'Shipped'; saveOfficerData(currentOfficer); }
-  }, 8000);
-  setTimeout(() => {
-    const o = currentOfficer.orders.find(x => x.id === orderId);
-    if (o) { o.status = 'Delivered'; saveOfficerData(currentOfficer); }
-  }, 20000);
-
   saveOfficerData(currentOfficer);
 
+  // Decrement the assigned centre's stock for this item (shared with admin)
+  const inv = getInventory();
+  if (inv[currentOfficer.centre] && inv[currentOfficer.centre][selectedItem.id] !== undefined) {
+    inv[currentOfficer.centre][selectedItem.id] = Math.max(0, inv[currentOfficer.centre][selectedItem.id] - qty);
+    saveInventory(inv);
+  }
+
   // Broadcast to admin
-  broadcastOrder(currentOfficer, orderId, selectedItem, qty, total, size, colour, date);
+  broadcastOrder(currentOfficer, orderId, selectedItem, qty, total, size, colour, date, ts);
+
+  // Re-render as the timestamp-derived status advances (Pending → Shipped → Delivered)
+  setTimeout(() => { if (currentOfficer) renderAll(); }, 10500);
+  setTimeout(() => { if (currentOfficer) renderAll(); }, 25500);
 
   closeModal();
   renderAll();
   showToast(`✓ Order placed! ${total} points deducted.`, 'success');
 }
 
-function broadcastOrder(officer, orderId, item, qty, total, size, colour, date) {
+function broadcastOrder(officer, orderId, item, qty, total, size, colour, date, ts) {
   const adminOrders = load('admin_orders', []);
   adminOrders.push({
     id: orderId,
@@ -789,7 +823,7 @@ function broadcastOrder(officer, orderId, item, qty, total, size, colour, date) 
     centre: officer.centre,
     item: item.name,
     itemId: item.id,
-    qty, total, size, colour, date,
+    qty, total, size, colour, date, ts,
     status: 'Pending'
   });
   save('admin_orders', adminOrders);

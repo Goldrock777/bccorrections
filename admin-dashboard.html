@@ -226,6 +226,9 @@
   @media (max-width: 768px) {
     main { padding: 1rem; }
     header { padding: 0 1rem; }
+    .hdr-title { font-size: 0.85rem; }
+    .hdr-sub { display: none; }
+    #hdr-admin { display: none; }
     .app-nav { padding: 0 1rem; }
     .sys-status { display: none; }
     th, td { padding: 10px 12px; font-size: 0.8rem; }
@@ -634,6 +637,35 @@ function load(key, def) { try { const v=localStorage.getItem(key); return v?JSON
 function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
 function rand(min, max) { return Math.floor(Math.random()*(max-min+1))+min; }
 
+// ─── SHARED INVENTORY & STATUS (same store the officer portal writes to) ───────
+const INV_KEYS = ['shirt','pants','boots','jacket','belt','badge','holster','gloves','cap','lsshirt'];
+function getInventory() {
+  let inv = load('centre_inventory', null);
+  if (!inv) {
+    inv = {};
+    CENTRES.forEach(c => {
+      inv[c] = {
+        shirt: rand(90,220), pants: rand(80,200), boots: rand(25,95),
+        jacket: rand(35,120), belt: rand(45,160), badge: rand(50,180),
+        holster: rand(20,75), gloves: rand(30,110), cap: rand(40,140), lsshirt: rand(45,150)
+      };
+    });
+    save('centre_inventory', inv);
+  }
+  return inv;
+}
+function saveInventory(inv) { save('centre_inventory', inv); }
+function invItemTotal(inv, key) { return CENTRES.reduce((a,c)=>a+(inv[c][key]||0),0); }
+function invGrandTotal(inv) { return CENTRES.reduce((a,c)=>a+INV_KEYS.reduce((s,k)=>s+(inv[c][k]||0),0),0); }
+function deriveStatus(ts) {
+  if (!ts) return 'Pending';
+  const e = Date.now() - ts;
+  if (e < 10000) return 'Pending';
+  if (e < 25000) return 'Shipped';
+  return 'Delivered';
+}
+function statusOf(o) { return o.ts ? deriveStatus(o.ts) : (o.status || 'Pending'); }
+
 // ─── AUTH ──────────────────────────────────────────────────────────────────────
 function doLogin() {
   const u = document.getElementById('user-input').value.trim();
@@ -681,13 +713,14 @@ function renderOverview() {
   document.getElementById('ov-pts').textContent = stats.totalPtsUsed;
   document.getElementById('pm-used').textContent = stats.totalPtsUsed;
   document.getElementById('pm-orders').textContent = stats.totalOrders;
+  document.getElementById('ov-units').textContent = invGrandTotal(getInventory()).toLocaleString();
 }
 
 function renderInventoryHealth() {
+  const inv = getInventory();
   const tbody = document.getElementById('inv-health-tbody');
-  const stockLevels = [1820,1540,820,1250,1100,380,920,640,510,700];
   tbody.innerHTML = ITEMS.map((item, i) => {
-    const s = stockLevels[i];
+    const s = invItemTotal(inv, INV_KEYS[i]);
     const cls = s < 400 ? 'badge-crit' : s < 800 ? 'badge-low' : 'badge-ok';
     const lbl = s < 400 ? 'Critical' : s < 800 ? 'Low' : 'OK';
     return `<tr><td>${item}</td><td><strong>${s.toLocaleString()}</strong></td><td><span class="badge ${cls}">${lbl}</span></td></tr>`;
@@ -730,9 +763,10 @@ function renderCharts() {
 }
 
 function renderInventoryTab() {
+  const inv = getInventory();
   const tbody = document.getElementById('full-inv-tbody');
   tbody.innerHTML = CENTRES.map(c => {
-    const vals = [rand(60,220),rand(50,190),rand(15,90),rand(25,120),rand(35,150),rand(40,180),rand(10,60),rand(20,100),rand(30,140),rand(20,80)];
+    const vals = INV_KEYS.map(k => inv[c][k]);
     const total = vals.reduce((a,b)=>a+b,0);
     const lowCount = vals.filter(v=>v<40).length;
     const cls = lowCount >= 3 ? 'badge-crit' : lowCount >= 1 ? 'badge-low' : 'badge-ok';
@@ -744,9 +778,9 @@ function renderInventoryTab() {
 
 function renderOrdersTab() {
   const orders = getAdminOrders();
-  const pending = orders.filter(o=>o.status==='Pending').length;
-  const shipped = orders.filter(o=>o.status==='Shipped').length;
-  const delivered = orders.filter(o=>o.status==='Delivered').length;
+  const pending = orders.filter(o=>statusOf(o)==='Pending').length;
+  const shipped = orders.filter(o=>statusOf(o)==='Shipped').length;
+  const delivered = orders.filter(o=>statusOf(o)==='Delivered').length;
   document.getElementById('ord-total').textContent = orders.length;
   document.getElementById('ord-pending').textContent = pending;
   document.getElementById('ord-shipped').textContent = shipped;
@@ -767,7 +801,7 @@ function renderOrdersTab() {
         <td>${o.qty}</td>
         <td><strong>${o.total}</strong></td>
         <td>${o.date}</td>
-        <td><span class="badge badge-${(o.status||'Pending').toLowerCase()}">${o.status||'Pending'}</span></td>
+        <td><span class="badge badge-${statusOf(o).toLowerCase()}">${statusOf(o)}</span></td>
       </tr>`).join('');
   }
 
@@ -810,13 +844,23 @@ function logAudit(event, user, detail, result) {
 function refreshOrders() { renderOrdersTab(); renderOverview(); renderCharts(); showToast('Data refreshed.','info'); }
 
 function reorderCentre(centre) {
-  logAudit('Reorder', 'admin', `Reorder triggered for ${centre}`, 'Success');
-  showToast(`Reorder triggered for ${centre}.`, 'info');
+  const inv = getInventory();
+  let restocked = 0;
+  INV_KEYS.forEach(k => { if (inv[centre][k] < 80) { inv[centre][k] += rand(60,120); restocked++; } });
+  saveInventory(inv);
+  logAudit('Reorder', 'admin', `Reorder triggered for ${centre} (${restocked} item line(s) restocked)`, 'Success');
+  renderInventoryTab(); renderInventoryHealth(); renderOverview();
+  showToast(`Reorder complete for ${centre} — ${restocked} item line(s) restocked.`, 'info');
 }
 
 function triggerReorder() {
-  logAudit('Reorder All', 'admin', 'Bulk reorder triggered for all low-stock centres', 'Success');
-  showToast('Reorder triggered for all low-stock centres.', 'info');
+  const inv = getInventory();
+  let restocked = 0;
+  CENTRES.forEach(c => INV_KEYS.forEach(k => { if (inv[c][k] < 80) { inv[c][k] += rand(60,120); restocked++; } }));
+  saveInventory(inv);
+  logAudit('Reorder All', 'admin', `Bulk reorder across all centres (${restocked} item line(s) restocked)`, 'Success');
+  renderInventoryTab(); renderInventoryHealth(); renderOverview();
+  showToast(`Bulk reorder complete — ${restocked} item line(s) restocked across all centres.`, 'info');
 }
 
 function resetAllPoints() {
