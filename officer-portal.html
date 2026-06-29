@@ -6,396 +6,220 @@
 <title>Officer Portal — BC Corrections UMS</title>
 <style>
   :root {
-    --primary: #003d7a;
-    --primary-dark: #002a56;
-    --accent: #ffc72c;
-    --success: #2e7d32;
-    --warning: #e65100;
-    --danger: #c62828;
-    --text: #1a1a2e;
-    --text-light: #4a5568;
-    --bg: #f1f5f9;
-    --white: #ffffff;
-    --border: #e2e8f0;
-    --shadow: 0 2px 12px rgba(0,61,122,0.08);
-    --shadow-lg: 0 8px 32px rgba(0,61,122,0.14);
-    --radius: 12px;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --primary: #4a9eff;
-      --primary-dark: #1d4ed8;
-      --accent: #ffc72c;
-      --success: #4ade80;
-      --warning: #fb923c;
-      --danger: #f87171;
-      --text: #f1f5f9;
-      --text-light: #94a3b8;
-      --bg: #0f172a;
-      --white: #1e293b;
-      --border: #334155;
-      --shadow: 0 2px 12px rgba(0,0,0,0.3);
-      --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
-    }
+    --bg: #0a111e; --bg-2: #0c1322; --panel: #111a2b; --panel-2: #0e1726;
+    --line: rgba(150,170,200,0.12); --line-2: rgba(150,170,200,0.20);
+    --text: #e7ecf3; --muted: #9aa7bc; --dim: #66758f;
+    --gold: #e7b53f; --blue: #6ea8e0; --green: #5fcf8e; --amber: #e3b341; --red: #e5736b;
+    /* legacy aliases used by inline render markup */
+    --white: var(--panel); --border: var(--line); --text-light: var(--muted);
+    --primary: var(--blue); --accent: var(--gold); --success: var(--green);
+    --warning: var(--amber); --danger: var(--red);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; line-height: 1.5; }
+  a { color: inherit; text-decoration: none; }
+  .mono { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
+  ::selection { background: rgba(110,168,224,0.25); }
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 8px; border: 3px solid transparent; background-clip: content-box; }
 
-  /* LOGIN */
-  #login-screen {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #002a56 0%, #003d7a 60%, #0056a8 100%);
-    display: flex; align-items: center; justify-content: center; padding: 2rem;
-  }
-  .login-card {
-    background: var(--white);
-    border-radius: 20px;
-    padding: 48px 40px;
-    width: 100%; max-width: 420px;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.3);
-  }
-  .login-logo {
-    text-align: center; margin-bottom: 32px;
-  }
-  .login-logo .badge {
-    width: 72px; height: 72px; border-radius: 50%;
-    background: linear-gradient(135deg, #002a56, #003d7a);
-    margin: 0 auto 16px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px;
-  }
-  .login-logo h1 { font-size: 1.4rem; font-weight: 800; }
-  .login-logo p { font-size: 0.85rem; color: var(--text-light); margin-top: 4px; }
-  .form-group { margin-bottom: 20px; }
-  .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em; }
-  .form-group input {
-    width: 100%; padding: 12px 14px;
-    border: 1px solid var(--border); border-radius: 8px;
-    font-size: 1rem; background: var(--bg); color: var(--text);
-    transition: border-color 0.2s;
-  }
-  .form-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,61,122,0.1); }
-  .login-hint { background: #e8f0fe; border-radius: 8px; padding: 10px 14px; font-size: 0.8rem; color: #1a56db; margin-bottom: 20px; }
-  @media (prefers-color-scheme: dark) { .login-hint { background: rgba(74,158,255,0.15); color: #93c5fd; } }
-  .btn-full {
-    width: 100%; padding: 14px;
-    background: linear-gradient(135deg, #003d7a, #0056a8);
-    color: #fff; border: none; border-radius: 8px;
-    font-size: 1rem; font-weight: 700; cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-full:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,61,122,0.4); }
-  .login-error { color: var(--danger); font-size: 0.85rem; text-align: center; margin-top: 12px; }
+  /* ── LOGIN ── */
+  #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: radial-gradient(900px 500px at 70% -10%, rgba(110,168,224,0.10), transparent 60%), var(--bg); }
+  .login-card { width: 100%; max-width: 400px; background: var(--panel); border: 1px solid var(--line-2); border-radius: 16px; padding: 36px 32px; box-shadow: 0 30px 80px -30px rgba(0,0,0,0.7); }
+  .login-logo { display: flex; align-items: center; gap: 11px; margin-bottom: 24px; }
+  .login-logo .mark { color: var(--gold); }
+  .login-logo h1 { font-size: 1rem; font-weight: 600; }
+  .login-logo p { font-size: 0.72rem; color: var(--dim); margin-top: 1px; }
+  .login-hint { background: rgba(110,168,224,0.08); border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; font-size: 0.78rem; color: var(--muted); margin-bottom: 18px; }
+  .login-hint strong { color: var(--text); }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); margin-bottom: 7px; }
+  .form-group input { width: 100%; padding: 11px 13px; background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 8px; color: var(--text); font-size: 0.95rem; }
+  .form-group input:focus { outline: none; border-color: var(--blue); }
+  .btn-full { width: 100%; padding: 12px; background: var(--gold); color: var(--bg); border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background .18s; }
+  .btn-full:hover { background: #f1c659; }
+  .login-error { color: var(--red); font-size: 0.84rem; text-align: center; margin-top: 12px; min-height: 18px; }
+  .login-back { display: block; text-align: center; margin-top: 16px; font-size: 0.84rem; color: var(--dim); }
+  .login-back:hover { color: var(--muted); }
 
-  /* APP SHELL */
+  /* ── APP SHELL ── */
   #app { display: none; }
-  header {
-    background: linear-gradient(135deg, #002a56, #003d7a);
-    color: #fff;
-    padding: 0 2rem;
-    height: 64px;
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 50;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
-  }
-  .hdr-left { display: flex; align-items: center; gap: 12px; }
-  .hdr-logo { font-size: 22px; }
-  .hdr-title { font-weight: 700; font-size: 1rem; }
-  .hdr-sub { font-size: 0.75rem; opacity: 0.7; }
-  .hdr-right { display: flex; align-items: center; gap: 12px; }
-  .hdr-officer { text-align: right; font-size: 0.85rem; }
-  .hdr-officer strong { display: block; }
-  .hdr-officer span { opacity: 0.7; font-size: 0.75rem; }
-  .btn-logout {
-    background: rgba(255,255,255,0.15); color: #fff;
-    border: 1px solid rgba(255,255,255,0.3); border-radius: 6px;
-    padding: 6px 14px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
-  }
-  .btn-logout:hover { background: rgba(255,255,255,0.25); }
+  .shell { display: grid; grid-template-columns: 248px 1fr; min-height: 100vh; }
+  .sidebar { border-right: 1px solid var(--line); background: var(--bg-2); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
+  .side-brand { display: flex; align-items: center; gap: 11px; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+  .side-brand .mark { color: var(--gold); }
+  .side-brand .name { font-size: 0.9rem; font-weight: 600; }
+  .side-brand .name small { display: block; font-size: 0.66rem; color: var(--dim); font-weight: 500; }
+  .side-nav { padding: 14px 12px; display: flex; flex-direction: column; gap: 2px; flex: 1; }
+  .side-cap { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--dim); padding: 10px 12px 6px; }
+  .side-link { display: flex; align-items: center; gap: 11px; padding: 9px 12px; border-radius: 8px; color: var(--muted); font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all .15s; border: none; background: none; width: 100%; text-align: left; position: relative; }
+  .side-link svg { width: 17px; height: 17px; flex-shrink: 0; }
+  .side-link:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  .side-link.active { color: #fff; background: rgba(110,168,224,0.12); }
+  .side-link.active::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--gold); }
+  .side-foot { padding: 14px; border-top: 1px solid var(--line); }
+  .side-status { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--muted); padding: 6px 8px; }
+  .side-status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(95,207,142,0.18); animation: pulse 2.4s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
 
-  /* NAV TABS */
-  .app-nav {
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    display: flex; gap: 4px; overflow-x: auto;
-  }
-  .app-nav button {
-    padding: 16px 20px; border: none; background: none;
-    font-size: 0.9rem; font-weight: 600; color: var(--text-light);
-    cursor: pointer; border-bottom: 3px solid transparent;
-    transition: all 0.2s; white-space: nowrap; margin-bottom: -1px;
-  }
-  .app-nav button:hover { color: var(--primary); }
-  .app-nav button.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .main-area { display: flex; flex-direction: column; min-width: 0; }
+  .topbar { height: 60px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; position: sticky; top: 0; background: rgba(10,17,30,0.72); backdrop-filter: blur(12px); z-index: 20; }
+  .topbar .ttl { font-size: 0.98rem; font-weight: 600; }
+  .topbar .ttl small { color: var(--dim); font-weight: 500; margin-left: 8px; font-size: 0.8rem; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .who { text-align: right; font-size: 0.84rem; line-height: 1.25; }
+  .who strong { display: block; color: var(--text); font-weight: 600; }
+  .who span { font-size: 0.74rem; color: var(--dim); }
+  .btn-out { background: transparent; border: 1px solid var(--line-2); color: var(--muted); border-radius: 7px; padding: 6px 13px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all .15s; }
+  .btn-out:hover { color: var(--text); border-color: var(--blue); }
+  main { padding: 28px; max-width: 1180px; }
 
-  /* MAIN */
-  main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-
-  /* TABS */
-  .tab-panel { display: none; }
+  .tab-panel { display: none; animation: fade .3s ease both; }
   .tab-panel.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
-  /* DASHBOARD */
-  .points-hero {
-    background: linear-gradient(135deg, #002a56, #003d7a);
-    border-radius: 16px; padding: 32px;
-    color: #fff; margin-bottom: 24px;
-  }
-  .points-hero h2 { font-size: 1rem; opacity: 0.8; margin-bottom: 8px; }
-  .points-big { font-size: 3.5rem; font-weight: 900; color: var(--accent); line-height: 1; }
-  .points-sub { font-size: 0.9rem; opacity: 0.7; margin-top: 6px; }
-  .points-bar-wrap { margin-top: 20px; }
-  .points-bar-label { display: flex; justify-content: space-between; font-size: 0.8rem; opacity: 0.8; margin-bottom: 6px; }
-  .points-bar { height: 10px; background: rgba(255,255,255,0.2); border-radius: 999px; overflow: hidden; }
-  .points-bar-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.8s ease; }
+  /* ── POINTS HERO ── */
+  .points-hero { background: radial-gradient(700px 300px at 90% -40%, rgba(231,181,63,0.10), transparent 60%), linear-gradient(180deg, var(--panel), var(--panel-2)); border: 1px solid var(--line-2); border-radius: 14px; padding: 24px 26px; margin-bottom: 18px; }
+  .points-hero h2 { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .points-big { font-size: 3rem; font-weight: 700; color: var(--gold); line-height: 1; margin-top: 8px; letter-spacing: -0.02em; }
+  .points-sub { font-size: 0.84rem; color: var(--dim); margin-top: 6px; }
+  .points-bar-wrap { margin-top: 18px; }
+  .points-bar-label { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted); margin-bottom: 7px; }
+  .points-bar-label strong { color: var(--text); }
+  .points-bar { height: 7px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; }
+  .points-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), #f1c659); border-radius: 99px; transition: width .5s ease; }
 
-  .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
-  .dash-card {
-    background: var(--white); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 20px;
-    transition: box-shadow 0.2s;
-  }
-  .dash-card:hover { box-shadow: var(--shadow); }
-  .dash-card .dc-val { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
-  .dash-card .dc-lbl { font-size: 0.8rem; color: var(--text-light); margin-top: 4px; }
+  /* ── TILES ── */
+  .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+  @media (max-width: 700px) { .dash-grid { grid-template-columns: repeat(2, 1fr); } }
+  .dash-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; transition: border-color .18s, transform .18s; }
+  .dash-card:hover { border-color: var(--line-2); transform: translateY(-2px); }
+  .dc-val { font-size: 1.7rem; font-weight: 650; color: #fff; letter-spacing: -0.02em; line-height: 1; }
+  .dc-lbl { font-size: 0.78rem; color: var(--dim); margin-top: 7px; }
 
-  /* TABLES */
-  .card {
-    background: var(--white); border: 1px solid var(--border);
-    border-radius: var(--radius); overflow: hidden; margin-bottom: 24px;
-  }
-  .card-header {
-    padding: 18px 24px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .card-header h3 { font-size: 1rem; font-weight: 700; }
+  /* ── CARDS / TABLES ── */
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-bottom: 18px; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 18px; border-bottom: 1px solid var(--line); }
+  .card-header h3 { font-size: 0.92rem; font-weight: 600; }
   .card-body { padding: 0; }
   table { width: 100%; border-collapse: collapse; }
-  th { padding: 12px 16px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light); background: var(--bg); text-align: left; }
-  td { padding: 14px 16px; font-size: 0.9rem; border-top: 1px solid var(--border); }
-  tr:hover td { background: rgba(0,61,122,0.03); }
+  th { text-align: left; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--dim); font-weight: 600; padding: 11px 16px; border-bottom: 1px solid var(--line); background: var(--panel-2); }
+  td { padding: 12px 16px; font-size: 0.86rem; border-bottom: 1px solid var(--line); color: var(--text); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr { transition: background .14s; }
+  tbody tr:hover td { background: rgba(255,255,255,0.02); }
+  td code { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 0.78rem; color: var(--muted); }
+  td strong { font-weight: 600; color: #fff; }
 
-  /* STATUS BADGES */
-  .badge {
-    padding: 3px 10px; border-radius: 999px;
-    font-size: 0.75rem; font-weight: 700; display: inline-block;
-  }
-  .badge-pending { background: #fef3cd; color: #92400e; }
-  .badge-shipped { background: #dbeafe; color: #1e40af; }
-  .badge-delivered { background: #dcfce7; color: #166534; }
-  .badge-credit { background: #dcfce7; color: #166534; }
-  .badge-debit { background: #fee2e2; color: #991b1b; }
-  @media (prefers-color-scheme: dark) {
-    .badge-pending { background: rgba(251,191,36,0.2); color: #fbbf24; }
-    .badge-shipped { background: rgba(59,130,246,0.2); color: #60a5fa; }
-    .badge-delivered { background: rgba(74,222,128,0.2); color: #4ade80; }
-    .badge-credit { background: rgba(74,222,128,0.2); color: #4ade80; }
-    .badge-debit { background: rgba(248,113,113,0.2); color: #f87171; }
-  }
+  .badge { padding: 2px 9px; border-radius: 99px; font-size: 0.7rem; font-weight: 600; display: inline-block; }
+  .badge-delivered, .badge-credit { background: rgba(95,207,142,0.14); color: var(--green); }
+  .badge-shipped { background: rgba(227,179,65,0.16); color: var(--amber); }
+  .badge-pending { background: rgba(110,168,224,0.16); color: var(--blue); }
+  .badge-debit { background: rgba(229,115,107,0.16); color: var(--red); }
 
-  /* CATALOGUE */
-  .catalogue-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
-  .catalogue-item {
-    background: var(--white); border: 1px solid var(--border);
-    border-radius: var(--radius); overflow: hidden;
-    transition: all 0.2s; cursor: pointer;
-  }
-  .catalogue-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
-  .catalogue-item.disabled { opacity: 0.5; cursor: not-allowed; }
-  .catalogue-item.disabled:hover { transform: none; box-shadow: none; border-color: var(--border); }
-  .ci-image {
-    height: 120px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 48px;
-    background: linear-gradient(135deg, #e8f0fe, #f1f5f9);
-  }
-  .ci-body { padding: 16px; }
-  .ci-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; }
-  .ci-desc { font-size: 0.8rem; color: var(--text-light); margin-bottom: 12px; }
+  /* ── PAGE HEAD ── */
+  .page-head { margin-bottom: 20px; }
+  .page-head h2 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; }
+  .page-head p { font-size: 0.88rem; color: var(--muted); margin-top: 2px; }
+  .pts-chip { background: var(--panel); border: 1px solid var(--line-2); border-radius: 10px; padding: 10px 18px; text-align: center; }
+  .pts-chip .l { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--dim); }
+  .pts-chip .v { font-size: 1.5rem; font-weight: 650; color: var(--gold); }
+
+  /* ── CATALOGUE ── */
+  .catalogue-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+  .catalogue-item { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; cursor: pointer; transition: all .18s; }
+  .catalogue-item:hover { transform: translateY(-3px); border-color: var(--line-2); box-shadow: 0 16px 40px -20px rgba(0,0,0,0.7); }
+  .catalogue-item.disabled { opacity: 0.45; cursor: not-allowed; }
+  .catalogue-item.disabled:hover { transform: none; box-shadow: none; border-color: var(--line); }
+  .ci-image { height: 116px; display: flex; align-items: center; justify-content: center; font-size: 46px; background: radial-gradient(circle at 50% 40%, rgba(110,168,224,0.10), transparent 70%), var(--panel-2); border-bottom: 1px solid var(--line); }
+  .ci-body { padding: 15px 16px 16px; }
+  .ci-name { font-weight: 600; font-size: 0.95rem; }
+  .ci-desc { font-size: 0.8rem; color: var(--dim); margin: 6px 0 14px; line-height: 1.45; }
   .ci-footer { display: flex; align-items: center; justify-content: space-between; }
-  .ci-points {
-    background: linear-gradient(135deg, #003d7a, #0056a8);
-    color: #fff; padding: 4px 12px; border-radius: 999px;
-    font-size: 0.8rem; font-weight: 700;
-  }
-  .ci-btn {
-    background: var(--accent); color: var(--primary-dark);
-    border: none; border-radius: 6px; padding: 6px 14px;
-    font-size: 0.8rem; font-weight: 700; cursor: pointer;
-    transition: all 0.2s;
-  }
-  .ci-btn:hover { background: #ffdb6b; }
+  .ci-points { font-size: 0.8rem; font-weight: 600; color: var(--gold); }
+  .ci-btn { background: rgba(231,181,63,0.12); color: var(--gold); border: 1px solid var(--line-2); border-radius: 7px; padding: 5px 14px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all .15s; }
+  .ci-btn:hover { border-color: var(--gold); color: #fff; }
+  .ci-btn:disabled { opacity: .5; }
 
-  /* FIT TOGGLE */
-  .fit-toggle {
-    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-    background: var(--white); border: 1px solid var(--border);
-    border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
-  }
-  .fit-toggle-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light); }
-  .fit-btn {
-    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
-    padding: 7px 16px; font-size: 0.88rem; font-weight: 700; color: var(--text);
-    cursor: pointer; transition: all 0.15s;
-  }
-  .fit-btn:hover { border-color: var(--primary); }
-  .fit-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-  .fit-toggle-hint { font-size: 0.75rem; color: var(--text-light); flex: 1; min-width: 180px; }
+  /* ── FIT TOGGLE ── */
+  .fit-toggle { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; margin-bottom: 18px; }
+  .fit-toggle-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--dim); }
+  .fit-btn { background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 8px; padding: 7px 16px; font-size: 0.86rem; font-weight: 600; color: var(--text); cursor: pointer; transition: all .15s; }
+  .fit-btn:hover { border-color: var(--blue); }
+  .fit-btn.active { background: var(--blue); color: #06101f; border-color: var(--blue); }
+  .fit-toggle-hint { font-size: 0.75rem; color: var(--dim); flex: 1; min-width: 180px; }
 
-  /* MODAL */
-  .modal-overlay {
-    position: fixed; inset: 0; z-index: 200;
-    background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
-    display: flex; align-items: center; justify-content: center;
-    padding: 1rem;
-    opacity: 0; pointer-events: none; transition: opacity 0.2s;
-  }
+  /* ── INVENTORY ── */
+  .inv-centre { font-weight: 600; color: #fff; }
+  .stock-ok { color: var(--green); font-weight: 600; }
+  .stock-low { color: var(--amber); font-weight: 600; }
+  .stock-crit { color: var(--red); font-weight: 600; }
+
+  /* ── MODAL ── */
+  .modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(4,8,16,0.7); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; padding: 16px; opacity: 0; pointer-events: none; transition: opacity .2s; }
   .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal {
-    position: relative;
-    background: var(--white); border-radius: 20px;
-    padding: 32px; max-width: 480px; width: 100%;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.3);
-    transform: translateY(20px); transition: transform 0.2s;
-    max-height: 92vh; overflow-y: auto;
-  }
-  .modal.modal-wide { max-width: 780px; }
-  .modal-overlay.open .modal { transform: translateY(0); }
-  .modal h2 { font-size: 1.35rem; font-weight: 800; margin-bottom: 4px; }
-  .modal .modal-pts { color: var(--primary); font-weight: 700; font-size: 0.9rem; margin-bottom: 18px; }
-  .modal-close {
-    position: absolute; top: 16px; right: 18px;
-    background: none; border: none; font-size: 1.1rem; line-height: 1;
-    color: var(--text-light); cursor: pointer; padding: 4px;
-  }
+  .modal { position: relative; background: var(--panel); border: 1px solid var(--line-2); border-radius: 16px; padding: 30px; max-width: 480px; width: 100%; max-height: 92vh; overflow-y: auto; transform: translateY(16px); transition: transform .2s; box-shadow: 0 40px 100px -30px rgba(0,0,0,0.8); }
+  .modal.modal-wide { max-width: 760px; }
+  .modal-overlay.open .modal { transform: none; }
+  .modal h2 { font-size: 1.3rem; font-weight: 600; }
+  .modal .modal-pts { color: var(--blue); font-weight: 600; font-size: 0.88rem; margin-bottom: 18px; }
+  .modal-close { position: absolute; top: 16px; right: 18px; background: none; border: none; font-size: 1.05rem; color: var(--dim); cursor: pointer; }
   .modal-close:hover { color: var(--text); }
-  .modal-grid { display: grid; grid-template-columns: 240px 1fr; gap: 28px; }
-
-  /* INTERACTIVE FIGURE */
-  .modal-figure {
-    background: linear-gradient(180deg, var(--bg), rgba(0,0,0,0));
-    border: 1px solid var(--border); border-radius: 14px;
-    padding: 16px 10px 12px; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-  }
+  .modal-grid { display: grid; grid-template-columns: 230px 1fr; gap: 28px; }
+  .modal-figure { background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 16px 10px 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .officer-fig { width: 100%; max-height: 320px; }
-  .fig-part { transition: opacity 0.3s, filter 0.3s; }
-  .fig-part.dim { opacity: 0.20; }
-  .fig-part.hl { filter: drop-shadow(0 0 8px var(--accent)); }
-  .fig-part.hl path, .fig-part.hl rect, .fig-part.hl circle { fill: var(--accent) !important; }
-  .figure-cap { margin-top: 10px; font-size: 0.82rem; font-weight: 700; color: var(--primary); text-align: center; }
-  .figure-hint { font-size: 0.72rem; color: var(--text-light); margin-top: 2px; text-align: center; }
-
-  /* OPTION CHIPS */
+  .fig-part { transition: opacity .3s, filter .3s; }
+  .fig-part.dim { opacity: 0.18; }
+  .fig-part.hl { filter: drop-shadow(0 0 9px var(--gold)); }
+  .fig-part.hl path, .fig-part.hl rect, .fig-part.hl circle { fill: var(--gold) !important; }
+  .figure-cap { margin-top: 10px; font-size: 0.82rem; font-weight: 600; color: var(--blue); text-align: center; }
+  .figure-hint { font-size: 0.72rem; color: var(--dim); margin-top: 2px; text-align: center; }
   .opt-group { margin-bottom: 14px; }
-  .opt-group > label { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light); margin-bottom: 7px; }
+  .opt-group > label { display: block; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--dim); margin-bottom: 7px; }
   .chip-row { display: flex; flex-wrap: wrap; gap: 7px; }
-  .opt-chip {
-    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
-    padding: 6px 12px; font-size: 0.83rem; font-weight: 600; color: var(--text);
-    cursor: pointer; transition: all 0.15s;
-  }
-  .opt-chip:hover { border-color: var(--primary); }
-  .opt-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-
-  /* SIZING GUIDE */
-  .guide-toggle {
-    margin-top: 4px; width: 100%; background: none;
-    border: 1px dashed var(--border); border-radius: 8px;
-    padding: 9px 12px; font-size: 0.82rem; font-weight: 700; color: var(--primary);
-    cursor: pointer; transition: all 0.15s; text-align: left;
-  }
-  .guide-toggle:hover { border-color: var(--primary); background: rgba(0,61,122,0.04); }
-  .guide-panel { display: none; margin-top: 10px; background: var(--bg); border-radius: 10px; padding: 14px; font-size: 0.82rem; }
+  .opt-chip { background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 8px; padding: 6px 12px; font-size: 0.83rem; font-weight: 600; color: var(--text); cursor: pointer; transition: all .15s; }
+  .opt-chip:hover { border-color: var(--blue); }
+  .opt-chip.active { background: var(--blue); color: #06101f; border-color: var(--blue); }
+  .guide-toggle { margin-top: 4px; width: 100%; background: none; border: 1px dashed var(--line-2); border-radius: 8px; padding: 9px 12px; font-size: 0.82rem; font-weight: 600; color: var(--blue); cursor: pointer; transition: all .15s; text-align: left; }
+  .guide-toggle:hover { border-color: var(--blue); background: rgba(110,168,224,0.06); }
+  .guide-panel { display: none; margin-top: 10px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; padding: 14px; font-size: 0.82rem; }
   .guide-panel.open { display: block; }
   .guide-panel table { width: 100%; border-collapse: collapse; }
-  .guide-panel td { padding: 4px 6px; border-bottom: 1px solid var(--border); }
+  .guide-panel td { padding: 4px 6px; border-bottom: 1px solid var(--line); }
   .guide-panel tr:last-child td { border-bottom: none; }
-  .guide-panel td:last-child { text-align: right; color: var(--text-light); }
-  .guide-panel p { margin-top: 8px; color: var(--text-light); }
-  .guide-hdr { font-weight: 700; color: var(--primary); margin-bottom: 8px; font-size: 0.82rem; }
-
-  .modal-total-line { background: var(--bg); border-radius: 8px; padding: 12px; font-size: 0.9rem; margin-top: 16px; }
+  .guide-panel td:last-child { text-align: right; color: var(--dim); }
+  .guide-panel p { margin-top: 8px; color: var(--dim); }
+  .guide-hdr { font-weight: 600; color: var(--blue); margin-bottom: 8px; font-size: 0.82rem; }
+  .modal-total-line { background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px; padding: 12px; font-size: 0.88rem; margin-top: 16px; color: var(--muted); }
+  .modal-total-line strong { color: #fff; }
   .modal-actions { display: flex; gap: 12px; margin-top: 16px; }
-  .btn-confirm {
-    flex: 1; padding: 12px;
-    background: linear-gradient(135deg, #003d7a, #0056a8);
-    color: #fff; border: none; border-radius: 8px;
-    font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
-  }
-  .btn-confirm:hover { box-shadow: 0 4px 16px rgba(0,61,122,0.4); }
-  .btn-confirm:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
-  .btn-cancel {
-    flex: 1; padding: 12px;
-    background: var(--bg); color: var(--text);
-    border: 1px solid var(--border); border-radius: 8px;
-    font-weight: 600; font-size: 0.95rem; cursor: pointer;
-  }
-  @media (max-width: 640px) {
-    .modal-grid { grid-template-columns: 1fr; gap: 16px; }
-    .officer-fig { max-height: 220px; }
-    .modal.modal-wide { padding: 24px; }
-  }
+  .btn-confirm { flex: 1; padding: 12px; background: var(--gold); color: var(--bg); border: none; border-radius: 8px; font-weight: 600; font-size: 0.92rem; cursor: pointer; transition: all .18s; }
+  .btn-confirm:hover { background: #f1c659; }
+  .btn-confirm:disabled { opacity: .45; cursor: not-allowed; }
+  .btn-cancel { flex: 1; padding: 12px; background: transparent; color: var(--muted); border: 1px solid var(--line-2); border-radius: 8px; font-weight: 600; font-size: 0.92rem; cursor: pointer; }
+  .btn-cancel:hover { color: var(--text); border-color: var(--blue); }
 
-  /* TOAST */
-  .toast {
-    position: fixed; bottom: 24px; right: 24px; z-index: 300;
-    background: #1e293b; color: #fff;
-    padding: 14px 20px; border-radius: 10px;
-    font-size: 0.9rem; font-weight: 600;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-    transform: translateY(80px); opacity: 0;
-    transition: all 0.3s;
-  }
+  /* ── TOAST ── */
+  .toast { position: fixed; bottom: 22px; right: 22px; z-index: 300; background: var(--panel); border: 1px solid var(--line-2); color: var(--text); padding: 13px 18px; border-radius: 10px; font-size: 0.88rem; font-weight: 500; box-shadow: 0 20px 50px -15px rgba(0,0,0,0.7); transform: translateY(80px); opacity: 0; transition: all .3s; }
   .toast.show { transform: translateY(0); opacity: 1; }
-  .toast.success { border-left: 4px solid var(--success); }
-  .toast.error { border-left: 4px solid var(--danger); }
+  .toast.success { border-left: 3px solid var(--green); }
+  .toast.error { border-left: 3px solid var(--red); }
+  .toast.info { border-left: 3px solid var(--blue); }
 
-  /* INVENTORY TABLE */
-  .inv-centre { font-weight: 600; }
-  .stock-ok { color: var(--success); font-weight: 700; }
-  .stock-low { color: var(--warning); font-weight: 700; }
-  .stock-crit { color: var(--danger); font-weight: 700; }
-
-  @media (max-width: 768px) {
-    main { padding: 1rem; }
-    .points-big { font-size: 2.5rem; }
-    header { padding: 0 1rem; }
-    .hdr-sub { display: none; }
-    .hdr-title { font-size: 0.92rem; }
-    .hdr-officer { display: none; }
-    .app-nav { padding: 0 1rem; }
-    table { font-size: 0.8rem; }
-    th, td { padding: 10px 12px; }
+  /* ── RESPONSIVE ── */
+  @media (max-width: 760px) {
+    .shell { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; }
+    .side-nav { flex-direction: row; overflow-x: auto; gap: 4px; flex: none; }
+    .side-cap, .side-foot { display: none; }
+    .side-link.active::before { display: none; }
+    main { padding: 18px; }
+    .topbar { padding: 0 18px; }
+    .who { display: none; }
+    .modal-grid { grid-template-columns: 1fr; gap: 16px; }
+    .officer-fig { max-height: 200px; }
   }
-
-  /* ─── POLISH LAYER ─────────────────────────────────────────────────────────── */
-  body { font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-  ::selection { background: rgba(0,61,122,0.18); }
-  *::-webkit-scrollbar { width: 11px; height: 11px; }
-  *::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; border: 3px solid transparent; background-clip: content-box; }
-  *::-webkit-scrollbar-thumb:hover { background: var(--text-light); background-clip: content-box; }
-
-  @keyframes panelIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-  @keyframes cardIn  { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-  .tab-panel.active { animation: panelIn 0.34s cubic-bezier(.22,.61,.36,1) both; }
-  .card, .dash-card, .catalogue-item { animation: cardIn 0.4s cubic-bezier(.22,.61,.36,1) both; }
-  .dash-grid > *:nth-child(2) { animation-delay: .05s; }
-  .dash-grid > *:nth-child(3) { animation-delay: .10s; }
-  .dash-grid > *:nth-child(4) { animation-delay: .15s; }
-
-  .dash-card { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
-  .dash-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: rgba(0,61,122,0.30); }
-  .card { transition: box-shadow .2s ease; }
-
-  header { box-shadow: 0 1px 0 rgba(255,255,255,0.05), 0 6px 22px rgba(0,0,0,0.30); }
-  header::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: linear-gradient(90deg, var(--accent), rgba(255,199,44,0) 55%); opacity: .7; }
-
-  .btn-confirm:active, .btn-full:active, .btn-cancel:active, .ci-btn:active, .btn-logout:active, .opt-chip:active, .fit-btn:active { transform: translateY(1px); }
-  .login-card { animation: panelIn 0.5s cubic-bezier(.22,.61,.36,1) both; }
-  table tbody tr { transition: background .15s ease; }
-  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
 </style>
 </head>
 <body>
@@ -404,176 +228,142 @@
 <div id="login-screen">
   <div class="login-card">
     <div class="login-logo">
-      <div class="badge">👮</div>
-      <h1>BC Corrections UMS</h1>
-      <p>Officer Self-Service Portal</p>
+      <svg class="mark" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 5 5.2v5.3c0 4.3 2.9 8.2 7 9.5 4.1-1.3 7-5.2 7-9.5V5.2L12 2.5Z"/><path d="m9 12 2 2 4-4.5"/></svg>
+      <div><h1>BC Corrections UMS</h1><p>Officer self-service portal</p></div>
     </div>
-    <div class="login-hint">Demo: Badge ID <strong>A2847</strong> — any password</div>
-    <div class="form-group">
-      <label>Badge ID</label>
-      <input type="text" id="badge-input" placeholder="e.g. A2847" value="A2847">
-    </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="pw-input" placeholder="Enter password" value="password">
-    </div>
-    <button class="btn-full" onclick="doLogin()">Sign In to Portal</button>
+    <div class="login-hint">Demo — Badge ID <strong>A2847</strong>, any password</div>
+    <div class="form-group"><label>Badge ID</label><input type="text" id="badge-input" placeholder="e.g. A2847" value="A2847"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="pw-input" placeholder="Enter password" value="password"></div>
+    <button class="btn-full" onclick="doLogin()">Sign in</button>
     <div class="login-error" id="login-error"></div>
-    <div style="text-align:center;margin-top:20px;">
-      <a href="index.html" style="color:var(--text-light);font-size:0.85rem;">← Back to Home</a>
-    </div>
+    <a class="login-back" href="index.html">← Back to home</a>
   </div>
 </div>
 
 <!-- APP -->
 <div id="app">
-  <header>
-    <div class="hdr-left">
-      <div class="hdr-logo">🛡️</div>
-      <div>
-        <div class="hdr-title">BC Corrections UMS</div>
-        <div class="hdr-sub">Officer Self-Service Portal</div>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="side-brand">
+        <svg class="mark" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 5 5.2v5.3c0 4.3 2.9 8.2 7 9.5 4.1-1.3 7-5.2 7-9.5V5.2L12 2.5Z"/><path d="m9 12 2 2 4-4.5"/></svg>
+        <div class="name">BC Corrections<small>Officer portal</small></div>
       </div>
-    </div>
-    <div class="hdr-right">
-      <div class="hdr-officer">
-        <strong id="hdr-name">Officer</strong>
-        <span id="hdr-badge"></span>
+      <nav class="side-nav">
+        <div class="side-cap">Menu</div>
+        <button class="side-link active" data-tab="dashboard" onclick="switchTab('dashboard')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </button>
+        <button class="side-link" data-tab="catalogue" onclick="switchTab('catalogue')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.2 12.5a1.5 1.5 0 0 0 1.5 1.2h8.4a1.5 1.5 0 0 0 1.5-1.2L21 7H6"/></svg>
+          Order uniforms
+        </button>
+        <button class="side-link" data-tab="orders" onclick="switchTab('orders')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8l9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/></svg>
+          My orders
+        </button>
+        <button class="side-link" data-tab="ledger" onclick="switchTab('ledger')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>
+          Points ledger
+        </button>
+        <button class="side-link" data-tab="inventory" onclick="switchTab('inventory')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9l8-5 8 5v12"/><path d="M9 21v-6h6v6"/></svg>
+          Centre inventory
+        </button>
+      </nav>
+      <div class="side-foot">
+        <div class="side-status"><span class="dot"></span> Connected</div>
       </div>
-      <button class="btn-logout" onclick="doLogout()">Sign Out</button>
-    </div>
-  </header>
+    </aside>
 
-  <nav class="app-nav">
-    <button class="active" onclick="switchTab('dashboard', this)">📊 Dashboard</button>
-    <button onclick="switchTab('catalogue', this)">🛒 Order Uniforms</button>
-    <button onclick="switchTab('orders', this)">📦 My Orders</button>
-    <button onclick="switchTab('ledger', this)">💳 Points Ledger</button>
-    <button onclick="switchTab('inventory', this)">🏢 Centre Inventory</button>
-  </nav>
+    <div class="main-area">
+      <div class="topbar">
+        <div class="ttl" id="page-title">Dashboard</div>
+        <div class="topbar-right">
+          <div class="who"><strong id="hdr-name">Officer</strong><span id="hdr-badge"></span></div>
+          <button class="btn-out" onclick="doLogout()">Sign out</button>
+        </div>
+      </div>
 
-  <main>
-
-    <!-- DASHBOARD TAB -->
-    <div class="tab-panel active" id="tab-dashboard">
-      <div class="points-hero">
-        <h2>Your Annual Points Balance</h2>
-        <div class="points-big" id="pts-available">500</div>
-        <div class="points-sub">Points available this year (resets annually)</div>
-        <div class="points-bar-wrap">
-          <div class="points-bar-label">
-            <span>Used: <strong id="pts-used-lbl">0</strong></span>
-            <span>Annual allotment: <strong>500</strong></span>
+      <main>
+        <!-- DASHBOARD -->
+        <div class="tab-panel active" id="tab-dashboard">
+          <div class="points-hero">
+            <h2>Annual points balance</h2>
+            <div class="points-big" id="pts-available">500</div>
+            <div class="points-sub">Points available this year (resets annually)</div>
+            <div class="points-bar-wrap">
+              <div class="points-bar-label"><span>Used <strong id="pts-used-lbl">0</strong></span><span>Allotment <strong>500</strong></span></div>
+              <div class="points-bar"><div class="points-bar-fill" id="pts-bar" style="width:0%"></div></div>
+            </div>
           </div>
-          <div class="points-bar">
-            <div class="points-bar-fill" id="pts-bar" style="width:0%"></div>
+          <div class="dash-grid">
+            <div class="dash-card"><div class="dc-val" id="dc-available">500</div><div class="dc-lbl">Points available</div></div>
+            <div class="dash-card"><div class="dc-val" id="dc-used">0</div><div class="dc-lbl">Points used this year</div></div>
+            <div class="dash-card"><div class="dc-val" id="dc-orders">0</div><div class="dc-lbl">Total orders placed</div></div>
+            <div class="dash-card"><div class="dc-val" id="dc-pending">0</div><div class="dc-lbl">Orders pending</div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Recent orders</h3><button class="ci-btn" onclick="switchTab('orders')">View all</button></div>
+            <div class="card-body">
+              <table>
+                <thead><tr><th>Order</th><th>Item</th><th>Date</th><th>Points</th><th>Status</th></tr></thead>
+                <tbody id="recent-orders-tbody"><tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:32px">No orders yet. Visit Order Uniforms to place your first order.</td></tr></tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="dash-grid">
-        <div class="dash-card">
-          <div class="dc-val" id="dc-available">500</div>
-          <div class="dc-lbl">Points Available</div>
+        <!-- CATALOGUE -->
+        <div class="tab-panel" id="tab-catalogue">
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:18px;">
+            <div class="page-head" style="margin:0"><h2>Uniform catalogue</h2><p>Select an item to configure size, fit and quantity. Points deduct on confirmation.</p></div>
+            <div class="pts-chip"><div class="l">Points remaining</div><div class="v" id="cat-pts">500</div></div>
+          </div>
+          <div class="fit-toggle" id="fit-toggle">
+            <span class="fit-toggle-label">Sizing fit</span>
+            <button class="fit-btn active" data-fit="Men's" onclick="setFit(this.dataset.fit)">Men's</button>
+            <button class="fit-btn" data-fit="Women's" onclick="setFit(this.dataset.fit)">Women's</button>
+            <span class="fit-toggle-hint">Applies to shirts, trousers, boots &amp; gloves — also adjustable per item when ordering.</span>
+          </div>
+          <div class="catalogue-grid" id="catalogue-grid"></div>
         </div>
-        <div class="dash-card">
-          <div class="dc-val" id="dc-used">0</div>
-          <div class="dc-lbl">Points Used This Year</div>
-        </div>
-        <div class="dash-card">
-          <div class="dc-val" id="dc-orders">0</div>
-          <div class="dc-lbl">Total Orders Placed</div>
-        </div>
-        <div class="dash-card">
-          <div class="dc-val" id="dc-pending">0</div>
-          <div class="dc-lbl">Orders Pending</div>
-        </div>
-      </div>
 
-      <div class="card">
-        <div class="card-header">
-          <h3>Recent Orders</h3>
-          <button class="ci-btn" onclick="switchTab('orders', document.querySelector('.app-nav button:nth-child(3)'))">View All</button>
+        <!-- ORDERS -->
+        <div class="tab-panel" id="tab-orders">
+          <div class="page-head"><h2>My orders</h2><p>Track the status of all your uniform orders.</p></div>
+          <div class="card"><div class="card-body">
+            <table>
+              <thead><tr><th>Order</th><th>Item</th><th>Size</th><th>Colour</th><th>Qty</th><th>Points</th><th>Date</th><th>Status</th></tr></thead>
+              <tbody id="orders-tbody"><tr><td colspan="8" style="text-align:center;color:var(--text-light);padding:32px">No orders placed yet.</td></tr></tbody>
+            </table>
+          </div></div>
         </div>
-        <div class="card-body">
-          <table>
-            <thead><tr><th>Order ID</th><th>Item</th><th>Date</th><th>Points</th><th>Status</th></tr></thead>
-            <tbody id="recent-orders-tbody"><tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:32px">No orders yet. Visit the Order Uniforms tab to place your first order.</td></tr></tbody>
-          </table>
+
+        <!-- LEDGER -->
+        <div class="tab-panel" id="tab-ledger">
+          <div class="page-head"><h2>Points ledger</h2><p>Complete history of all point transactions.</p></div>
+          <div class="card"><div class="card-body">
+            <table>
+              <thead><tr><th>Date</th><th>Description</th><th>Points</th><th>Balance</th><th>Type</th></tr></thead>
+              <tbody id="ledger-tbody"></tbody>
+            </table>
+          </div></div>
         </div>
-      </div>
+
+        <!-- INVENTORY -->
+        <div class="tab-panel" id="tab-inventory">
+          <div class="page-head"><h2>Centre inventory</h2><p>Live stock levels across all 10 correctional centres.</p></div>
+          <div class="card"><div class="card-body" style="overflow-x:auto">
+            <table>
+              <thead><tr><th>Centre</th><th>Shirts</th><th>Pants</th><th>Boots</th><th>Jackets</th><th>Belts</th><th>Total</th><th>Status</th></tr></thead>
+              <tbody id="inv-tbody"></tbody>
+            </table>
+          </div></div>
+        </div>
+      </main>
     </div>
-
-    <!-- CATALOGUE TAB -->
-    <div class="tab-panel" id="tab-catalogue">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-        <div>
-          <h2 style="font-size:1.3rem;font-weight:800">Uniform Catalogue</h2>
-          <p style="color:var(--text-light);font-size:0.9rem">Click any item to order. Points deducted upon confirmation.</p>
-        </div>
-        <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:12px 20px;text-align:center;">
-          <div style="font-size:0.75rem;color:var(--text-light);font-weight:600;text-transform:uppercase">Points Remaining</div>
-          <div style="font-size:1.6rem;font-weight:800;color:var(--primary)" id="cat-pts">500</div>
-        </div>
-      </div>
-      <div class="fit-toggle" id="fit-toggle">
-        <span class="fit-toggle-label">Sizing fit</span>
-        <button class="fit-btn active" data-fit="Men's" onclick="setFit(this.dataset.fit)">👔 Men's</button>
-        <button class="fit-btn" data-fit="Women's" onclick="setFit(this.dataset.fit)">👚 Women's</button>
-        <span class="fit-toggle-hint">Applies to shirts, trousers, boots &amp; gloves — you can also switch it per item when ordering.</span>
-      </div>
-      <div class="catalogue-grid" id="catalogue-grid"></div>
-    </div>
-
-    <!-- ORDERS TAB -->
-    <div class="tab-panel" id="tab-orders">
-      <div style="margin-bottom:20px;">
-        <h2 style="font-size:1.3rem;font-weight:800">My Orders</h2>
-        <p style="color:var(--text-light);font-size:0.9rem">Track the status of all your uniform orders.</p>
-      </div>
-      <div class="card">
-        <div class="card-body">
-          <table>
-            <thead><tr><th>Order ID</th><th>Item</th><th>Size</th><th>Colour</th><th>Qty</th><th>Points</th><th>Date</th><th>Status</th></tr></thead>
-            <tbody id="orders-tbody"><tr><td colspan="8" style="text-align:center;color:var(--text-light);padding:32px">No orders placed yet.</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- LEDGER TAB -->
-    <div class="tab-panel" id="tab-ledger">
-      <div style="margin-bottom:20px;">
-        <h2 style="font-size:1.3rem;font-weight:800">Points Ledger</h2>
-        <p style="color:var(--text-light);font-size:0.9rem">Complete history of all point transactions.</p>
-      </div>
-      <div class="card">
-        <div class="card-body">
-          <table>
-            <thead><tr><th>Date</th><th>Description</th><th>Points</th><th>Balance</th><th>Type</th></tr></thead>
-            <tbody id="ledger-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- INVENTORY TAB -->
-    <div class="tab-panel" id="tab-inventory">
-      <div style="margin-bottom:20px;">
-        <h2 style="font-size:1.3rem;font-weight:800">Centre Inventory Status</h2>
-        <p style="color:var(--text-light);font-size:0.9rem">Live stock levels across all 10 BC Corrections centres.</p>
-      </div>
-      <div class="card">
-        <div class="card-body">
-          <table>
-            <thead><tr><th>Centre</th><th>Shirts</th><th>Pants</th><th>Boots</th><th>Jackets</th><th>Belts</th><th>Total Units</th><th>Status</th></tr></thead>
-            <tbody id="inv-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-  </main>
+  </div>
 </div>
 
 <!-- ORDER MODAL -->
@@ -581,44 +371,32 @@
   <div class="modal modal-wide">
     <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
     <div class="modal-grid">
-      <!-- Interactive uniform figure -->
       <div class="modal-figure">
         <svg class="officer-fig" viewBox="0 0 220 400" xmlns="http://www.w3.org/2000/svg">
-          <!-- head (static) -->
           <circle cx="110" cy="84" r="26" fill="#e8b48f"/>
-          <!-- cap -->
           <g id="fig-cap" class="fig-part">
             <path d="M76 66 Q110 26 144 66 Z" fill="#1c2e4a"/>
             <rect x="68" y="62" width="84" height="11" rx="4" fill="#15233a"/>
             <rect x="96" y="42" width="28" height="12" rx="3" fill="#15233a"/>
           </g>
-          <!-- neck -->
           <rect x="100" y="106" width="20" height="16" fill="#d9a07c"/>
-          <!-- shirt + arms -->
           <g id="fig-shirt" class="fig-part">
             <path d="M70 122 L150 122 L162 152 L152 252 L68 252 L58 152 Z" fill="#3a5a82"/>
             <path d="M70 122 L110 142 L150 122 L138 117 L110 126 L82 117 Z" fill="#2f4a6d"/>
             <rect x="46" y="126" width="20" height="98" rx="9" fill="#3a5a82"/>
             <rect x="154" y="126" width="20" height="98" rx="9" fill="#3a5a82"/>
           </g>
-          <!-- badge -->
-          <g id="fig-badge" class="fig-part">
-            <circle cx="90" cy="160" r="7" fill="#ffc72c"/>
-          </g>
-          <!-- gloves / hands -->
+          <g id="fig-badge" class="fig-part"><circle cx="90" cy="160" r="7" fill="#ffc72c"/></g>
           <g id="fig-handL" class="fig-part"><circle cx="56" cy="230" r="12" fill="#e8b48f"/></g>
           <g id="fig-handR" class="fig-part"><circle cx="164" cy="230" r="12" fill="#e8b48f"/></g>
-          <!-- belt -->
           <g id="fig-belt" class="fig-part">
             <rect x="66" y="250" width="88" height="16" rx="3" fill="#1a1a1a"/>
             <rect x="104" y="252" width="12" height="12" rx="2" fill="#c9a227"/>
           </g>
-          <!-- pants -->
           <g id="fig-pants" class="fig-part">
             <rect x="70" y="264" width="33" height="102" rx="6" fill="#20304d"/>
             <rect x="117" y="264" width="33" height="102" rx="6" fill="#20304d"/>
           </g>
-          <!-- boots -->
           <g id="fig-boots" class="fig-part">
             <path d="M68 360 h35 v22 h15 v11 h-50 z" fill="#141414"/>
             <path d="M152 360 h-35 v22 h-15 v11 h50 z" fill="#141414"/>
@@ -627,24 +405,17 @@
         <div class="figure-cap" id="figure-cap-label">Uniform Shirt</div>
         <div class="figure-hint">Highlighted on the figure</div>
       </div>
-
-      <!-- Configurator -->
       <div class="modal-config">
         <h2 id="modal-name">Uniform Shirt</h2>
         <div class="modal-pts" id="modal-pts">40 points each</div>
         <div id="option-groups"></div>
-        <div class="opt-group">
-          <label>Quantity</label>
-          <div class="chip-row" id="qty-chips"></div>
-        </div>
-        <button class="guide-toggle" onclick="toggleGuide()">📏 Quick Sizing Guide</button>
+        <div class="opt-group"><label>Quantity</label><div class="chip-row" id="qty-chips"></div></div>
+        <button class="guide-toggle" onclick="toggleGuide()">Quick sizing guide</button>
         <div class="guide-panel" id="guide-panel"></div>
-        <div class="modal-total-line">
-          Total cost: <strong id="modal-total">40 pts</strong> — Remaining after: <strong id="modal-after">460 pts</strong>
-        </div>
+        <div class="modal-total-line">Total cost: <strong id="modal-total">40 pts</strong> — Remaining after: <strong id="modal-after">460 pts</strong></div>
         <div class="modal-actions">
           <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-          <button class="btn-confirm" onclick="confirmOrder()">Confirm Order</button>
+          <button class="btn-confirm" onclick="confirmOrder()">Confirm order</button>
         </div>
       </div>
     </div>
@@ -660,7 +431,7 @@ const CATALOGUE = [
   { id: 'pants',    name: 'Uniform Pants',     pts: 50,  icon: '👖', desc: 'Tactical cargo pants, ripstop fabric' },
   { id: 'boots',    name: 'Duty Boots',        pts: 120, icon: '👢', desc: 'Composite toe, slip-resistant, polishable' },
   { id: 'jacket',   name: 'Outerwear Jacket',  pts: 100, icon: '🧥', desc: 'Waterproof, windproof, fleece-lined' },
-  { id: 'belt',     name: 'Duty Belt',         pts: 80,  icon: '⬜', desc: 'Nylon duty belt with keeper loops' },
+  { id: 'belt',     name: 'Duty Belt',         pts: 80,  icon: '🟫', desc: 'Nylon duty belt with keeper loops' },
   { id: 'badge',    name: 'Badge & Insignia',  pts: 20,  icon: '🏅', desc: 'Officer badge and rank insignia set' },
   { id: 'holster',  name: 'Tactical Holster',  pts: 85,  icon: '🔫', desc: 'Level-II retention, adjustable cant' },
   { id: 'gloves',   name: 'Tactical Gloves',   pts: 25,  icon: '🧤', desc: 'Cut-resistant, touchscreen compatible' },
@@ -740,7 +511,7 @@ function doLogin() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   document.getElementById('hdr-name').textContent = currentOfficer.name;
-  document.getElementById('hdr-badge').textContent = 'Badge: ' + badge + ' · ' + currentOfficer.centre;
+  document.getElementById('hdr-badge').textContent = 'Badge ' + badge + ' · ' + currentOfficer.centre;
   renderAll();
 }
 document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
@@ -752,11 +523,14 @@ function doLogout() {
 }
 
 // ─── TABS ──────────────────────────────────────────────────────────────────────
-function switchTab(name, btn) {
+const TAB_TITLES = { dashboard: 'Dashboard', catalogue: 'Order uniforms', orders: 'My orders', ledger: 'Points ledger', inventory: 'Centre inventory' };
+function switchTab(name) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.app-nav button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.side-link').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  if (btn) btn.classList.add('active');
+  const link = document.querySelector('.side-link[data-tab="' + name + '"]');
+  if (link) link.classList.add('active');
+  const t = document.getElementById('page-title'); if (t && TAB_TITLES[name]) t.textContent = TAB_TITLES[name];
   if (name === 'inventory') renderInventory();
 }
 
@@ -788,9 +562,9 @@ function renderDashboard() {
   } else {
     tbody.innerHTML = recent.map(o => `
       <tr>
-        <td><code style="font-size:0.8rem">${o.id}</code></td>
+        <td><code>${o.id}</code></td>
         <td>${o.item}</td>
-        <td>${o.date}</td>
+        <td class="mono">${o.date}</td>
         <td><strong>${o.totalPts}</strong> pts</td>
         <td><span class="badge badge-${statusOf(o).toLowerCase()}">${statusOf(o)}</span></td>
       </tr>`).join('');
@@ -810,7 +584,7 @@ function renderCatalogue() {
         <div class="ci-name">${item.name}</div>
         <div class="ci-desc">${item.desc}</div>
         <div class="ci-footer">
-          <span class="ci-points">⭐ ${item.pts} pts</span>
+          <span class="ci-points">${item.pts} pts</span>
           <button class="ci-btn" ${!canAfford ? 'disabled' : ''}>Order</button>
         </div>
       </div>
@@ -826,13 +600,13 @@ function renderOrders() {
   }
   tbody.innerHTML = [...currentOfficer.orders].reverse().map(o => `
     <tr>
-      <td><code style="font-size:0.8rem">${o.id}</code></td>
+      <td><code>${o.id}</code></td>
       <td>${o.item}</td>
       <td>${o.size}</td>
       <td>${o.colour}</td>
       <td>${o.qty}</td>
       <td><strong>${o.totalPts}</strong></td>
-      <td>${o.date}</td>
+      <td class="mono">${o.date}</td>
       <td><span class="badge badge-${statusOf(o).toLowerCase()}">${statusOf(o)}</span></td>
     </tr>`).join('');
 }
@@ -841,7 +615,7 @@ function renderLedger() {
   const tbody = document.getElementById('ledger-tbody');
   tbody.innerHTML = [...currentOfficer.ledger].reverse().map(l => `
     <tr>
-      <td>${l.date}</td>
+      <td class="mono">${l.date}</td>
       <td>${l.desc}</td>
       <td><strong>${l.type === 'credit' ? '+' : '-'}${Math.abs(l.delta)}</strong></td>
       <td>${l.balance}</td>
@@ -857,7 +631,7 @@ function renderInventory() {
     const s = d.shirt, p = d.pants, b = d.boots, j = d.jacket, belt = d.belt;
     const total = s + p + b + j + belt;
     const statusClass = total < 200 ? 'stock-crit' : total < 350 ? 'stock-low' : 'stock-ok';
-    const statusLabel = total < 200 ? '⚠ Critical' : total < 350 ? '↓ Low' : '✓ OK';
+    const statusLabel = total < 200 ? 'Critical' : total < 350 ? 'Low' : 'OK';
     return `<tr>
       <td class="inv-centre">${c}</td>
       <td class="${s<40?'stock-crit':s<80?'stock-low':'stock-ok'}">${s}</td>
@@ -890,7 +664,6 @@ function animateCount(el, target) {
 }
 
 // ─── MODAL CONFIGURATOR ─────────────────────────────────────────────────────────
-// Per-item config: which body region(s) to highlight + which sizing type to show.
 const ITEM_CONFIG = {
   shirt:   { type: 'shirt',   region: ['shirt'] },
   lsshirt: { type: 'shirt',   region: ['shirt'], sleeveLocked: 'Long Sleeve' },
@@ -905,19 +678,17 @@ const ITEM_CONFIG = {
 };
 const FIG_PARTS = ['cap', 'shirt', 'badge', 'handL', 'handR', 'belt', 'pants', 'boots'];
 
-let sel = {};       // current option selections
+let sel = {};
 let selQty = 1;
-let catalogueFit = "Men's";   // catalogue-level default fit
+let catalogueFit = "Men's";
 
 function setFit(f) {
   catalogueFit = f;
   document.querySelectorAll('#fit-toggle .fit-btn').forEach(b => b.classList.toggle('active', b.dataset.fit === f));
 }
 
-// Items whose sizing differs by men's / women's fit.
 const FIT_TYPES = ['shirt', 'pants', 'boots', 'gloves'];
 
-// Build the option groups (with sensible defaults) for an item type.
 function buildGroups(id) {
   const c = ITEM_CONFIG[id];
   const fit = sel.fit || catalogueFit;
@@ -950,16 +721,15 @@ function buildGroups(id) {
   } else if (c.type === 'holster') {
     g.push({ label: 'Carry Hand', key: 'hand', opts: ['Right', 'Left'], def: 0 });
     g.push({ label: 'Colour', key: 'colour', opts: ['Black'], def: 0 });
-  } else { // badge
+  } else {
     g.push({ label: 'Finish', key: 'finish', opts: ['Standard', 'Subdued'], def: 0 });
   }
   return g;
 }
 
-// Sizing-guide content per type (men's / women's where relevant).
 function guideHTML(type, fit) {
   const W = fit === "Women's";
-  const hdr = (W ? "👚 Women's" : "👔 Men's");
+  const hdr = (W ? "Women's" : "Men's");
   if (type === 'shirt') return `<div class="guide-hdr">${hdr} — Shirt (bust/chest)</div><table>` + (W ? `
     <tr><td>XS</td><td>Bust 32-33"</td></tr><tr><td>S</td><td>34-35"</td></tr>
     <tr><td>M</td><td>36-37"</td></tr><tr><td>L</td><td>38-40"</td></tr>
@@ -1001,7 +771,6 @@ function guideHTML(type, fit) {
   return `<p>This item is one-size / issued to standard specification — no sizing required.</p>`;
 }
 
-// Compact size string stored on the order.
 function sizeSpec() {
   const t = ITEM_CONFIG[selectedItem.id].type;
   const fp = sel.fit ? sel.fit + ' ' : '';
@@ -1032,8 +801,6 @@ function highlightFigure(id) {
 function renderOptions() {
   const wrap = document.getElementById('option-groups');
   const groups = buildGroups(selectedItem.id);
-  // Reconcile: if a current selection is no longer valid (e.g. fit changed the
-  // size range), fall back to that group's default.
   groups.forEach(g => { if (!g.opts.includes(sel[g.key])) sel[g.key] = g.opts[g.def] || g.opts[0]; });
   wrap.innerHTML = groups.map(g => `
     <div class="opt-group">
@@ -1042,12 +809,10 @@ function renderOptions() {
         ${g.opts.map(o => `<button class="opt-chip ${sel[g.key] === o ? 'active' : ''}" data-val="${String(o).replace(/"/g, '&quot;')}">${o}</button>`).join('')}
       </div>
     </div>`).join('');
-  // Sizing guide depends on fit — keep it in sync (open/closed state preserved).
   const gp = document.getElementById('guide-panel');
   if (gp) gp.innerHTML = guideHTML(ITEM_CONFIG[selectedItem.id].type, sel.fit);
 }
 
-// Delegated handler (option values may contain quotes/spaces, so avoid inline onclick)
 document.getElementById('option-groups').addEventListener('click', e => {
   const btn = e.target.closest('.opt-chip');
   if (!btn) return;
@@ -1139,23 +904,20 @@ function confirmOrder() {
 
   saveOfficerData(currentOfficer);
 
-  // Decrement the assigned centre's stock for this item (shared with admin)
   const inv = getInventory();
   if (inv[currentOfficer.centre] && inv[currentOfficer.centre][selectedItem.id] !== undefined) {
     inv[currentOfficer.centre][selectedItem.id] = Math.max(0, inv[currentOfficer.centre][selectedItem.id] - qty);
     saveInventory(inv);
   }
 
-  // Broadcast to admin
   broadcastOrder(currentOfficer, orderId, selectedItem, qty, total, size, colour, date, ts);
 
-  // Re-render as the timestamp-derived status advances (Pending → Shipped → Delivered)
   setTimeout(() => { if (currentOfficer) renderAll(); }, 10500);
   setTimeout(() => { if (currentOfficer) renderAll(); }, 25500);
 
   closeModal();
   renderAll();
-  showToast(`✓ Order placed! ${total} points deducted.`, 'success');
+  showToast(`Order placed — ${total} points deducted.`, 'success');
 }
 
 function broadcastOrder(officer, orderId, item, qty, total, size, colour, date, ts) {
