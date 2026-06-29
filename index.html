@@ -3,516 +3,505 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BC Corrections Uniform Management System</title>
+<title>BC Corrections — Uniform Management System</title>
 <style>
   :root {
-    --navy-900: #050f22;
-    --navy-850: #07142a;
-    --navy-800: #0a1c38;
-    --navy-700: #0e2547;
-    --navy-600: #123059;
-    --navy-500: #1b3e6f;
-    --line: rgba(120,160,220,0.14);
-    --line-strong: rgba(120,160,220,0.28);
-    --primary: #4a9eff;
-    --accent: #ffc72c;
-    --success: #4ade80;
-    --warning: #fbbf24;
-    --danger: #f87171;
-    --text: #eaf1fb;
-    --text-mid: #b8c7de;
-    --text-dim: #7e93b3;
-    --radius: 14px;
-    --shadow: 0 8px 32px rgba(0,0,0,0.45);
+    --bg: #0a111e;
+    --bg-2: #0c1322;
+    --panel: #111a2b;
+    --panel-2: #0e1726;
+    --line: rgba(150,170,200,0.12);
+    --line-2: rgba(150,170,200,0.20);
+    --text: #e7ecf3;
+    --muted: #9aa7bc;
+    --dim: #66758f;
+    --gold: #e7b53f;
+    --blue: #6ea8e0;
+    --green: #5fcf8e;
+    --amber: #e3b341;
+    --red: #e5736b;
+    --maxw: 1120px;
+    --r: 10px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
   body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background: var(--navy-850);
-    color: var(--text);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--text);
+    line-height: 1.55; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+    font-feature-settings: "kern", "liga";
   }
-  a { text-decoration: none; color: inherit; }
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: rgba(110,168,224,0.25); }
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 8px; border: 3px solid transparent; background-clip: content-box; }
 
-  /* NAV */
-  nav {
-    background: rgba(5,15,34,0.85);
-    backdrop-filter: blur(10px);
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
+  .eyebrow { font-size: 0.74rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
+  .mono { font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace; }
+
+  /* ── NAV ── */
+  header.nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,17,30,0.72); backdrop-filter: saturate(140%) blur(12px);
     border-bottom: 1px solid var(--line);
-    padding: 0 2rem;
-    display: flex; align-items: center; justify-content: space-between;
-    height: 64px; position: sticky; top: 0; z-index: 100;
   }
-  .nav-brand { display: flex; align-items: center; gap: 12px; }
-  .nav-brand .crest {
-    width: 38px; height: 38px; background: var(--accent);
-    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 16px; color: var(--navy-900);
-  }
-  .nav-brand span { color: var(--text); font-weight: 600; font-size: 0.98rem; }
-  .nav-links { display: flex; gap: 6px; align-items: center; }
-  .nav-links a {
-    color: var(--text-mid); padding: 8px 14px; border-radius: 8px;
-    font-size: 0.9rem; transition: all 0.2s;
-  }
-  .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
-  .nav-links a.btn-accent { background: var(--accent); color: var(--navy-900); font-weight: 700; }
-  .nav-links a.btn-accent:hover { background: #ffd75e; }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 62px; }
+  .brand { display: flex; align-items: center; gap: 11px; }
+  .brand .mark { color: var(--gold); }
+  .brand .name { font-size: 0.95rem; font-weight: 600; letter-spacing: -0.01em; }
+  .brand .name small { display: block; font-size: 0.68rem; font-weight: 500; color: var(--dim); letter-spacing: 0.02em; }
+  .nav-links { display: flex; align-items: center; gap: 4px; }
+  .nav-links a { font-size: 0.875rem; color: var(--muted); padding: 8px 13px; border-radius: 7px; transition: color .18s, background .18s; }
+  .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  .nav-links .cta { margin-left: 8px; color: var(--bg); background: var(--gold); font-weight: 600; padding: 8px 16px; }
+  .nav-links .cta:hover { background: #f1c659; color: var(--bg); }
 
-  /* HERO */
-  .hero {
-    position: relative; overflow: hidden;
-    background:
-      radial-gradient(1200px 600px at 70% -10%, rgba(74,158,255,0.18), transparent 60%),
-      linear-gradient(160deg, #06122a 0%, #0a1f3f 55%, #0c264d 100%);
-    padding: 110px 2rem 90px; text-align: center;
-  }
+  /* ── BUTTONS ── */
+  .btn { display: inline-flex; align-items: center; gap: 8px; font-size: 0.92rem; font-weight: 600; padding: 11px 20px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; transition: all .18s ease; }
+  .btn-gold { background: var(--gold); color: var(--bg); }
+  .btn-gold:hover { background: #f1c659; transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--text); border-color: var(--line-2); }
+  .btn-ghost:hover { border-color: var(--blue); color: #fff; }
+  .btn svg { width: 16px; height: 16px; }
+
+  /* ── HERO ── */
+  .hero { position: relative; padding: 92px 0 72px; border-bottom: 1px solid var(--line); overflow: hidden; }
   .hero::before {
-    content: ''; position: absolute; inset: 0; opacity: 0.5;
-    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M22 19v-3h-2v3h-3v2h3v3h2v-3h3v-2h-3z'/%3E%3C/g%3E%3C/svg%3E");
+    content: ''; position: absolute; top: -40%; right: -10%; width: 760px; height: 760px;
+    background: radial-gradient(closest-side, rgba(110,168,224,0.10), transparent);
+    pointer-events: none;
   }
-  .hero > * { position: relative; }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: rgba(255,199,44,0.10); border: 1px solid rgba(255,199,44,0.30);
-    color: var(--accent); padding: 7px 18px; border-radius: 999px;
-    font-size: 0.8rem; font-weight: 700; margin-bottom: 26px;
-    text-transform: uppercase; letter-spacing: 0.08em;
-  }
-  .hero h1 { font-size: clamp(2.2rem, 5.5vw, 3.8rem); font-weight: 800; line-height: 1.08; letter-spacing: -0.02em; }
-  .hero h1 span { color: var(--accent); display: block; }
-  .hero p { font-size: 1.12rem; color: var(--text-mid); max-width: 640px; margin: 22px auto 38px; }
-  .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-  .btn-primary {
-    background: var(--accent); color: var(--navy-900);
-    padding: 15px 34px; border-radius: 10px; font-weight: 700; font-size: 1rem;
-    transition: all 0.2s; border: none; cursor: pointer; display: inline-block;
-  }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(255,199,44,0.35); }
-  .btn-outline {
-    background: rgba(255,255,255,0.04); color: var(--text);
-    padding: 15px 34px; border-radius: 10px; font-weight: 600; font-size: 1rem;
-    border: 1px solid var(--line-strong); transition: all 0.2s; cursor: pointer; display: inline-block;
-  }
-  .btn-outline:hover { border-color: var(--primary); background: rgba(74,158,255,0.10); }
+  .hero-grid { position: relative; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; }
+  .hero-copy .eyebrow { margin-bottom: 20px; display: inline-flex; align-items: center; gap: 9px; }
+  .hero-copy .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(95,207,142,0.18); }
+  .hero h1 { font-size: clamp(2.1rem, 4.4vw, 3.15rem); font-weight: 600; line-height: 1.08; letter-spacing: -0.025em; color: #fff; }
+  .hero h1 em { font-style: normal; color: var(--gold); }
+  .hero p.lede { margin-top: 20px; font-size: 1.08rem; color: var(--muted); max-width: 520px; }
+  .hero-actions { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero-meta { margin-top: 40px; display: flex; gap: 34px; flex-wrap: wrap; }
+  .hero-meta .m .v { font-size: 1.5rem; font-weight: 650; letter-spacing: -0.02em; color: #fff; }
+  .hero-meta .m .l { font-size: 0.78rem; color: var(--dim); margin-top: 1px; }
 
-  /* STATS */
-  .stats-bar { background: var(--navy-900); border-bottom: 1px solid var(--line); padding: 26px 2rem; }
-  .stats-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; }
-  .stat-item { text-align: center; }
-  .stat-item .num { font-size: 1.9rem; font-weight: 800; color: var(--accent); display: block; }
-  .stat-item .lbl { font-size: 0.82rem; color: var(--text-dim); }
+  /* PRODUCT WINDOW */
+  .window { background: var(--panel); border: 1px solid var(--line-2); border-radius: 14px; overflow: hidden; box-shadow: 0 30px 80px -30px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.02) inset; }
+  .window .chrome { display: flex; align-items: center; gap: 7px; padding: 11px 14px; background: var(--panel-2); border-bottom: 1px solid var(--line); }
+  .window .chrome .d { width: 10px; height: 10px; border-radius: 50%; background: var(--line-2); }
+  .window .chrome .t { margin-left: 10px; font-size: 0.74rem; color: var(--dim); }
+  .window .body { padding: 20px; }
+  .pcard { background: linear-gradient(180deg, rgba(110,168,224,0.06), rgba(110,168,224,0)); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; }
+  .pcard .lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--dim); }
+  .pcard .num { font-size: 2rem; font-weight: 650; color: #fff; letter-spacing: -0.02em; line-height: 1; margin-top: 4px; }
+  .pcard .num .u { font-size: 0.9rem; color: var(--muted); font-weight: 500; }
+  .progress { height: 6px; border-radius: 99px; background: rgba(255,255,255,0.07); margin-top: 16px; overflow: hidden; }
+  .progress > i { display: block; height: 100%; width: 24%; border-radius: 99px; background: linear-gradient(90deg, var(--gold), #f1c659); }
+  .prow { display: flex; align-items: center; justify-content: space-between; padding: 12px 2px; border-bottom: 1px solid var(--line); font-size: 0.9rem; }
+  .prow:last-child { border-bottom: none; }
+  .prow .nm { color: var(--text); }
+  .prow .pt { font-size: 0.78rem; color: var(--muted); }
+  .prow .pt b { color: var(--gold); }
 
-  /* SECTION */
-  section { padding: 84px 2rem; }
-  .section-inner { max-width: 1140px; margin: 0 auto; }
-  .section-label { color: var(--primary); font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 12px; }
-  .section-title { font-size: clamp(1.7rem, 3vw, 2.3rem); font-weight: 800; letter-spacing: -0.01em; }
-  .section-sub { color: var(--text-mid); font-size: 1.05rem; max-width: 600px; margin: 14px 0 44px; }
+  /* ── SECTIONS ── */
+  section.block { padding: 84px 0; border-bottom: 1px solid var(--line); }
+  .head { max-width: 620px; margin-bottom: 52px; }
+  .head h2 { font-size: clamp(1.6rem, 2.6vw, 2.05rem); font-weight: 600; letter-spacing: -0.02em; color: #fff; margin-top: 14px; }
+  .head p { color: var(--muted); margin-top: 12px; font-size: 1.02rem; }
 
-  /* HOW IT WORKS */
-  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px,1fr)); gap: 18px; }
-  .step {
-    background: linear-gradient(180deg, var(--navy-700), var(--navy-800));
-    border: 1px solid var(--line); border-radius: var(--radius); padding: 26px;
-    position: relative; transition: all 0.25s;
+  /* STEPS */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-top: 1px solid var(--line); }
+  .step { padding: 28px 24px 28px 0; border-right: 1px solid var(--line); }
+  .step:last-child { border-right: none; padding-right: 0; }
+  .step .no { font-size: 0.78rem; font-weight: 600; color: var(--gold); letter-spacing: 0.04em; }
+  .step h3 { font-size: 1.02rem; font-weight: 600; color: #fff; margin: 14px 0 8px; }
+  .step p { font-size: 0.9rem; color: var(--muted); }
+
+  /* SPLIT (preview sections) */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  .split.rev .copy { order: 2; }
+  .copy .kicker { display: inline-flex; align-items: center; gap: 8px; font-size: 0.76rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); }
+  .copy .kicker svg { width: 15px; height: 15px; }
+  .copy h2 { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; color: #fff; margin: 14px 0 12px; }
+  .copy p { color: var(--muted); font-size: 0.98rem; }
+  .copy ul { list-style: none; margin: 22px 0 28px; }
+  .copy li { display: flex; gap: 11px; align-items: flex-start; padding: 7px 0; font-size: 0.93rem; color: var(--muted); }
+  .copy li svg { width: 17px; height: 17px; color: var(--gold); flex-shrink: 0; margin-top: 2px; }
+  .copy a.txtlink { display: inline-flex; align-items: center; gap: 7px; color: var(--text); font-weight: 600; font-size: 0.92rem; border-bottom: 1px solid var(--line-2); padding-bottom: 3px; transition: border-color .2s, gap .2s; }
+  .copy a.txtlink:hover { border-color: var(--gold); gap: 11px; }
+  .copy a.txtlink svg { width: 15px; height: 15px; }
+
+  /* DEMO TABLE */
+  .demo-sum { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; }
+  .demo-sum .num { font-size: 1.7rem; font-weight: 650; color: #fff; line-height: 1; letter-spacing: -0.02em; }
+  .demo-sum .num.gold { color: var(--gold); }
+  .demo-sum .lbl { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--dim); margin-top: 3px; }
+  .dtable { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  .dtable th { text-align: left; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--dim); font-weight: 600; padding: 10px 4px; border-bottom: 1px solid var(--line); }
+  .dtable td { padding: 11px 4px; font-size: 0.9rem; border-bottom: 1px solid var(--line); }
+  .dtable tr:last-child td { border-bottom: none; }
+  .add {
+    border: 1px solid var(--line-2); background: transparent; color: var(--text);
+    border-radius: 7px; padding: 5px 13px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all .15s; white-space: nowrap;
   }
-  .step:hover { border-color: var(--line-strong); transform: translateY(-3px); }
-  .step .step-num {
-    width: 34px; height: 34px; border-radius: 9px; background: rgba(74,158,255,0.15);
-    color: var(--primary); font-weight: 800; display: flex; align-items: center; justify-content: center;
-    margin-bottom: 16px; font-size: 0.95rem; border: 1px solid rgba(74,158,255,0.3);
-  }
-  .step h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
-  .step p { font-size: 0.9rem; color: var(--text-mid); }
+  .add:hover { border-color: var(--gold); color: #fff; }
+  .add.on { background: rgba(95,207,142,0.12); border-color: rgba(95,207,142,0.4); color: var(--green); }
+  .add:disabled { opacity: 0.4; cursor: not-allowed; }
+  .ptcost { font-size: 0.8rem; color: var(--muted); }
+  .demo-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; font-size: 0.8rem; color: var(--dim); }
+  .lnk-reset { background: none; border: none; color: var(--muted); font-size: 0.78rem; cursor: pointer; border-bottom: 1px solid transparent; }
+  .lnk-reset:hover { color: var(--text); border-color: var(--line-2); }
 
-  /* PREVIEW PANEL */
-  .preview-bg { background: var(--navy-900); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .preview-wrap { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 40px; align-items: start; }
-  @media (max-width: 880px) { .preview-wrap { grid-template-columns: 1fr; gap: 28px; } }
-  .preview-copy .tag {
-    display: inline-block; background: rgba(74,158,255,0.12); color: var(--primary);
-    font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 999px; margin-bottom: 14px;
-    text-transform: uppercase; letter-spacing: 0.06em;
-  }
-  .preview-copy h3 { font-size: 1.5rem; font-weight: 800; margin-bottom: 12px; }
-  .preview-copy p { color: var(--text-mid); font-size: 0.96rem; margin-bottom: 20px; }
-  .preview-copy ul { list-style: none; margin-bottom: 26px; }
-  .preview-copy li { font-size: 0.92rem; color: var(--text-mid); padding: 7px 0; display: flex; gap: 10px; }
-  .preview-copy li::before { content: '→'; color: var(--accent); font-weight: 700; }
+  /* TABS */
+  .tabs { display: flex; gap: 2px; padding: 4px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 9px; margin-bottom: 16px; width: fit-content; }
+  .tab { background: transparent; border: none; color: var(--muted); font-size: 0.82rem; font-weight: 600; padding: 7px 15px; border-radius: 6px; cursor: pointer; transition: all .15s; }
+  .tab:hover { color: var(--text); }
+  .tab.active { background: rgba(110,168,224,0.14); color: #fff; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .mtable { width: 100%; border-collapse: collapse; }
+  .mtable th { text-align: left; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--dim); font-weight: 600; padding: 10px 4px; border-bottom: 1px solid var(--line); }
+  .mtable td { padding: 11px 4px; font-size: 0.88rem; border-bottom: 1px solid var(--line); }
+  .mtable tr:last-child td { border-bottom: none; }
+  .tag { font-size: 0.7rem; font-weight: 600; padding: 2px 9px; border-radius: 99px; }
+  .t-ok { background: rgba(95,207,142,0.14); color: var(--green); }
+  .t-low { background: rgba(227,179,65,0.16); color: var(--amber); }
+  .t-crit { background: rgba(229,115,107,0.16); color: var(--red); }
+  .t-pend { background: rgba(110,168,224,0.16); color: var(--blue); }
+  .t-ship { background: rgba(227,179,65,0.16); color: var(--amber); }
+  .t-del { background: rgba(95,207,142,0.14); color: var(--green); }
+  .mmetrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+  .mm { border: 1px solid var(--line); border-radius: 9px; padding: 14px; }
+  .mm .v { font-size: 1.3rem; font-weight: 650; color: #fff; letter-spacing: -0.02em; }
+  .mm .l { font-size: 0.72rem; color: var(--dim); margin-top: 3px; }
 
-  /* MOCK WINDOW */
-  .mock {
-    background: var(--navy-800); border: 1px solid var(--line-strong);
-    border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
-  }
-  .mock-bar { background: var(--navy-900); padding: 11px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--line); }
-  .mock-dot { width: 11px; height: 11px; border-radius: 50%; }
-  .mock-dot.r { background: #ff5f57; } .mock-dot.y { background: #febc2e; } .mock-dot.g { background: #28c840; }
-  .mock-title { margin-left: 10px; font-size: 0.78rem; color: var(--text-dim); }
-  .mock-body { padding: 20px; }
-
-  /* INTERACTIVE OFFICER DEMO */
-  .pts-summary {
-    display: flex; align-items: center; justify-content: space-between;
-    background: linear-gradient(135deg, var(--navy-600), var(--navy-700));
-    border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px;
-  }
-  .pts-summary .big { font-size: 1.8rem; font-weight: 800; color: var(--accent); line-height: 1; }
-  .pts-summary .sm { font-size: 0.74rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
-  .pts-bar { height: 7px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; margin-top: 14px; }
-  .pts-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #ffd75e); border-radius: 999px; transition: width 0.4s ease; width: 0; }
-  .demo-table { width: 100%; border-collapse: collapse; }
-  .demo-table th { text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); padding: 8px 6px; border-bottom: 1px solid var(--line); }
-  .demo-table td { padding: 9px 6px; font-size: 0.88rem; border-bottom: 1px solid var(--line); }
-  .demo-table tr:last-child td { border-bottom: none; }
-  .demo-ico { font-size: 1.1rem; margin-right: 8px; }
-  .pts-pill { background: rgba(74,158,255,0.15); color: var(--primary); font-weight: 700; font-size: 0.78rem; padding: 2px 9px; border-radius: 999px; }
-  .add-btn {
-    background: var(--accent); color: var(--navy-900); border: none; border-radius: 7px;
-    padding: 5px 14px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.15s; white-space: nowrap;
-  }
-  .add-btn:hover { background: #ffd75e; }
-  .add-btn.added { background: rgba(74,222,128,0.18); color: var(--success); border: 1px solid rgba(74,222,128,0.35); }
-  .add-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-  .demo-note { font-size: 0.78rem; color: var(--text-dim); margin-top: 12px; display: flex; justify-content: space-between; align-items: center; }
-  .demo-reset { background: none; border: 1px solid var(--line-strong); color: var(--text-mid); border-radius: 6px; padding: 4px 10px; font-size: 0.74rem; cursor: pointer; }
-  .demo-reset:hover { color: var(--text); border-color: var(--primary); }
-
-  /* ADMIN PREVIEW TABS */
-  .ptabs { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
-  .ptab { background: rgba(255,255,255,0.04); border: 1px solid var(--line); color: var(--text-mid); border-radius: 8px; padding: 7px 14px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
-  .ptab:hover { color: var(--text); }
-  .ptab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-  .ppanel { display: none; }
-  .ppanel.active { display: block; }
-  .mini-metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 8px; }
-  .mini-metric { background: var(--navy-700); border: 1px solid var(--line); border-radius: 9px; padding: 12px; text-align: center; }
-  .mini-metric .v { font-size: 1.3rem; font-weight: 800; color: var(--primary); }
-  .mini-metric .l { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
-  .badge { padding: 2px 9px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
-  .b-ok { background: rgba(74,222,128,0.16); color: var(--success); }
-  .b-low { background: rgba(251,191,36,0.16); color: var(--warning); }
-  .b-crit { background: rgba(248,113,113,0.16); color: var(--danger); }
-  .b-pend { background: rgba(74,158,255,0.16); color: var(--primary); }
-  .b-ship { background: rgba(251,191,36,0.16); color: var(--warning); }
-  .b-del { background: rgba(74,222,128,0.16); color: var(--success); }
-
-  .preview-cta { margin-top: 22px; }
-
-  /* CENTRES */
-  .centres-bg { background: var(--navy-850); }
-  .centre-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
-  .centre-chip {
-    background: var(--navy-700); border: 1px solid var(--line); border-radius: 999px;
-    padding: 9px 18px; font-size: 0.9rem; color: var(--text-mid); display: flex; align-items: center; gap: 8px;
-    transition: all 0.2s;
-  }
-  .centre-chip:hover { border-color: var(--primary); color: var(--text); }
-  .centre-chip::before { content: '📍'; font-size: 0.85rem; }
+  /* COVERAGE */
+  .centres { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .centre { padding: 22px 20px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 10px; font-size: 0.92rem; color: var(--text); }
+  .centre svg { width: 15px; height: 15px; color: var(--dim); flex-shrink: 0; }
+  .centres .centre:nth-child(5n) { border-right: none; }
+  .centres .centre:nth-child(n+6) { border-bottom: none; }
 
   /* CTA */
-  .cta-section {
-    background: radial-gradient(900px 400px at 50% 0%, rgba(74,158,255,0.16), transparent 60%), var(--navy-900);
-    text-align: center; padding: 84px 2rem; border-top: 1px solid var(--line);
-  }
-  .cta-section h2 { font-size: 2rem; font-weight: 800; margin-bottom: 14px; }
-  .cta-section p { color: var(--text-mid); margin-bottom: 34px; font-size: 1.05rem; }
+  .cta { padding: 90px 0; text-align: center; border-bottom: 1px solid var(--line); }
+  .cta h2 { font-size: clamp(1.7rem, 3vw, 2.3rem); font-weight: 600; letter-spacing: -0.02em; color: #fff; }
+  .cta p { color: var(--muted); margin: 14px auto 32px; max-width: 480px; }
+  .cta .hero-actions { justify-content: center; }
 
   /* FOOTER */
-  footer { background: var(--navy-900); color: var(--text-dim); padding: 30px 2rem; text-align: center; font-size: 0.85rem; border-top: 1px solid var(--line); }
-  footer strong { color: var(--text-mid); }
-  .footer-links { display: flex; justify-content: center; gap: 22px; margin-top: 12px; flex-wrap: wrap; }
-  .footer-links a { color: var(--text-dim); transition: color 0.2s; }
-  .footer-links a:hover { color: var(--accent); }
+  footer { padding: 44px 0 36px; }
+  .foot-grid { display: flex; justify-content: space-between; gap: 30px; flex-wrap: wrap; }
+  .foot-brand { max-width: 320px; }
+  .foot-brand .name { font-weight: 600; color: var(--text); }
+  .foot-brand p { color: var(--dim); font-size: 0.84rem; margin-top: 8px; }
+  .foot-cols { display: flex; gap: 56px; flex-wrap: wrap; }
+  .foot-col h4 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--dim); margin-bottom: 12px; }
+  .foot-col a { display: block; color: var(--muted); font-size: 0.88rem; padding: 4px 0; transition: color .15s; }
+  .foot-col a:hover { color: var(--text); }
+  .foot-base { border-top: 1px solid var(--line); margin-top: 36px; padding-top: 22px; font-size: 0.8rem; color: var(--dim); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
-  @media (max-width: 640px) {
-    nav { padding: 0 1rem; }
-    .nav-links a:not(.btn-accent) { display: none; }
-    .stats-inner { grid-template-columns: repeat(2,1fr); gap: 16px; }
-    .hero { padding: 80px 1rem 64px; }
-    section { padding: 60px 1.2rem; }
-    .mini-metrics { grid-template-columns: repeat(3,1fr); }
+  /* reveal */
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s cubic-bezier(.22,.61,.36,1), transform .6s cubic-bezier(.22,.61,.36,1); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (max-width: 900px) {
+    .hero-grid, .split { grid-template-columns: 1fr; gap: 40px; }
+    .split.rev .copy { order: 0; }
+    .steps { grid-template-columns: 1fr 1fr; }
+    .step { border-right: none; padding-right: 0; border-bottom: 1px solid var(--line); }
+    .centres { grid-template-columns: repeat(2, 1fr); }
+    .centre, .centres .centre { border-right: 1px solid var(--line); }
+    .centre:nth-child(2n) { border-right: none; }
   }
+  @media (max-width: 560px) {
+    .wrap { padding: 0 18px; }
+    .nav-links a:not(.cta) { display: none; }
+    .steps { grid-template-columns: 1fr; }
+    .centres { grid-template-columns: 1fr; }
+    .centre { border-right: none !important; }
+    section.block { padding: 60px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="nav-brand">
-    <div class="crest">BC</div>
-    <span>BC Corrections UMS</span>
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="brand">
+      <svg class="mark" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 5 5.2v5.3c0 4.3 2.9 8.2 7 9.5 4.1-1.3 7-5.2 7-9.5V5.2L12 2.5Z"/><path d="m9 12 2 2 4-4.5"/></svg>
+      <div class="name">BC Corrections UMS<small>Uniform Management System</small></div>
+    </div>
+    <nav class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#officer">Officer</a>
+      <a href="#admin">Administration</a>
+      <a href="officer-portal.html" class="cta">Launch portal</a>
+    </nav>
   </div>
-  <div class="nav-links">
-    <a href="#how">How It Works</a>
-    <a href="#officer-preview">Officer View</a>
-    <a href="#admin-preview">Admin View</a>
-    <a href="officer-portal.html" class="btn-accent">Launch Portal</a>
-  </div>
-</nav>
+</header>
 
+<!-- HERO -->
 <section class="hero">
-  <div class="hero-badge">🛡️ Government of British Columbia — Ministry of Public Safety</div>
-  <h1>Uniform Management<span>Made Seamless</span></h1>
-  <p>A web-based ordering, point-allotment, and inventory management system purpose-built for BC Corrections Adult Custody Division — serving 1,725 officers across 10 correctional centres.</p>
-  <div class="hero-actions">
-    <a href="officer-portal.html" class="btn-primary">Open Officer Portal →</a>
-    <a href="admin-dashboard.html" class="btn-outline">Open Admin Dashboard</a>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow"><span class="dot"></span> Ministry of Public Safety &amp; Solicitor General</span>
+      <h1>Uniform supply, ordering &amp; inventory — <em>in one system.</em></h1>
+      <p class="lede">A web-based ordering and point-allotment platform for the Adult Custody Division: 1,725 officers, ten correctional centres, one consistent program.</p>
+      <div class="hero-actions">
+        <a href="officer-portal.html" class="btn btn-gold">Open officer portal
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="admin-dashboard.html" class="btn btn-ghost">Administration dashboard</a>
+      </div>
+      <div class="hero-meta">
+        <div class="m"><div class="v">1,725</div><div class="l">Uniformed officers</div></div>
+        <div class="m"><div class="v">10</div><div class="l">Correctional centres</div></div>
+        <div class="m"><div class="v">500</div><div class="l">Annual points each</div></div>
+      </div>
+    </div>
+
+    <div class="window" aria-hidden="true">
+      <div class="chrome"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t mono">officer-portal — points &amp; catalogue</span></div>
+      <div class="body">
+        <div class="pcard">
+          <div>
+            <div class="lbl">Points remaining</div>
+            <div class="num">380<span class="u"> / 500</span></div>
+          </div>
+          <div style="text-align:right">
+            <div class="lbl">This year</div>
+            <div class="num" style="font-size:1.4rem">3 orders</div>
+          </div>
+        </div>
+        <div class="progress"><i></i></div>
+        <div style="margin-top:14px">
+          <div class="prow"><span class="nm">Duty Boots · US 10 · D</span><span class="pt"><b>120</b> pts</span></div>
+          <div class="prow"><span class="nm">Uniform Shirt · L · Long</span><span class="pt"><b>45</b> pts</span></div>
+          <div class="prow"><span class="nm">Uniform Pants · 34W × 32L</span><span class="pt"><b>50</b> pts</span></div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
-
-<div class="stats-bar">
-  <div class="stats-inner">
-    <div class="stat-item"><span class="num">1,725</span><span class="lbl">Uniformed Officers</span></div>
-    <div class="stat-item"><span class="num">10</span><span class="lbl">Correctional Centres</span></div>
-    <div class="stat-item"><span class="num">500</span><span class="lbl">Annual Points / Officer</span></div>
-    <div class="stat-item"><span class="num">10</span><span class="lbl">Catalogue Items</span></div>
-  </div>
-</div>
 
 <!-- HOW IT WORKS -->
-<section id="how">
-  <div class="section-inner">
-    <div class="section-label">How It Works</div>
-    <div class="section-title">Order to doorstep, in four steps</div>
-    <p class="section-sub">The whole program runs through one online system — no paperwork, no phone orders, no guesswork on stock or points.</p>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <h4>Officer signs in</h4>
-        <p>Each officer logs in with their Badge ID and sees their live annual points balance — 500 points, reset yearly.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <h4>Orders from the catalogue</h4>
-        <p>Browse 10 standard uniform items, each with a point value. Pick size, colour and quantity — points deduct automatically.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <h4>Ships to their centre</h4>
-        <p>Every order is delivered to the officer's assigned correctional centre and tracked Pending → Shipped → Delivered.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <h4>Admin stays in control</h4>
-        <p>Stock across all 10 centres, points usage, delivery performance and compliance are visible live on the admin dashboard.</p>
+<section class="block" id="how">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">How it works</span>
+      <h2>From order to centre, without the paperwork</h2>
+      <p>Every part of the program runs through one platform — ordering, points, fulfilment and oversight.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step"><div class="no">STEP 01</div><h3>Sign in</h3><p>Officers authenticate with their Badge ID and see their live annual points balance.</p></div>
+      <div class="step"><div class="no">STEP 02</div><h3>Configure &amp; order</h3><p>Choose item, fit, size and quantity from the online catalogue. Points deduct on confirmation.</p></div>
+      <div class="step"><div class="no">STEP 03</div><h3>Fulfil to centre</h3><p>Orders ship to the officer's assigned centre, tracked from pending to delivered.</p></div>
+      <div class="step"><div class="no">STEP 04</div><h3>Oversee</h3><p>Administration monitors stock, points usage, delivery performance and compliance in real time.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- OFFICER -->
+<section class="block" id="officer">
+  <div class="wrap split">
+    <div class="copy reveal">
+      <span class="kicker">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+        Officer experience
+      </span>
+      <h2>A catalogue that respects the points budget</h2>
+      <p>Try it — add items and watch the annual allotment update. This mirrors the live ordering logic, including over-budget protection.</p>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Real point cost shown before ordering</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Men's &amp; women's sizing with reference charts</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Order history and a full points ledger</li>
+      </ul>
+      <a class="txtlink" href="officer-portal.html">Open the full officer portal
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+    <div class="window reveal">
+      <div class="chrome"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t mono">uniform catalogue</span></div>
+      <div class="body">
+        <div class="demo-sum">
+          <div><div class="num gold" id="d-remain">500</div><div class="lbl">Points remaining</div></div>
+          <div style="text-align:right"><div class="num" id="d-used">0</div><div class="lbl">Points used</div></div>
+        </div>
+        <table class="dtable"><thead><tr><th>Item</th><th>Cost</th><th style="text-align:right">Add</th></tr></thead><tbody id="d-body"></tbody></table>
+        <div class="demo-foot"><span id="d-msg">Add an item to see points deduct.</span><button class="lnk-reset" onclick="resetDemo()">Reset</button></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- OFFICER PREVIEW -->
-<section id="officer-preview" class="preview-bg">
-  <div class="section-inner">
-    <div class="preview-wrap">
-      <div class="preview-copy">
-        <span class="tag">👮 Officer View</span>
-        <h3>What an officer sees</h3>
-        <p>Try it right here — add items to see how the points balance updates in real time. This is the same catalogue and point logic officers use in the live portal.</p>
-        <ul>
-          <li>Live points balance against the 500-point annual allotment</li>
-          <li>Real point cost shown on every item before ordering</li>
-          <li>System blocks orders that would exceed the allotment</li>
-          <li>Order history and a full points ledger per officer</li>
-        </ul>
-        <div class="preview-cta">
-          <a href="officer-portal.html" class="btn-primary">Open the full Officer Portal →</a>
-        </div>
-      </div>
-      <div class="mock">
-        <div class="mock-bar">
-          <span class="mock-dot r"></span><span class="mock-dot y"></span><span class="mock-dot g"></span>
-          <span class="mock-title">Officer Portal — Uniform Catalogue</span>
-        </div>
-        <div class="mock-body">
-          <div class="pts-summary">
-            <div><div class="big" id="demo-remaining">500</div><div class="sm">Points Remaining</div></div>
-            <div style="text-align:right"><div class="big" style="color:var(--text)" id="demo-used">0</div><div class="sm">Points Used</div></div>
-          </div>
-          <div class="pts-bar"><div class="pts-bar-fill" id="demo-bar"></div></div>
-          <table class="demo-table" style="margin-top:16px">
-            <thead><tr><th>Item</th><th>Cost</th><th style="text-align:right">Add to order</th></tr></thead>
-            <tbody id="demo-tbody"></tbody>
-          </table>
-          <div class="demo-note">
-            <span id="demo-msg">Click “Add” on any item to see points deduct.</span>
-            <button class="demo-reset" onclick="resetDemo()">Reset</button>
-          </div>
-        </div>
-      </div>
+<!-- ADMIN -->
+<section class="block" id="admin">
+  <div class="wrap split rev">
+    <div class="copy reveal">
+      <span class="kicker">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-4 3 3 4-6"/></svg>
+        Administration
+      </span>
+      <h2>One operational view across ten centres</h2>
+      <p>Stock health, every order placed through the portal, points redeemed and SLA performance — all live. Switch the tabs to look around.</p>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Stock and reorder status per centre</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Live order status: pending, shipped, delivered</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Compliance audit trail and SLA monitoring</li>
+      </ul>
+      <a class="txtlink" href="admin-dashboard.html">Open the administration dashboard
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
     </div>
-  </div>
-</section>
-
-<!-- ADMIN PREVIEW -->
-<section id="admin-preview">
-  <div class="section-inner">
-    <div class="preview-wrap" style="grid-template-columns:1.1fr 0.9fr">
-      <div class="mock">
-        <div class="mock-bar">
-          <span class="mock-dot r"></span><span class="mock-dot y"></span><span class="mock-dot g"></span>
-          <span class="mock-title">Admin Dashboard</span>
+    <div class="window reveal">
+      <div class="chrome"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t mono">administration</span></div>
+      <div class="body">
+        <div class="tabs">
+          <button class="tab active" onclick="showPanel('inv', this)">Inventory</button>
+          <button class="tab" onclick="showPanel('ord', this)">Orders</button>
+          <button class="tab" onclick="showPanel('met', this)">Metrics</button>
         </div>
-        <div class="mock-body">
-          <div class="ptabs">
-            <button class="ptab active" onclick="showPanel('inv', this)">Inventory</button>
-            <button class="ptab" onclick="showPanel('ord', this)">Orders</button>
-            <button class="ptab" onclick="showPanel('met', this)">Metrics</button>
-          </div>
-
-          <div class="ppanel active" id="p-inv">
-            <table class="demo-table">
-              <thead><tr><th>Centre</th><th>Total Units</th><th style="text-align:right">Status</th></tr></thead>
-              <tbody>
-                <tr><td>Surrey</td><td>1,284</td><td style="text-align:right"><span class="badge b-ok">OK</span></td></tr>
-                <tr><td>Coquitlam</td><td>968</td><td style="text-align:right"><span class="badge b-ok">OK</span></td></tr>
-                <tr><td>Kamloops</td><td>412</td><td style="text-align:right"><span class="badge b-low">Low</span></td></tr>
-                <tr><td>Prince George</td><td>289</td><td style="text-align:right"><span class="badge b-crit">Critical</span></td></tr>
-                <tr><td>Victoria</td><td>1,047</td><td style="text-align:right"><span class="badge b-ok">OK</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="ppanel" id="p-ord">
-            <table class="demo-table">
-              <thead><tr><th>Order</th><th>Item</th><th style="text-align:right">Status</th></tr></thead>
-              <tbody>
-                <tr><td>ORD-8F2A</td><td>Duty Boots</td><td style="text-align:right"><span class="badge b-del">Delivered</span></td></tr>
-                <tr><td>ORD-7C19</td><td>Uniform Shirt</td><td style="text-align:right"><span class="badge b-ship">Shipped</span></td></tr>
-                <tr><td>ORD-7B04</td><td>Outerwear Jacket</td><td style="text-align:right"><span class="badge b-pend">Pending</span></td></tr>
-                <tr><td>ORD-6E55</td><td>Duty Belt</td><td style="text-align:right"><span class="badge b-del">Delivered</span></td></tr>
-                <tr><td>ORD-6A12</td><td>Tactical Gloves</td><td style="text-align:right"><span class="badge b-ship">Shipped</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="ppanel" id="p-met">
-            <div class="mini-metrics">
-              <div class="mini-metric"><div class="v">1,725</div><div class="l">Active Officers</div></div>
-              <div class="mini-metric"><div class="v">10</div><div class="l">Centres Online</div></div>
-              <div class="mini-metric"><div class="v">99.9%</div><div class="l">Uptime</div></div>
-            </div>
-            <div class="mini-metrics" style="margin-top:10px">
-              <div class="mini-metric"><div class="v">97.3%</div><div class="l">On-Time Delivery</div></div>
-              <div class="mini-metric"><div class="v">3.2d</div><div class="l">Avg Processing</div></div>
-              <div class="mini-metric"><div class="v">98.1%</div><div class="l">Order Accuracy</div></div>
-            </div>
-          </div>
+        <div class="panel active" id="p-inv">
+          <table class="mtable"><thead><tr><th>Centre</th><th>Units</th><th style="text-align:right">Status</th></tr></thead><tbody>
+            <tr><td>Surrey</td><td class="mono">1,284</td><td style="text-align:right"><span class="tag t-ok">OK</span></td></tr>
+            <tr><td>Coquitlam</td><td class="mono">968</td><td style="text-align:right"><span class="tag t-ok">OK</span></td></tr>
+            <tr><td>Kamloops</td><td class="mono">412</td><td style="text-align:right"><span class="tag t-low">Low</span></td></tr>
+            <tr><td>Prince George</td><td class="mono">289</td><td style="text-align:right"><span class="tag t-crit">Critical</span></td></tr>
+            <tr><td>Victoria</td><td class="mono">1,047</td><td style="text-align:right"><span class="tag t-ok">OK</span></td></tr>
+          </tbody></table>
         </div>
-      </div>
-      <div class="preview-copy">
-        <span class="tag">⚙️ Admin View</span>
-        <h3>What the program team sees</h3>
-        <p>Administrators get a live operational picture — stock health per centre, every order placed through the portal, points usage, and SLA performance. Switch the tabs to look around.</p>
-        <ul>
-          <li>Stock levels and reorder status across all 10 centres</li>
-          <li>Every officer order, with live Pending / Shipped / Delivered status</li>
-          <li>Points redeemed and annual allotment usage</li>
-          <li>Compliance audit trail and SLA monitoring</li>
-        </ul>
-        <div class="preview-cta">
-          <a href="admin-dashboard.html" class="btn-outline">Open the full Admin Dashboard →</a>
+        <div class="panel" id="p-ord">
+          <table class="mtable"><thead><tr><th>Order</th><th>Item</th><th style="text-align:right">Status</th></tr></thead><tbody>
+            <tr><td class="mono">ORD-8F2A</td><td>Duty Boots</td><td style="text-align:right"><span class="tag t-del">Delivered</span></td></tr>
+            <tr><td class="mono">ORD-7C19</td><td>Uniform Shirt</td><td style="text-align:right"><span class="tag t-ship">Shipped</span></td></tr>
+            <tr><td class="mono">ORD-7B04</td><td>Outerwear Jacket</td><td style="text-align:right"><span class="tag t-pend">Pending</span></td></tr>
+            <tr><td class="mono">ORD-6E55</td><td>Duty Belt</td><td style="text-align:right"><span class="tag t-del">Delivered</span></td></tr>
+          </tbody></table>
+        </div>
+        <div class="panel" id="p-met">
+          <div class="mmetrics">
+            <div class="mm"><div class="v">1,725</div><div class="l">Active officers</div></div>
+            <div class="mm"><div class="v">99.9%</div><div class="l">Uptime</div></div>
+            <div class="mm"><div class="v">97.3%</div><div class="l">On-time delivery</div></div>
+            <div class="mm"><div class="v">3.2d</div><div class="l">Avg processing</div></div>
+            <div class="mm"><div class="v">98.1%</div><div class="l">Order accuracy</div></div>
+            <div class="mm"><div class="v">10/10</div><div class="l">Centres online</div></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CENTRES -->
-<section class="centres-bg">
-  <div class="section-inner">
-    <div class="section-label">Coverage</div>
-    <div class="section-title">Delivered to all 10 correctional centres</div>
-    <p class="section-sub">Orders route automatically to the centre where each officer is assigned. Inventory is tracked separately at every location.</p>
-    <div class="centre-chips">
-      <span class="centre-chip">Surrey</span>
-      <span class="centre-chip">Coquitlam</span>
-      <span class="centre-chip">Maple Ridge</span>
-      <span class="centre-chip">Victoria</span>
-      <span class="centre-chip">Nanaimo</span>
-      <span class="centre-chip">Kamloops</span>
-      <span class="centre-chip">Prince George</span>
-      <span class="centre-chip">Chilliwack</span>
-      <span class="centre-chip">Oliver</span>
-      <span class="centre-chip">Kelowna</span>
+<!-- COVERAGE -->
+<section class="block">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">Coverage</span>
+      <h2>Delivered to all ten centres</h2>
+      <p>Orders route automatically to the centre where each officer is assigned. Inventory is tracked independently at every location.</p>
+    </div>
+    <div class="centres reveal">
+      <div class="centre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>Surrey</div>
+      <div class="centre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>Coquitlam</div>
+      <div class="centre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>Maple Ridge</div>
+      <div class="centre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>Victoria</div>
+      <div class="centre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>Nanaimo</div>
+      <div class="centre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>Kamloops</div>
+      <div class="centre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>Prince George</div>
+      <div class="centre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>Chilliwack</div>
+      <div class="centre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>Oliver</div>
+      <div class="centre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>Kelowna</div>
     </div>
   </div>
 </section>
 
-<div class="cta-section">
-  <h2>See the system in action</h2>
-  <p>Both portals are live and fully interactive — sign in and place a real test order.</p>
-  <div class="hero-actions">
-    <a href="officer-portal.html" class="btn-primary">Officer Portal →</a>
-    <a href="admin-dashboard.html" class="btn-outline">Admin Dashboard</a>
+<!-- CTA -->
+<section class="cta">
+  <div class="wrap reveal">
+    <h2>See the system in action</h2>
+    <p>Both portals are live and fully interactive — sign in and place a real test order.</p>
+    <div class="hero-actions">
+      <a href="officer-portal.html" class="btn btn-gold">Officer portal
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a href="admin-dashboard.html" class="btn btn-ghost">Administration dashboard</a>
+    </div>
   </div>
-</div>
+</section>
 
 <footer>
-  <strong>BC Corrections Uniform Management System</strong> — NOI Opportunity ID 231357<br>
-  Ministry of Public Safety and Solicitor General — Adult Custody Division
-  <div class="footer-links">
-    <a href="index.html">Home</a>
-    <a href="officer-portal.html">Officer Portal</a>
-    <a href="admin-dashboard.html">Admin Dashboard</a>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="name">BC Corrections — Uniform Management System</div>
+        <p>A demonstration platform for the Adult Custody Division uniform program. NOI Opportunity ID 231357.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h4>Platform</h4>
+          <a href="officer-portal.html">Officer portal</a>
+          <a href="admin-dashboard.html">Administration</a>
+          <a href="#how">How it works</a>
+        </div>
+        <div class="foot-col">
+          <h4>Program</h4>
+          <a href="#officer">Ordering &amp; points</a>
+          <a href="#admin">Inventory &amp; compliance</a>
+          <a href="#">Ten correctional centres</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-base">
+      <span>Ministry of Public Safety &amp; Solicitor General</span>
+      <span class="mono">NOI 231357 · Adult Custody Division</span>
+    </div>
   </div>
 </footer>
 
 <script>
-  // ─── Interactive officer catalogue demo ─────────────────────────────────────
-  const DEMO_ITEMS = [
-    { name: 'Uniform Shirt',    pts: 40,  icon: '👕' },
-    { name: 'Uniform Pants',    pts: 50,  icon: '👖' },
-    { name: 'Duty Boots',       pts: 120, icon: '👢' },
-    { name: 'Outerwear Jacket', pts: 100, icon: '🧥' },
-    { name: 'Duty Belt',        pts: 80,  icon: '⬜' },
-    { name: 'Badge & Insignia', pts: 20,  icon: '🏅' },
-    { name: 'Tactical Holster', pts: 85,  icon: '🔫' },
-    { name: 'Tactical Gloves',  pts: 25,  icon: '🧤' },
-    { name: 'Duty Cap',         pts: 30,  icon: '🧢' },
-    { name: 'Long Sleeve Shirt',pts: 45,  icon: '👔' },
+  // Interactive officer catalogue demo
+  const ITEMS = [
+    { n: 'Uniform Shirt', p: 40 }, { n: 'Uniform Pants', p: 50 }, { n: 'Duty Boots', p: 120 },
+    { n: 'Outerwear Jacket', p: 100 }, { n: 'Duty Belt', p: 80 }, { n: 'Badge & Insignia', p: 20 },
+    { n: 'Tactical Holster', p: 85 }, { n: 'Tactical Gloves', p: 25 }, { n: 'Duty Cap', p: 30 }, { n: 'Long Sleeve Shirt', p: 45 },
   ];
-  const ALLOTMENT = 500;
-  let added = new Set();
+  const CAP = 500;
+  let picked = new Set();
+  const used = () => [...picked].reduce((t, i) => t + ITEMS[i].p, 0);
 
   function renderDemo() {
-    const tbody = document.getElementById('demo-tbody');
-    tbody.innerHTML = DEMO_ITEMS.map((it, i) => {
-      const isAdded = added.has(i);
-      const used = totalUsed();
-      const wouldExceed = !isAdded && (used + it.pts > ALLOTMENT);
+    const u = used();
+    document.getElementById('d-body').innerHTML = ITEMS.map((it, i) => {
+      const on = picked.has(i);
+      const over = !on && (u + it.p > CAP);
       return `<tr>
-        <td><span class="demo-ico">${it.icon}</span>${it.name}</td>
-        <td><span class="pts-pill">${it.pts} pts</span></td>
-        <td style="text-align:right">
-          <button class="add-btn ${isAdded ? 'added' : ''}" ${wouldExceed ? 'disabled' : ''} onclick="toggleItem(${i})">
-            ${isAdded ? '✓ Added' : (wouldExceed ? 'Too many pts' : '+ Add')}
-          </button>
-        </td>
+        <td>${it.n}</td>
+        <td class="ptcost">${it.p} pts</td>
+        <td style="text-align:right"><button class="add ${on ? 'on' : ''}" ${over ? 'disabled' : ''} onclick="toggle(${i})">${on ? '✓ Added' : (over ? 'Over budget' : 'Add')}</button></td>
       </tr>`;
     }).join('');
-    const used = totalUsed();
-    document.getElementById('demo-used').textContent = used;
-    document.getElementById('demo-remaining').textContent = ALLOTMENT - used;
-    document.getElementById('demo-bar').style.width = Math.min(100, (used / ALLOTMENT) * 100) + '%';
-    const msg = document.getElementById('demo-msg');
-    if (used === 0) msg.textContent = 'Click “Add” on any item to see points deduct.';
-    else if (ALLOTMENT - used < 40) msg.textContent = 'Almost out of points — the system blocks anything you can’t afford.';
-    else msg.textContent = added.size + ' item(s) in this order · ' + (ALLOTMENT - used) + ' points left.';
+    document.getElementById('d-used').textContent = u;
+    document.getElementById('d-remain').textContent = CAP - u;
+    const m = document.getElementById('d-msg');
+    if (u === 0) m.textContent = 'Add an item to see points deduct.';
+    else if (CAP - u < 40) m.textContent = 'Almost out — the system blocks anything you can’t afford.';
+    else m.textContent = picked.size + ' item(s) selected · ' + (CAP - u) + ' points left.';
   }
-  function totalUsed() { let t = 0; added.forEach(i => t += DEMO_ITEMS[i].pts); return t; }
-  function toggleItem(i) { added.has(i) ? added.delete(i) : added.add(i); renderDemo(); }
-  function resetDemo() { added = new Set(); renderDemo(); }
+  function toggle(i) { picked.has(i) ? picked.delete(i) : picked.add(i); renderDemo(); }
+  function resetDemo() { picked = new Set(); renderDemo(); }
 
-  // ─── Admin preview tabs ─────────────────────────────────────────────────────
   function showPanel(id, btn) {
-    document.querySelectorAll('.ppanel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.ptab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
     document.getElementById('p-' + id).classList.add('active');
     btn.classList.add('active');
   }
+
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
   renderDemo();
 </script>
