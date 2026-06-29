@@ -233,6 +233,36 @@
     .sys-status { display: none; }
     th, td { padding: 10px 12px; font-size: 0.8rem; }
   }
+
+  /* ─── POLISH LAYER ─────────────────────────────────────────────────────────── */
+  body { font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  ::selection { background: rgba(0,61,122,0.18); }
+  *::-webkit-scrollbar { width: 11px; height: 11px; }
+  *::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; border: 3px solid transparent; background-clip: content-box; }
+  *::-webkit-scrollbar-thumb:hover { background: var(--text-light); background-clip: content-box; }
+
+  @keyframes panelIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes cardIn  { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .tab-panel.active { animation: panelIn 0.34s cubic-bezier(.22,.61,.36,1) both; }
+  .card, .metric-card, .comp-card { animation: cardIn 0.4s cubic-bezier(.22,.61,.36,1) both; }
+  .metrics-grid > *:nth-child(2) { animation-delay: .05s; }
+  .metrics-grid > *:nth-child(3) { animation-delay: .10s; }
+  .metrics-grid > *:nth-child(4) { animation-delay: .15s; }
+  .metrics-grid > *:nth-child(5) { animation-delay: .20s; }
+  .metrics-grid > *:nth-child(6) { animation-delay: .25s; }
+
+  .metric-card { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+  .metric-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: rgba(0,61,122,0.30); }
+  .card { transition: box-shadow .2s ease; }
+  .bar-fill { box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12); }
+
+  header { box-shadow: 0 1px 0 rgba(255,255,255,0.05), 0 6px 22px rgba(0,0,0,0.32); }
+  header::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: linear-gradient(90deg, var(--accent), rgba(255,199,44,0) 55%); opacity: .7; }
+
+  .btn-full:active, .btn-sm:active, .btn-logout:active, .ptab:active { transform: translateY(1px); }
+  .login-card { animation: panelIn 0.5s cubic-bezier(.22,.61,.36,1) both; }
+  table tbody tr { transition: background .15s ease; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; } }
 </style>
 </head>
 <body>
@@ -294,14 +324,14 @@
         <div class="metric-card">
           <div class="mc-accent blue"></div>
           <div class="mc-icon">👮</div>
-          <div class="mc-val">1,725</div>
+          <div class="mc-val" id="ov-officers">1,725</div>
           <div class="mc-lbl">Active Officers</div>
           <div class="mc-delta ok">↑ 10 centres</div>
         </div>
         <div class="metric-card">
           <div class="mc-accent green"></div>
           <div class="mc-icon">🏢</div>
-          <div class="mc-val">10</div>
+          <div class="mc-val" id="ov-centres">10</div>
           <div class="mc-lbl">Centres Online</div>
           <div class="mc-delta up">✓ All operational</div>
         </div>
@@ -637,6 +667,22 @@ function load(key, def) { try { const v=localStorage.getItem(key); return v?JSON
 function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
 function rand(min, max) { return Math.floor(Math.random()*(max-min+1))+min; }
 
+// Animated count-up for key metrics.
+function animateCount(el, target) {
+  if (!el) return;
+  target = Number(target) || 0;
+  const cur = parseInt(String(el.textContent).replace(/[^0-9-]/g, '')) || 0;
+  if (cur === target) { el.textContent = target.toLocaleString(); return; }
+  const dur = 700, t0 = performance.now(), diff = target - cur;
+  function step(now) {
+    const k = Math.min(1, (now - t0) / dur);
+    const e = 1 - Math.pow(1 - k, 3);
+    el.textContent = Math.round(cur + diff * e).toLocaleString();
+    if (k < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
 // ─── SHARED INVENTORY & STATUS (same store the officer portal writes to) ───────
 const INV_KEYS = ['shirt','pants','boots','jacket','belt','badge','holster','gloves','cap','lsshirt'];
 function getInventory() {
@@ -709,11 +755,13 @@ function getAdminStats() { return load('admin_stats', { totalOrders: 0, totalPts
 
 function renderOverview() {
   const stats = getAdminStats();
-  document.getElementById('ov-orders').textContent = stats.totalOrders;
-  document.getElementById('ov-pts').textContent = stats.totalPtsUsed;
-  document.getElementById('pm-used').textContent = stats.totalPtsUsed;
-  document.getElementById('pm-orders').textContent = stats.totalOrders;
-  document.getElementById('ov-units').textContent = invGrandTotal(getInventory()).toLocaleString();
+  animateCount(document.getElementById('ov-officers'), 1725);
+  animateCount(document.getElementById('ov-centres'), 10);
+  animateCount(document.getElementById('ov-orders'), stats.totalOrders);
+  animateCount(document.getElementById('ov-pts'), stats.totalPtsUsed);
+  animateCount(document.getElementById('pm-used'), stats.totalPtsUsed);
+  animateCount(document.getElementById('pm-orders'), stats.totalOrders);
+  animateCount(document.getElementById('ov-units'), invGrandTotal(getInventory()));
 }
 
 function renderInventoryHealth() {
@@ -781,10 +829,10 @@ function renderOrdersTab() {
   const pending = orders.filter(o=>statusOf(o)==='Pending').length;
   const shipped = orders.filter(o=>statusOf(o)==='Shipped').length;
   const delivered = orders.filter(o=>statusOf(o)==='Delivered').length;
-  document.getElementById('ord-total').textContent = orders.length;
-  document.getElementById('ord-pending').textContent = pending;
-  document.getElementById('ord-shipped').textContent = shipped;
-  document.getElementById('ord-delivered').textContent = delivered;
+  animateCount(document.getElementById('ord-total'), orders.length);
+  animateCount(document.getElementById('ord-pending'), pending);
+  animateCount(document.getElementById('ord-shipped'), shipped);
+  animateCount(document.getElementById('ord-delivered'), delivered);
 
   const tbody = document.getElementById('all-orders-tbody');
   if (!orders.length) {

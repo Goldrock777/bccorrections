@@ -369,6 +369,33 @@
     table { font-size: 0.8rem; }
     th, td { padding: 10px 12px; }
   }
+
+  /* ─── POLISH LAYER ─────────────────────────────────────────────────────────── */
+  body { font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  ::selection { background: rgba(0,61,122,0.18); }
+  *::-webkit-scrollbar { width: 11px; height: 11px; }
+  *::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; border: 3px solid transparent; background-clip: content-box; }
+  *::-webkit-scrollbar-thumb:hover { background: var(--text-light); background-clip: content-box; }
+
+  @keyframes panelIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes cardIn  { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .tab-panel.active { animation: panelIn 0.34s cubic-bezier(.22,.61,.36,1) both; }
+  .card, .dash-card, .catalogue-item { animation: cardIn 0.4s cubic-bezier(.22,.61,.36,1) both; }
+  .dash-grid > *:nth-child(2) { animation-delay: .05s; }
+  .dash-grid > *:nth-child(3) { animation-delay: .10s; }
+  .dash-grid > *:nth-child(4) { animation-delay: .15s; }
+
+  .dash-card { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+  .dash-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: rgba(0,61,122,0.30); }
+  .card { transition: box-shadow .2s ease; }
+
+  header { box-shadow: 0 1px 0 rgba(255,255,255,0.05), 0 6px 22px rgba(0,0,0,0.30); }
+  header::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: linear-gradient(90deg, var(--accent), rgba(255,199,44,0) 55%); opacity: .7; }
+
+  .btn-confirm:active, .btn-full:active, .btn-cancel:active, .ci-btn:active, .btn-logout:active, .opt-chip:active, .fit-btn:active { transform: translateY(1px); }
+  .login-card { animation: panelIn 0.5s cubic-bezier(.22,.61,.36,1) both; }
+  table tbody tr { transition: background .15s ease; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; } }
 </style>
 </head>
 <body>
@@ -746,13 +773,13 @@ function pointsAvailable() { return ANNUAL_POINTS - (currentOfficer.pointsUsed |
 function renderDashboard() {
   const avail = pointsAvailable();
   const used = currentOfficer.pointsUsed || 0;
-  document.getElementById('pts-available').textContent = avail;
+  animateCount(document.getElementById('pts-available'), avail);
   document.getElementById('pts-used-lbl').textContent = used;
   document.getElementById('pts-bar').style.width = Math.min(100, (used / ANNUAL_POINTS) * 100) + '%';
-  document.getElementById('dc-available').textContent = avail;
-  document.getElementById('dc-used').textContent = used;
-  document.getElementById('dc-orders').textContent = currentOfficer.orders.length;
-  document.getElementById('dc-pending').textContent = currentOfficer.orders.filter(o => statusOf(o) === 'Pending').length;
+  animateCount(document.getElementById('dc-available'), avail);
+  animateCount(document.getElementById('dc-used'), used);
+  animateCount(document.getElementById('dc-orders'), currentOfficer.orders.length);
+  animateCount(document.getElementById('dc-pending'), currentOfficer.orders.filter(o => statusOf(o) === 'Pending').length);
 
   const tbody = document.getElementById('recent-orders-tbody');
   const recent = [...currentOfficer.orders].reverse().slice(0, 5);
@@ -845,6 +872,22 @@ function renderInventory() {
 }
 
 function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+// Animated count-up for key numbers (eases from current value to target).
+function animateCount(el, target) {
+  if (!el) return;
+  target = Number(target) || 0;
+  const cur = parseInt(String(el.textContent).replace(/[^0-9-]/g, '')) || 0;
+  if (cur === target) { el.textContent = target.toLocaleString(); return; }
+  const dur = 600, t0 = performance.now(), diff = target - cur;
+  function step(now) {
+    const k = Math.min(1, (now - t0) / dur);
+    const e = 1 - Math.pow(1 - k, 3);
+    el.textContent = Math.round(cur + diff * e).toLocaleString();
+    if (k < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
 
 // ─── MODAL CONFIGURATOR ─────────────────────────────────────────────────────────
 // Per-item config: which body region(s) to highlight + which sizing type to show.
