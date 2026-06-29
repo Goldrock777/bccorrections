@@ -237,34 +237,88 @@
   }
   .modal-overlay.open { opacity: 1; pointer-events: all; }
   .modal {
+    position: relative;
     background: var(--white); border-radius: 20px;
-    padding: 40px; max-width: 480px; width: 100%;
+    padding: 32px; max-width: 480px; width: 100%;
     box-shadow: 0 24px 64px rgba(0,0,0,0.3);
     transform: translateY(20px); transition: transform 0.2s;
+    max-height: 92vh; overflow-y: auto;
   }
+  .modal.modal-wide { max-width: 780px; }
   .modal-overlay.open .modal { transform: translateY(0); }
-  .modal-item-icon { font-size: 48px; margin-bottom: 12px; }
-  .modal h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; }
-  .modal .modal-pts { color: var(--primary); font-weight: 700; font-size: 0.9rem; margin-bottom: 20px; }
-  .modal .form-group select {
-    width: 100%; padding: 10px 12px;
-    border: 1px solid var(--border); border-radius: 8px;
-    font-size: 0.95rem; background: var(--bg); color: var(--text);
+  .modal h2 { font-size: 1.35rem; font-weight: 800; margin-bottom: 4px; }
+  .modal .modal-pts { color: var(--primary); font-weight: 700; font-size: 0.9rem; margin-bottom: 18px; }
+  .modal-close {
+    position: absolute; top: 16px; right: 18px;
+    background: none; border: none; font-size: 1.1rem; line-height: 1;
+    color: var(--text-light); cursor: pointer; padding: 4px;
   }
-  .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
+  .modal-close:hover { color: var(--text); }
+  .modal-grid { display: grid; grid-template-columns: 240px 1fr; gap: 28px; }
+
+  /* INTERACTIVE FIGURE */
+  .modal-figure {
+    background: linear-gradient(180deg, var(--bg), rgba(0,0,0,0));
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 10px 12px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .officer-fig { width: 100%; max-height: 320px; }
+  .fig-part { transition: opacity 0.3s, filter 0.3s; }
+  .fig-part.dim { opacity: 0.20; }
+  .fig-part.hl { filter: drop-shadow(0 0 8px var(--accent)); }
+  .fig-part.hl path, .fig-part.hl rect, .fig-part.hl circle { fill: var(--accent) !important; }
+  .figure-cap { margin-top: 10px; font-size: 0.82rem; font-weight: 700; color: var(--primary); text-align: center; }
+  .figure-hint { font-size: 0.72rem; color: var(--text-light); margin-top: 2px; text-align: center; }
+
+  /* OPTION CHIPS */
+  .opt-group { margin-bottom: 14px; }
+  .opt-group > label { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light); margin-bottom: 7px; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 7px; }
+  .opt-chip {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 6px 12px; font-size: 0.83rem; font-weight: 600; color: var(--text);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .opt-chip:hover { border-color: var(--primary); }
+  .opt-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+  /* SIZING GUIDE */
+  .guide-toggle {
+    margin-top: 4px; width: 100%; background: none;
+    border: 1px dashed var(--border); border-radius: 8px;
+    padding: 9px 12px; font-size: 0.82rem; font-weight: 700; color: var(--primary);
+    cursor: pointer; transition: all 0.15s; text-align: left;
+  }
+  .guide-toggle:hover { border-color: var(--primary); background: rgba(0,61,122,0.04); }
+  .guide-panel { display: none; margin-top: 10px; background: var(--bg); border-radius: 10px; padding: 14px; font-size: 0.82rem; }
+  .guide-panel.open { display: block; }
+  .guide-panel table { width: 100%; border-collapse: collapse; }
+  .guide-panel td { padding: 4px 6px; border-bottom: 1px solid var(--border); }
+  .guide-panel tr:last-child td { border-bottom: none; }
+  .guide-panel td:last-child { text-align: right; color: var(--text-light); }
+  .guide-panel p { margin-top: 8px; color: var(--text-light); }
+
+  .modal-total-line { background: var(--bg); border-radius: 8px; padding: 12px; font-size: 0.9rem; margin-top: 16px; }
+  .modal-actions { display: flex; gap: 12px; margin-top: 16px; }
   .btn-confirm {
     flex: 1; padding: 12px;
     background: linear-gradient(135deg, #003d7a, #0056a8);
     color: #fff; border: none; border-radius: 8px;
-    font-weight: 700; font-size: 0.95rem; cursor: pointer;
-    transition: all 0.2s;
+    font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
   }
   .btn-confirm:hover { box-shadow: 0 4px 16px rgba(0,61,122,0.4); }
+  .btn-confirm:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
   .btn-cancel {
     flex: 1; padding: 12px;
     background: var(--bg); color: var(--text);
     border: 1px solid var(--border); border-radius: 8px;
     font-weight: 600; font-size: 0.95rem; cursor: pointer;
+  }
+  @media (max-width: 640px) {
+    .modal-grid { grid-template-columns: 1fr; gap: 16px; }
+    .officer-fig { max-height: 220px; }
+    .modal.modal-wide { padding: 24px; }
   }
 
   /* TOAST */
@@ -474,35 +528,75 @@
 
 <!-- ORDER MODAL -->
 <div class="modal-overlay" id="modal-overlay">
-  <div class="modal">
-    <div class="modal-item-icon" id="modal-icon">👕</div>
-    <h2 id="modal-name">Uniform Shirt</h2>
-    <div class="modal-pts" id="modal-pts">40 points</div>
-    <div class="form-group">
-      <label>Size</label>
-      <select id="modal-size">
-        <option>XS</option><option>S</option><option selected>M</option>
-        <option>L</option><option>XL</option><option>2XL</option><option>3XL</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Colour</label>
-      <select id="modal-colour">
-        <option>Navy Blue</option><option>Black</option><option>Khaki</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Quantity</label>
-      <select id="modal-qty">
-        <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-      </select>
-    </div>
-    <div id="modal-total-line" style="background:var(--bg);border-radius:8px;padding:12px;font-size:0.9rem;margin-bottom:4px;">
-      Total cost: <strong id="modal-total">40 pts</strong> — Remaining after: <strong id="modal-after">460 pts</strong>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-confirm" onclick="confirmOrder()">Confirm Order</button>
+  <div class="modal modal-wide">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+    <div class="modal-grid">
+      <!-- Interactive uniform figure -->
+      <div class="modal-figure">
+        <svg class="officer-fig" viewBox="0 0 220 400" xmlns="http://www.w3.org/2000/svg">
+          <!-- head (static) -->
+          <circle cx="110" cy="84" r="26" fill="#e8b48f"/>
+          <!-- cap -->
+          <g id="fig-cap" class="fig-part">
+            <path d="M76 66 Q110 26 144 66 Z" fill="#1c2e4a"/>
+            <rect x="68" y="62" width="84" height="11" rx="4" fill="#15233a"/>
+            <rect x="96" y="42" width="28" height="12" rx="3" fill="#15233a"/>
+          </g>
+          <!-- neck -->
+          <rect x="100" y="106" width="20" height="16" fill="#d9a07c"/>
+          <!-- shirt + arms -->
+          <g id="fig-shirt" class="fig-part">
+            <path d="M70 122 L150 122 L162 152 L152 252 L68 252 L58 152 Z" fill="#3a5a82"/>
+            <path d="M70 122 L110 142 L150 122 L138 117 L110 126 L82 117 Z" fill="#2f4a6d"/>
+            <rect x="46" y="126" width="20" height="98" rx="9" fill="#3a5a82"/>
+            <rect x="154" y="126" width="20" height="98" rx="9" fill="#3a5a82"/>
+          </g>
+          <!-- badge -->
+          <g id="fig-badge" class="fig-part">
+            <circle cx="90" cy="160" r="7" fill="#ffc72c"/>
+          </g>
+          <!-- gloves / hands -->
+          <g id="fig-handL" class="fig-part"><circle cx="56" cy="230" r="12" fill="#e8b48f"/></g>
+          <g id="fig-handR" class="fig-part"><circle cx="164" cy="230" r="12" fill="#e8b48f"/></g>
+          <!-- belt -->
+          <g id="fig-belt" class="fig-part">
+            <rect x="66" y="250" width="88" height="16" rx="3" fill="#1a1a1a"/>
+            <rect x="104" y="252" width="12" height="12" rx="2" fill="#c9a227"/>
+          </g>
+          <!-- pants -->
+          <g id="fig-pants" class="fig-part">
+            <rect x="70" y="264" width="33" height="102" rx="6" fill="#20304d"/>
+            <rect x="117" y="264" width="33" height="102" rx="6" fill="#20304d"/>
+          </g>
+          <!-- boots -->
+          <g id="fig-boots" class="fig-part">
+            <path d="M68 360 h35 v22 h15 v11 h-50 z" fill="#141414"/>
+            <path d="M152 360 h-35 v22 h-15 v11 h50 z" fill="#141414"/>
+          </g>
+        </svg>
+        <div class="figure-cap" id="figure-cap-label">Uniform Shirt</div>
+        <div class="figure-hint">Highlighted on the figure</div>
+      </div>
+
+      <!-- Configurator -->
+      <div class="modal-config">
+        <h2 id="modal-name">Uniform Shirt</h2>
+        <div class="modal-pts" id="modal-pts">40 points each</div>
+        <div id="option-groups"></div>
+        <div class="opt-group">
+          <label>Quantity</label>
+          <div class="chip-row" id="qty-chips"></div>
+        </div>
+        <button class="guide-toggle" onclick="toggleGuide()">📏 Quick Sizing Guide</button>
+        <div class="guide-panel" id="guide-panel"></div>
+        <div class="modal-total-line">
+          Total cost: <strong id="modal-total">40 pts</strong> — Remaining after: <strong id="modal-after">460 pts</strong>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+          <button class="btn-confirm" onclick="confirmOrder()">Confirm Order</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -729,27 +823,178 @@ function renderInventory() {
 
 function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
-// ─── MODAL ─────────────────────────────────────────────────────────────────────
+// ─── MODAL CONFIGURATOR ─────────────────────────────────────────────────────────
+// Per-item config: which body region(s) to highlight + which sizing type to show.
+const ITEM_CONFIG = {
+  shirt:   { type: 'shirt',   region: ['shirt'] },
+  lsshirt: { type: 'shirt',   region: ['shirt'], sleeveLocked: 'Long Sleeve' },
+  jacket:  { type: 'shirt',   region: ['shirt'], colours: ['Navy Blue', 'Black'] },
+  pants:   { type: 'pants',   region: ['pants'] },
+  boots:   { type: 'boots',   region: ['boots'] },
+  belt:    { type: 'belt',    region: ['belt'] },
+  badge:   { type: 'badge',   region: ['badge'] },
+  holster: { type: 'holster', region: ['belt'] },
+  gloves:  { type: 'gloves',  region: ['handL', 'handR'] },
+  cap:     { type: 'cap',     region: ['cap'] },
+};
+const FIG_PARTS = ['cap', 'shirt', 'badge', 'handL', 'handR', 'belt', 'pants', 'boots'];
+
+let sel = {};       // current option selections
+let selQty = 1;
+
+// Build the option groups (with sensible defaults) for an item type.
+function buildGroups(id) {
+  const c = ITEM_CONFIG[id];
+  const g = [];
+  if (c.type === 'shirt') {
+    g.push({ label: 'Sleeve', key: 'sleeve', opts: c.sleeveLocked ? [c.sleeveLocked] : ['Short Sleeve', 'Long Sleeve'], def: 0 });
+    g.push({ label: 'Size', key: 'size', opts: ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'], def: 2 });
+    g.push({ label: 'Colour', key: 'colour', opts: c.colours || ['Navy Blue', 'Black', 'Khaki'], def: 0 });
+  } else if (c.type === 'pants') {
+    g.push({ label: 'Waist (in)', key: 'waist', opts: ['28', '30', '32', '34', '36', '38', '40', '42', '44'], def: 3 });
+    g.push({ label: 'Inseam / Length', key: 'inseam', opts: ['Short · 30"', 'Regular · 32"', 'Long · 34"'], def: 1 });
+    g.push({ label: 'Colour', key: 'colour', opts: ['Navy Blue', 'Black', 'Khaki'], def: 0 });
+  } else if (c.type === 'boots') {
+    g.push({ label: 'Shoe Size (US)', key: 'shoe', opts: ['6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '12', '13'], def: 6 });
+    g.push({ label: 'Width', key: 'width', opts: ['D · Regular', 'EE · Wide'], def: 0 });
+    g.push({ label: 'Colour', key: 'colour', opts: ['Black', 'Brown'], def: 0 });
+  } else if (c.type === 'belt') {
+    g.push({ label: 'Size', key: 'size', opts: ['S · 30-34"', 'M · 34-38"', 'L · 38-42"', 'XL · 42-46"'], def: 1 });
+    g.push({ label: 'Colour', key: 'colour', opts: ['Black'], def: 0 });
+  } else if (c.type === 'gloves') {
+    g.push({ label: 'Size', key: 'size', opts: ['S', 'M', 'L', 'XL'], def: 1 });
+    g.push({ label: 'Colour', key: 'colour', opts: ['Black'], def: 0 });
+  } else if (c.type === 'cap') {
+    g.push({ label: 'Size', key: 'size', opts: ['S/M', 'L/XL'], def: 0 });
+    g.push({ label: 'Colour', key: 'colour', opts: ['Navy Blue', 'Black'], def: 0 });
+  } else if (c.type === 'holster') {
+    g.push({ label: 'Carry Hand', key: 'hand', opts: ['Right', 'Left'], def: 0 });
+    g.push({ label: 'Colour', key: 'colour', opts: ['Black'], def: 0 });
+  } else { // badge
+    g.push({ label: 'Finish', key: 'finish', opts: ['Standard', 'Subdued'], def: 0 });
+  }
+  return g;
+}
+
+// Sizing-guide content per type.
+function guideHTML(type) {
+  if (type === 'shirt') return `<table>
+    <tr><td>XS</td><td>Chest 34-36"</td></tr><tr><td>S</td><td>36-38"</td></tr>
+    <tr><td>M</td><td>38-40"</td></tr><tr><td>L</td><td>42-44"</td></tr>
+    <tr><td>XL</td><td>46-48"</td></tr><tr><td>2XL</td><td>50-52"</td></tr>
+    <tr><td>3XL</td><td>54-56"</td></tr></table>
+    <p>Measure around the fullest part of the chest. Order one size up if layering body armour.</p>`;
+  if (type === 'pants') return `<table>
+    <tr><td>Waist</td><td>Measured in inches (snug, not tight)</td></tr>
+    <tr><td>Short</td><td>30" inseam</td></tr>
+    <tr><td>Regular</td><td>32" inseam</td></tr>
+    <tr><td>Long</td><td>34" inseam</td></tr></table>
+    <p>Inseam is measured from crotch to hem along the inner leg.</p>`;
+  if (type === 'boots') return `<table>
+    <tr><td>US 7</td><td>25.0 cm</td></tr><tr><td>US 8</td><td>26.0 cm</td></tr>
+    <tr><td>US 9</td><td>27.0 cm</td></tr><tr><td>US 10</td><td>28.0 cm</td></tr>
+    <tr><td>US 11</td><td>29.0 cm</td></tr><tr><td>US 12</td><td>30.0 cm</td></tr>
+    <tr><td>US 13</td><td>31.0 cm</td></tr></table>
+    <p>Measure foot length in cm. Half sizes available; choose <strong>EE · Wide</strong> for a broader fit.</p>`;
+  if (type === 'belt') return `<table>
+    <tr><td>S</td><td>Waist 30-34"</td></tr><tr><td>M</td><td>34-38"</td></tr>
+    <tr><td>L</td><td>38-42"</td></tr><tr><td>XL</td><td>42-46"</td></tr></table>
+    <p>Match your trouser waist size.</p>`;
+  if (type === 'gloves') return `<table>
+    <tr><td>S</td><td>Palm 7-8"</td></tr><tr><td>M</td><td>8-9"</td></tr>
+    <tr><td>L</td><td>9-10"</td></tr><tr><td>XL</td><td>10-11"</td></tr></table>
+    <p>Measure around the palm, excluding the thumb.</p>`;
+  if (type === 'cap') return `<table>
+    <tr><td>S/M</td><td>Head 21-22.5"</td></tr><tr><td>L/XL</td><td>22.5-24"</td></tr></table>
+    <p>Measure around the head above the ears.</p>`;
+  return `<p>This item is one-size / issued to standard specification — no sizing required.</p>`;
+}
+
+// Compact size string stored on the order.
+function sizeSpec() {
+  const t = ITEM_CONFIG[selectedItem.id].type;
+  if (t === 'shirt') return sel.size + ' · ' + (sel.sleeve || '').replace(' Sleeve', '');
+  if (t === 'pants') return sel.waist + 'W × ' + (sel.inseam.match(/\d+/) || ['32'])[0] + 'L';
+  if (t === 'boots') return 'US ' + sel.shoe + ' · ' + sel.width.split(' ')[0];
+  if (t === 'belt' || t === 'gloves' || t === 'cap') return sel.size;
+  if (t === 'holster') return sel.hand + ' hand';
+  if (t === 'badge') return sel.finish;
+  return '—';
+}
+
+function highlightFigure(id) {
+  const region = ITEM_CONFIG[id].region;
+  FIG_PARTS.forEach(p => {
+    const el = document.getElementById('fig-' + p);
+    if (!el) return;
+    el.classList.remove('hl');
+    el.classList.add('dim');
+  });
+  region.forEach(p => {
+    const el = document.getElementById('fig-' + p);
+    if (el) { el.classList.add('hl'); el.classList.remove('dim'); }
+  });
+}
+
+function renderOptions() {
+  const wrap = document.getElementById('option-groups');
+  const groups = buildGroups(selectedItem.id);
+  wrap.innerHTML = groups.map(g => `
+    <div class="opt-group">
+      <label>${g.label}</label>
+      <div class="chip-row" data-key="${g.key}">
+        ${g.opts.map(o => `<button class="opt-chip ${sel[g.key] === o ? 'active' : ''}" data-val="${String(o).replace(/"/g, '&quot;')}">${o}</button>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// Delegated handler (option values may contain quotes/spaces, so avoid inline onclick)
+document.getElementById('option-groups').addEventListener('click', e => {
+  const btn = e.target.closest('.opt-chip');
+  if (!btn) return;
+  const key = btn.parentElement.getAttribute('data-key');
+  selectOpt(key, btn.dataset.val);
+});
+
+function renderQty() {
+  document.getElementById('qty-chips').innerHTML = [1, 2, 3, 4, 5]
+    .map(n => `<button class="opt-chip ${selQty === n ? 'active' : ''}" onclick="setQty(${n})">${n}</button>`).join('');
+}
+
+function selectOpt(key, val) { sel[key] = val; renderOptions(); }
+function setQty(n) { selQty = n; renderQty(); updateModalTotal(); }
+
 function openModal(itemId) {
   selectedItem = CATALOGUE.find(i => i.id === itemId);
   if (!selectedItem) return;
-  document.getElementById('modal-icon').textContent = selectedItem.icon;
+  const groups = buildGroups(itemId);
+  sel = {};
+  groups.forEach(g => { sel[g.key] = g.opts[g.def] || g.opts[0]; });
+  selQty = 1;
   document.getElementById('modal-name').textContent = selectedItem.name;
+  document.getElementById('figure-cap-label').textContent = selectedItem.name;
   document.getElementById('modal-pts').textContent = selectedItem.pts + ' points each';
+  highlightFigure(itemId);
+  renderOptions();
+  renderQty();
+  const gp = document.getElementById('guide-panel');
+  gp.classList.remove('open');
+  gp.innerHTML = guideHTML(ITEM_CONFIG[itemId].type);
   updateModalTotal();
   document.getElementById('modal-overlay').classList.add('open');
 }
 
+function toggleGuide() { document.getElementById('guide-panel').classList.toggle('open'); }
+
 function updateModalTotal() {
   if (!selectedItem) return;
-  const qty = parseInt(document.getElementById('modal-qty').value);
-  const total = selectedItem.pts * qty;
+  const total = selectedItem.pts * selQty;
   const after = pointsAvailable() - total;
   document.getElementById('modal-total').textContent = total + ' pts';
   document.getElementById('modal-after').textContent = (after >= 0 ? after : '⚠ ' + after) + ' pts';
+  const btn = document.querySelector('.btn-confirm');
+  if (btn) btn.disabled = after < 0;
 }
-
-document.getElementById('modal-qty').addEventListener('change', updateModalTotal);
 
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
@@ -762,13 +1007,13 @@ document.getElementById('modal-overlay').addEventListener('click', e => {
 
 function confirmOrder() {
   if (!selectedItem) return;
-  const qty = parseInt(document.getElementById('modal-qty').value);
+  const qty = selQty;
   const total = selectedItem.pts * qty;
   const avail = pointsAvailable();
   if (total > avail) { showToast('Insufficient points.', 'error'); return; }
 
-  const size = document.getElementById('modal-size').value;
-  const colour = document.getElementById('modal-colour').value;
+  const size = sizeSpec();
+  const colour = sel.colour || '—';
   const date = new Date().toISOString().split('T')[0];
   const orderId = 'ORD-' + Date.now().toString(36).toUpperCase();
 
