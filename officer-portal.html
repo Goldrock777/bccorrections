@@ -227,6 +227,22 @@
   }
   .ci-btn:hover { background: #ffdb6b; }
 
+  /* FIT TOGGLE */
+  .fit-toggle {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
+  }
+  .fit-toggle-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light); }
+  .fit-btn {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 7px 16px; font-size: 0.88rem; font-weight: 700; color: var(--text);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .fit-btn:hover { border-color: var(--primary); }
+  .fit-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .fit-toggle-hint { font-size: 0.75rem; color: var(--text-light); flex: 1; min-width: 180px; }
+
   /* MODAL */
   .modal-overlay {
     position: fixed; inset: 0; z-index: 200;
@@ -298,6 +314,7 @@
   .guide-panel tr:last-child td { border-bottom: none; }
   .guide-panel td:last-child { text-align: right; color: var(--text-light); }
   .guide-panel p { margin-top: 8px; color: var(--text-light); }
+  .guide-hdr { font-weight: 700; color: var(--primary); margin-bottom: 8px; font-size: 0.82rem; }
 
   .modal-total-line { background: var(--bg); border-radius: 8px; padding: 12px; font-size: 0.9rem; margin-top: 16px; }
   .modal-actions { display: flex; gap: 12px; margin-top: 16px; }
@@ -471,6 +488,12 @@
           <div style="font-size:0.75rem;color:var(--text-light);font-weight:600;text-transform:uppercase">Points Remaining</div>
           <div style="font-size:1.6rem;font-weight:800;color:var(--primary)" id="cat-pts">500</div>
         </div>
+      </div>
+      <div class="fit-toggle" id="fit-toggle">
+        <span class="fit-toggle-label">Sizing fit</span>
+        <button class="fit-btn active" data-fit="Men's" onclick="setFit(this.dataset.fit)">👔 Men's</button>
+        <button class="fit-btn" data-fit="Women's" onclick="setFit(this.dataset.fit)">👚 Women's</button>
+        <span class="fit-toggle-hint">Applies to shirts, trousers, boots &amp; gloves — you can also switch it per item when ordering.</span>
       </div>
       <div class="catalogue-grid" id="catalogue-grid"></div>
     </div>
@@ -841,28 +864,42 @@ const FIG_PARTS = ['cap', 'shirt', 'badge', 'handL', 'handR', 'belt', 'pants', '
 
 let sel = {};       // current option selections
 let selQty = 1;
+let catalogueFit = "Men's";   // catalogue-level default fit
+
+function setFit(f) {
+  catalogueFit = f;
+  document.querySelectorAll('#fit-toggle .fit-btn').forEach(b => b.classList.toggle('active', b.dataset.fit === f));
+}
+
+// Items whose sizing differs by men's / women's fit.
+const FIT_TYPES = ['shirt', 'pants', 'boots', 'gloves'];
 
 // Build the option groups (with sensible defaults) for an item type.
 function buildGroups(id) {
   const c = ITEM_CONFIG[id];
+  const fit = sel.fit || catalogueFit;
+  const W = fit === "Women's";
   const g = [];
+  if (FIT_TYPES.includes(c.type)) {
+    g.push({ label: 'Fit', key: 'fit', opts: ["Men's", "Women's"], def: W ? 1 : 0 });
+  }
   if (c.type === 'shirt') {
     g.push({ label: 'Sleeve', key: 'sleeve', opts: c.sleeveLocked ? [c.sleeveLocked] : ['Short Sleeve', 'Long Sleeve'], def: 0 });
-    g.push({ label: 'Size', key: 'size', opts: ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'], def: 2 });
+    g.push({ label: 'Size', key: 'size', opts: W ? ['XS', 'S', 'M', 'L', 'XL', '2XL'] : ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'], def: 2 });
     g.push({ label: 'Colour', key: 'colour', opts: c.colours || ['Navy Blue', 'Black', 'Khaki'], def: 0 });
   } else if (c.type === 'pants') {
-    g.push({ label: 'Waist (in)', key: 'waist', opts: ['28', '30', '32', '34', '36', '38', '40', '42', '44'], def: 3 });
-    g.push({ label: 'Inseam / Length', key: 'inseam', opts: ['Short · 30"', 'Regular · 32"', 'Long · 34"'], def: 1 });
+    g.push({ label: 'Waist (in)', key: 'waist', opts: W ? ['24', '26', '28', '30', '32', '34', '36', '38', '40'] : ['28', '30', '32', '34', '36', '38', '40', '42', '44'], def: 3 });
+    g.push({ label: 'Inseam / Length', key: 'inseam', opts: W ? ['Short · 28"', 'Regular · 30"', 'Long · 32"'] : ['Short · 30"', 'Regular · 32"', 'Long · 34"'], def: 1 });
     g.push({ label: 'Colour', key: 'colour', opts: ['Navy Blue', 'Black', 'Khaki'], def: 0 });
   } else if (c.type === 'boots') {
-    g.push({ label: 'Shoe Size (US)', key: 'shoe', opts: ['6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '12', '13'], def: 6 });
+    g.push({ label: 'Shoe Size (US)', key: 'shoe', opts: W ? ['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '11'] : ['6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '12', '13'], def: 6 });
     g.push({ label: 'Width', key: 'width', opts: ['D · Regular', 'EE · Wide'], def: 0 });
     g.push({ label: 'Colour', key: 'colour', opts: ['Black', 'Brown'], def: 0 });
   } else if (c.type === 'belt') {
     g.push({ label: 'Size', key: 'size', opts: ['S · 30-34"', 'M · 34-38"', 'L · 38-42"', 'XL · 42-46"'], def: 1 });
     g.push({ label: 'Colour', key: 'colour', opts: ['Black'], def: 0 });
   } else if (c.type === 'gloves') {
-    g.push({ label: 'Size', key: 'size', opts: ['S', 'M', 'L', 'XL'], def: 1 });
+    g.push({ label: 'Size', key: 'size', opts: W ? ['XS', 'S', 'M', 'L'] : ['S', 'M', 'L', 'XL'], def: 1 });
     g.push({ label: 'Colour', key: 'colour', opts: ['Black'], def: 0 });
   } else if (c.type === 'cap') {
     g.push({ label: 'Size', key: 'size', opts: ['S/M', 'L/XL'], def: 0 });
@@ -876,35 +913,46 @@ function buildGroups(id) {
   return g;
 }
 
-// Sizing-guide content per type.
-function guideHTML(type) {
-  if (type === 'shirt') return `<table>
+// Sizing-guide content per type (men's / women's where relevant).
+function guideHTML(type, fit) {
+  const W = fit === "Women's";
+  const hdr = (W ? "👚 Women's" : "👔 Men's");
+  if (type === 'shirt') return `<div class="guide-hdr">${hdr} — Shirt (bust/chest)</div><table>` + (W ? `
+    <tr><td>XS</td><td>Bust 32-33"</td></tr><tr><td>S</td><td>34-35"</td></tr>
+    <tr><td>M</td><td>36-37"</td></tr><tr><td>L</td><td>38-40"</td></tr>
+    <tr><td>XL</td><td>41-43"</td></tr><tr><td>2XL</td><td>44-46"</td></tr>` : `
     <tr><td>XS</td><td>Chest 34-36"</td></tr><tr><td>S</td><td>36-38"</td></tr>
     <tr><td>M</td><td>38-40"</td></tr><tr><td>L</td><td>42-44"</td></tr>
     <tr><td>XL</td><td>46-48"</td></tr><tr><td>2XL</td><td>50-52"</td></tr>
-    <tr><td>3XL</td><td>54-56"</td></tr></table>
-    <p>Measure around the fullest part of the chest. Order one size up if layering body armour.</p>`;
-  if (type === 'pants') return `<table>
-    <tr><td>Waist</td><td>Measured in inches (snug, not tight)</td></tr>
-    <tr><td>Short</td><td>30" inseam</td></tr>
-    <tr><td>Regular</td><td>32" inseam</td></tr>
-    <tr><td>Long</td><td>34" inseam</td></tr></table>
+    <tr><td>3XL</td><td>54-56"</td></tr>`) + `</table>
+    <p>Measure around the fullest part of the ${W ? 'bust' : 'chest'}. Order one size up if layering body armour.</p>`;
+  if (type === 'pants') return `<div class="guide-hdr">${hdr} — Trousers</div><table>
+    <tr><td>Waist</td><td>${W ? '24-40"' : '28-44"'} (snug, not tight)</td></tr>
+    <tr><td>Short</td><td>${W ? '28"' : '30"'} inseam</td></tr>
+    <tr><td>Regular</td><td>${W ? '30"' : '32"'} inseam</td></tr>
+    <tr><td>Long</td><td>${W ? '32"' : '34"'} inseam</td></tr></table>
     <p>Inseam is measured from crotch to hem along the inner leg.</p>`;
-  if (type === 'boots') return `<table>
+  if (type === 'boots') return `<div class="guide-hdr">${hdr} — Boots (US → cm)</div><table>` + (W ? `
+    <tr><td>US 5</td><td>22.0 cm</td></tr><tr><td>US 6</td><td>22.9 cm</td></tr>
+    <tr><td>US 7</td><td>23.8 cm</td></tr><tr><td>US 8</td><td>24.6 cm</td></tr>
+    <tr><td>US 9</td><td>25.4 cm</td></tr><tr><td>US 10</td><td>26.2 cm</td></tr>
+    <tr><td>US 11</td><td>27.1 cm</td></tr>` : `
     <tr><td>US 7</td><td>25.0 cm</td></tr><tr><td>US 8</td><td>26.0 cm</td></tr>
     <tr><td>US 9</td><td>27.0 cm</td></tr><tr><td>US 10</td><td>28.0 cm</td></tr>
     <tr><td>US 11</td><td>29.0 cm</td></tr><tr><td>US 12</td><td>30.0 cm</td></tr>
-    <tr><td>US 13</td><td>31.0 cm</td></tr></table>
+    <tr><td>US 13</td><td>31.0 cm</td></tr>`) + `</table>
     <p>Measure foot length in cm. Half sizes available; choose <strong>EE · Wide</strong> for a broader fit.</p>`;
-  if (type === 'belt') return `<table>
+  if (type === 'belt') return `<div class="guide-hdr">Duty Belt (unisex)</div><table>
     <tr><td>S</td><td>Waist 30-34"</td></tr><tr><td>M</td><td>34-38"</td></tr>
     <tr><td>L</td><td>38-42"</td></tr><tr><td>XL</td><td>42-46"</td></tr></table>
     <p>Match your trouser waist size.</p>`;
-  if (type === 'gloves') return `<table>
+  if (type === 'gloves') return `<div class="guide-hdr">${hdr} — Gloves (palm)</div><table>` + (W ? `
+    <tr><td>XS</td><td>Palm 6-7"</td></tr><tr><td>S</td><td>7-7.5"</td></tr>
+    <tr><td>M</td><td>7.5-8"</td></tr><tr><td>L</td><td>8-8.5"</td></tr>` : `
     <tr><td>S</td><td>Palm 7-8"</td></tr><tr><td>M</td><td>8-9"</td></tr>
-    <tr><td>L</td><td>9-10"</td></tr><tr><td>XL</td><td>10-11"</td></tr></table>
+    <tr><td>L</td><td>9-10"</td></tr><tr><td>XL</td><td>10-11"</td></tr>`) + `</table>
     <p>Measure around the palm, excluding the thumb.</p>`;
-  if (type === 'cap') return `<table>
+  if (type === 'cap') return `<div class="guide-hdr">Duty Cap (unisex)</div><table>
     <tr><td>S/M</td><td>Head 21-22.5"</td></tr><tr><td>L/XL</td><td>22.5-24"</td></tr></table>
     <p>Measure around the head above the ears.</p>`;
   return `<p>This item is one-size / issued to standard specification — no sizing required.</p>`;
@@ -913,10 +961,12 @@ function guideHTML(type) {
 // Compact size string stored on the order.
 function sizeSpec() {
   const t = ITEM_CONFIG[selectedItem.id].type;
-  if (t === 'shirt') return sel.size + ' · ' + (sel.sleeve || '').replace(' Sleeve', '');
-  if (t === 'pants') return sel.waist + 'W × ' + (sel.inseam.match(/\d+/) || ['32'])[0] + 'L';
-  if (t === 'boots') return 'US ' + sel.shoe + ' · ' + sel.width.split(' ')[0];
-  if (t === 'belt' || t === 'gloves' || t === 'cap') return sel.size;
+  const fp = sel.fit ? sel.fit + ' ' : '';
+  if (t === 'shirt') return fp + sel.size + ' · ' + (sel.sleeve || '').replace(' Sleeve', '');
+  if (t === 'pants') return fp + sel.waist + 'W × ' + (sel.inseam.match(/\d+/) || ['32'])[0] + 'L';
+  if (t === 'boots') return fp + 'US ' + sel.shoe + ' · ' + sel.width.split(' ')[0];
+  if (t === 'gloves') return fp + sel.size;
+  if (t === 'belt' || t === 'cap') return sel.size;
   if (t === 'holster') return sel.hand + ' hand';
   if (t === 'badge') return sel.finish;
   return '—';
@@ -939,6 +989,9 @@ function highlightFigure(id) {
 function renderOptions() {
   const wrap = document.getElementById('option-groups');
   const groups = buildGroups(selectedItem.id);
+  // Reconcile: if a current selection is no longer valid (e.g. fit changed the
+  // size range), fall back to that group's default.
+  groups.forEach(g => { if (!g.opts.includes(sel[g.key])) sel[g.key] = g.opts[g.def] || g.opts[0]; });
   wrap.innerHTML = groups.map(g => `
     <div class="opt-group">
       <label>${g.label}</label>
@@ -946,6 +999,9 @@ function renderOptions() {
         ${g.opts.map(o => `<button class="opt-chip ${sel[g.key] === o ? 'active' : ''}" data-val="${String(o).replace(/"/g, '&quot;')}">${o}</button>`).join('')}
       </div>
     </div>`).join('');
+  // Sizing guide depends on fit — keep it in sync (open/closed state preserved).
+  const gp = document.getElementById('guide-panel');
+  if (gp) gp.innerHTML = guideHTML(ITEM_CONFIG[selectedItem.id].type, sel.fit);
 }
 
 // Delegated handler (option values may contain quotes/spaces, so avoid inline onclick)
@@ -979,7 +1035,7 @@ function openModal(itemId) {
   renderQty();
   const gp = document.getElementById('guide-panel');
   gp.classList.remove('open');
-  gp.innerHTML = guideHTML(ITEM_CONFIG[itemId].type);
+  gp.innerHTML = guideHTML(ITEM_CONFIG[itemId].type, sel.fit);
   updateModalTotal();
   document.getElementById('modal-overlay').classList.add('open');
 }
