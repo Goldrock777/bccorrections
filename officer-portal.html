@@ -166,8 +166,16 @@
   .modal-close { position: absolute; top: 16px; right: 18px; background: none; border: none; font-size: 1.05rem; color: var(--dim); cursor: pointer; }
   .modal-close:hover { color: var(--text); }
   .modal-grid { display: grid; grid-template-columns: 230px 1fr; gap: 28px; }
-  .modal-figure { background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 16px 10px 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .officer-fig { width: 100%; max-height: 320px; }
+  .modal-figure { background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; align-items: center; }
+  .hero-wrap { width: 100%; }
+  .hero-img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 10px; display: block; background: var(--bg-2); border: 1px solid var(--line); }
+  .officer-fig { display: none; width: 100%; max-height: 300px; }
+  .officer-fig.show { display: block; }
+  .thumb-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 12px; width: 100%; }
+  .thumb { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 19px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px; cursor: pointer; transition: all .15s; padding: 0; overflow: hidden; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .thumb:hover { border-color: var(--blue); }
+  .thumb.active { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
   .fig-part { transition: opacity .3s, filter .3s; }
   .fig-part.dim { opacity: 0.18; }
   .fig-part.hl { filter: drop-shadow(0 0 9px var(--gold)); }
@@ -372,7 +380,9 @@
     <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
     <div class="modal-grid">
       <div class="modal-figure">
-        <svg class="officer-fig" viewBox="0 0 220 400" xmlns="http://www.w3.org/2000/svg">
+        <div class="hero-wrap">
+        <img id="hero-img" class="hero-img" src="corrections1.png" alt="BC Corrections uniform" onerror="heroFallback()">
+        <svg id="hero-svg" class="officer-fig" viewBox="0 0 220 400" xmlns="http://www.w3.org/2000/svg">
           <circle cx="110" cy="84" r="26" fill="#e8b48f"/>
           <g id="fig-cap" class="fig-part">
             <path d="M76 66 Q110 26 144 66 Z" fill="#1c2e4a"/>
@@ -402,8 +412,9 @@
             <path d="M152 360 h-35 v22 h-15 v11 h50 z" fill="#141414"/>
           </g>
         </svg>
+        </div>
         <div class="figure-cap" id="figure-cap-label">Uniform Shirt</div>
-        <div class="figure-hint">Highlighted on the figure</div>
+        <div class="thumb-strip" id="thumb-strip"></div>
       </div>
       <div class="modal-config">
         <h2 id="modal-name">Uniform Shirt</h2>
@@ -784,6 +795,29 @@ function sizeSpec() {
   return '—';
 }
 
+// Headline image (corrections1.png) with graceful fallback to the SVG figure.
+function heroFallback() {
+  const img = document.getElementById('hero-img');
+  const svg = document.getElementById('hero-svg');
+  if (img) img.style.display = 'none';
+  if (svg) svg.classList.add('show');
+}
+function setHero(item) {
+  const img = document.getElementById('hero-img');
+  const svg = document.getElementById('hero-svg');
+  if (!img) return;
+  if (svg) svg.classList.remove('show');
+  img.style.display = '';
+  img.src = item.img || 'corrections1.png';
+}
+function renderThumbs() {
+  const strip = document.getElementById('thumb-strip');
+  if (!strip) return;
+  strip.innerHTML = CATALOGUE.map(it =>
+    `<button class="thumb ${selectedItem && selectedItem.id === it.id ? 'active' : ''}" title="${it.name}" onclick="openModal('${it.id}')">${it.img ? `<img src="${it.img}" alt="">` : it.icon}</button>`
+  ).join('');
+}
+
 function highlightFigure(id) {
   const region = ITEM_CONFIG[id].region;
   FIG_PARTS.forEach(p => {
@@ -838,6 +872,8 @@ function openModal(itemId) {
   document.getElementById('modal-name').textContent = selectedItem.name;
   document.getElementById('figure-cap-label').textContent = selectedItem.name;
   document.getElementById('modal-pts').textContent = selectedItem.pts + ' points each';
+  setHero(selectedItem);
+  renderThumbs();
   highlightFigure(itemId);
   renderOptions();
   renderQty();
