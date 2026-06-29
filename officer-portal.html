@@ -131,7 +131,9 @@
   .catalogue-item:hover { transform: translateY(-3px); border-color: var(--line-2); box-shadow: 0 16px 40px -20px rgba(0,0,0,0.7); }
   .catalogue-item.disabled { opacity: 0.45; cursor: not-allowed; }
   .catalogue-item.disabled:hover { transform: none; box-shadow: none; border-color: var(--line); }
-  .ci-image { height: 116px; display: flex; align-items: center; justify-content: center; font-size: 46px; background: radial-gradient(circle at 50% 40%, rgba(110,168,224,0.10), transparent 70%), var(--panel-2); border-bottom: 1px solid var(--line); }
+  .ci-image { height: 120px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at 50% 38%, rgba(110,168,224,0.08), transparent 70%), var(--panel-2); border-bottom: 1px solid var(--line); }
+  .ci-image svg { width: 50px; height: 50px; color: var(--muted); transition: color .18s; }
+  .catalogue-item:hover .ci-image svg { color: var(--blue); }
   .ci-body { padding: 15px 16px 16px; }
   .ci-name { font-weight: 600; font-size: 0.95rem; }
   .ci-desc { font-size: 0.8rem; color: var(--dim); margin: 6px 0 14px; line-height: 1.45; }
@@ -159,23 +161,24 @@
   .modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(4,8,16,0.7); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; padding: 16px; opacity: 0; pointer-events: none; transition: opacity .2s; }
   .modal-overlay.open { opacity: 1; pointer-events: all; }
   .modal { position: relative; background: var(--panel); border: 1px solid var(--line-2); border-radius: 16px; padding: 30px; max-width: 480px; width: 100%; max-height: 92vh; overflow-y: auto; transform: translateY(16px); transition: transform .2s; box-shadow: 0 40px 100px -30px rgba(0,0,0,0.8); }
-  .modal.modal-wide { max-width: 760px; }
+  .modal.modal-wide { max-width: 840px; }
   .modal-overlay.open .modal { transform: none; }
   .modal h2 { font-size: 1.3rem; font-weight: 600; }
   .modal .modal-pts { color: var(--blue); font-weight: 600; font-size: 0.88rem; margin-bottom: 18px; }
   .modal-close { position: absolute; top: 16px; right: 18px; background: none; border: none; font-size: 1.05rem; color: var(--dim); cursor: pointer; }
   .modal-close:hover { color: var(--text); }
-  .modal-grid { display: grid; grid-template-columns: 230px 1fr; gap: 28px; }
+  .modal-grid { display: grid; grid-template-columns: 300px 1fr; gap: 30px; }
   .modal-figure { background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; align-items: center; }
   .hero-wrap { width: 100%; }
-  .hero-img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 10px; display: block; background: var(--bg-2); border: 1px solid var(--line); }
+  .hero-img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 10px; display: block; background: var(--bg-2); border: 1px solid var(--line); }
   .officer-fig { display: none; width: 100%; max-height: 300px; }
   .officer-fig.show { display: block; }
   .thumb-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 12px; width: 100%; }
-  .thumb { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 19px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px; cursor: pointer; transition: all .15s; padding: 0; overflow: hidden; }
+  .thumb { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px; cursor: pointer; transition: all .15s; padding: 0; overflow: hidden; color: var(--muted); }
   .thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .thumb:hover { border-color: var(--blue); }
-  .thumb.active { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
+  .thumb svg { width: 20px; height: 20px; }
+  .thumb:hover { border-color: var(--blue); color: var(--text); }
+  .thumb.active { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); color: var(--gold); }
   .fig-part { transition: opacity .3s, filter .3s; }
   .fig-part.dim { opacity: 0.18; }
   .fig-part.hl { filter: drop-shadow(0 0 9px var(--gold)); }
@@ -450,6 +453,21 @@ const CATALOGUE = [
   { id: 'lsshirt',  name: 'Long Sleeve Shirt', pts: 45,  icon: '👔', desc: 'Long-sleeve duty shirt, uniform fabric' },
 ];
 
+// Clean line icons per item (replaces emoji). currentColor inherits.
+const I = s => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">${s}</svg>`;
+const ITEM_ICONS = {
+  shirt:   I('<path d="M9 3 5 4.5 3 8l3 2v10h12V10l3-2-2-3.5L15 3l-3 2.2L9 3Z"/><path d="M9 3c0 1.7 1.3 3 3 3s3-1.3 3-3"/>'),
+  lsshirt: I('<path d="M9 3 5 4.5 3 18l2.6.6L7 11v9h10v-9l1.4 7.6L21 18 19 4.5 15 3l-3 2.2L9 3Z"/><path d="M9 3c0 1.7 1.3 3 3 3s3-1.3 3-3"/>'),
+  jacket:  I('<path d="M9 3 4 5.5 5.5 9 6 20h12l.5-11L20 5.5 15 3l-3 2-3-2Z"/><path d="M12 5v15"/>'),
+  pants:   I('<path d="M6.6 3h10.8l.4 4.3L17 21h-3.3l-1.2-10h-1L10.3 21H7L6.2 7.3 6.6 3Z"/><path d="M6.6 7h10.8"/>'),
+  boots:   I('<path d="M9 3h3.6v9.4l5.4 3.2V19a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M8 16.4h4.6"/>'),
+  belt:    I('<rect x="2.5" y="9.5" width="19" height="5" rx="1.2"/><rect x="10" y="9" width="4" height="6" rx="1"/>'),
+  badge:   I('<path d="M12 2.6 5 5.4v5.1c0 4.2 2.9 8 7 9.3 4.1-1.3 7-5.1 7-9.3V5.4L12 2.6Z"/><path d="m9.3 11.8 1.8 1.8 3.6-3.8"/>'),
+  holster: I('<path d="M7 3h6.4l1.2 7.4A5 5 0 0 1 9.8 16H8a2 2 0 0 1-2-2V4a1 1 0 0 1 1-1Z"/><path d="M9 7h3.4"/>'),
+  gloves:  I('<path d="M8.5 21v-7l-1.7-1.3a1.4 1.4 0 0 1 1.8-2.1l.9.7V6.4a1.25 1.25 0 0 1 2.5 0V10m0 0V5.6a1.25 1.25 0 0 1 2.5 0V10m0 0V7.2a1.25 1.25 0 0 1 2.5 0V15a6 6 0 0 1-1.6 4"/>'),
+  cap:     I('<path d="M3.5 14a8.5 5.5 0 0 1 17 0"/><path d="M20.3 14H22a1 1 0 0 1 0 2h-3"/><path d="M3.5 14h17"/>'),
+};
+
 const CENTRES = [
   'Surrey', 'Coquitlam', 'Maple Ridge', 'Victoria', 'Nanaimo',
   'Kamloops', 'Prince George', 'Chilliwack', 'Oliver', 'Kelowna'
@@ -590,7 +608,7 @@ function renderCatalogue() {
     const canAfford = avail >= item.pts;
     return `
     <div class="catalogue-item ${!canAfford ? 'disabled' : ''}" onclick="${canAfford ? `openModal('${item.id}')` : "showToast('Insufficient points for this item.','error')"}">
-      <div class="ci-image">${item.icon}</div>
+      <div class="ci-image">${ITEM_ICONS[item.id] || ''}</div>
       <div class="ci-body">
         <div class="ci-name">${item.name}</div>
         <div class="ci-desc">${item.desc}</div>
@@ -814,7 +832,7 @@ function renderThumbs() {
   const strip = document.getElementById('thumb-strip');
   if (!strip) return;
   strip.innerHTML = CATALOGUE.map(it =>
-    `<button class="thumb ${selectedItem && selectedItem.id === it.id ? 'active' : ''}" title="${it.name}" onclick="openModal('${it.id}')">${it.img ? `<img src="${it.img}" alt="">` : it.icon}</button>`
+    `<button class="thumb ${selectedItem && selectedItem.id === it.id ? 'active' : ''}" title="${it.name}" onclick="openModal('${it.id}')">${it.img ? `<img src="${it.img}" alt="">` : (ITEM_ICONS[it.id] || '')}</button>`
   ).join('');
 }
 
@@ -891,7 +909,9 @@ function updateModalTotal() {
   const total = selectedItem.pts * selQty;
   const after = pointsAvailable() - total;
   document.getElementById('modal-total').textContent = total + ' pts';
-  document.getElementById('modal-after').textContent = (after >= 0 ? after : '⚠ ' + after) + ' pts';
+  const afterEl = document.getElementById('modal-after');
+  afterEl.textContent = after + ' pts';
+  afterEl.style.color = after < 0 ? 'var(--red)' : '';
   const btn = document.querySelector('.btn-confirm');
   if (btn) btn.disabled = after < 0;
 }
