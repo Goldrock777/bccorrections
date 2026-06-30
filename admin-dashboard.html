@@ -69,7 +69,11 @@
   .side-link:hover { color: var(--text); background: rgba(255,255,255,0.04); }
   .side-link.active { color: #fff; background: rgba(110,168,224,0.12); }
   .side-link.active::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--gold); }
-  .side-foot { padding: 14px; border-top: 1px solid var(--line); }
+  .side-brand { text-decoration: none; transition: opacity .15s; } .side-brand:hover { opacity: 0.85; }
+  .side-foot { padding: 10px 14px 14px; border-top: 1px solid var(--line); }
+  .side-home { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 8px; color: var(--muted); font-size: 0.82rem; font-weight: 500; transition: all .15s; margin-bottom: 4px; }
+  .side-home svg { width: 15px; height: 15px; }
+  .side-home:hover { color: var(--text); background: rgba(255,255,255,0.04); }
   .side-status { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--muted); padding: 6px 8px; }
   .side-status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(95,207,142,0.18); animation: pulse 2.4s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
@@ -223,10 +227,10 @@
   <div class="shell">
     <!-- SIDEBAR -->
     <aside class="sidebar">
-      <div class="side-brand">
+      <a class="side-brand" href="index.html" title="Back to home">
         <svg class="mark" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 5 5.2v5.3c0 4.3 2.9 8.2 7 9.5 4.1-1.3 7-5.2 7-9.5V5.2L12 2.5Z"/><path d="m9 12 2 2 4-4.5"/></svg>
         <div class="name">BC Corrections<small>Administration</small></div>
-      </div>
+      </a>
       <nav class="side-nav">
         <div class="side-cap">Operations</div>
         <button class="side-link active" onclick="switchTab('overview', this)">
@@ -247,6 +251,10 @@
         </button>
       </nav>
       <div class="side-foot">
+        <a class="side-home" href="index.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+          Back to site
+        </a>
         <div class="side-status"><span class="dot"></span> All systems online</div>
       </div>
     </aside>

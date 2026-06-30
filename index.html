@@ -261,6 +261,11 @@
   .cta h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 600; letter-spacing: -0.02em; color: #fff; }
   .cta p { color: var(--muted); margin: 13px auto 30px; max-width: 480px; }
   .cta .hero-actions { justify-content: center; }
+  .demo-access { margin-top: 26px; display: inline-flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; font-size: 0.82rem; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 10px 20px; }
+  .demo-access b { color: var(--text); font-weight: 600; }
+  .demo-access code { font-family: var(--mono); font-size: 0.78rem; color: var(--gold); }
+  .demo-access .sep { width: 1px; height: 14px; background: var(--line-2); }
+  @media (max-width: 560px) { .demo-access { flex-direction: column; gap: 8px; border-radius: 12px; } .demo-access .sep { display: none; } }
 
   /* FOOTER */
   footer { padding: 46px 0 38px; }
@@ -592,6 +597,11 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
       <a href="admin-dashboard.html" class="btn btn-ghost">Administration console</a>
+    </div>
+    <div class="demo-access">
+      <span><b>Officer</b> — Badge ID <code>A2847</code>, any password</span>
+      <span class="sep"></span>
+      <span><b>Administration</b> — <code>admin</code> / <code>admin123</code></span>
     </div>
   </div>
 </section>
