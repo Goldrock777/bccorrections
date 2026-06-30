@@ -133,6 +133,7 @@
   .badge-crit { background: rgba(229,115,107,0.16); color: var(--red); }
   .badge-pending { background: rgba(110,168,224,0.16); color: var(--blue); }
   .badge-online { background: rgba(95,207,142,0.14); color: var(--green); }
+  .badge-cancelled { background: rgba(150,170,200,0.14); color: var(--muted); }
 
   /* ── BARS ── */
   .bar-chart { display: flex; flex-direction: column; gap: 11px; }
@@ -374,7 +375,7 @@
             <div class="card-head"><h3>All orders</h3></div>
             <div class="card-body flush" style="overflow-x:auto">
               <table>
-                <thead><tr><th>Order</th><th>Officer</th><th>Badge</th><th>Centre</th><th>Item</th><th>Size</th><th>Qty</th><th>Pts</th><th>Date</th><th>Status</th></tr></thead>
+                <thead><tr><th>Order</th><th>Officer</th><th>Badge</th><th>Centre</th><th>Item</th><th>Size</th><th>Qty</th><th>Pts</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
                 <tbody id="all-orders-tbody"></tbody>
               </table>
             </div>
@@ -517,7 +518,20 @@ function deriveStatus(ts) {
   if (e < 25000) return 'Shipped';
   return 'Delivered';
 }
-function statusOf(o) { return o.ts ? deriveStatus(o.ts) : (o.status || 'Pending'); }
+function getOrderStatus() { return load('order_status', {}); }
+function setOrderStatus(id, status) { const m = getOrderStatus(); m[id] = status; save('order_status', m); }
+function statusOf(o) {
+  const ov = getOrderStatus()[o.id];
+  if (ov) return ov;
+  return o.ts ? deriveStatus(o.ts) : (o.status || 'Pending');
+}
+const NEXT_STATUS = { Pending: 'Shipped', Shipped: 'Delivered' };
+function advanceOrder(id, status) {
+  setOrderStatus(id, status);
+  logAudit('Order update', 'admin', id + ' marked ' + status, 'Success');
+  renderOrdersTab();
+  showToast('Order ' + id + ' marked ' + status + '.', 'info');
+}
 
 // ─── AUTH ──────────────────────────────────────────────────────────────────────
 function doLogin() {
@@ -642,9 +656,15 @@ function renderOrdersTab() {
 
   const tbody = document.getElementById('all-orders-tbody');
   if (!orders.length) {
-    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text-light);padding:32px">No orders yet. Officers can place orders via the officer portal.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:var(--text-light);padding:32px">No orders yet. Officers can place orders via the officer portal.</td></tr>';
   } else {
-    tbody.innerHTML = [...orders].reverse().map(o => `
+    tbody.innerHTML = [...orders].reverse().map(o => {
+      const st = statusOf(o);
+      const next = NEXT_STATUS[st];
+      const action = next
+        ? `<button class="btn-sm" onclick="advanceOrder('${o.id}','${next}')">Mark ${next.toLowerCase()}</button>`
+        : '<span style="color:var(--dim)">—</span>';
+      return `
       <tr>
         <td><code>${o.id}</code></td>
         <td>${o.officer}</td>
@@ -655,8 +675,10 @@ function renderOrdersTab() {
         <td>${o.qty}</td>
         <td><strong>${o.total}</strong></td>
         <td class="mono">${o.date}</td>
-        <td><span class="badge badge-${statusOf(o).toLowerCase()}">${statusOf(o)}</span></td>
-      </tr>`).join('');
+        <td><span class="badge badge-${st.toLowerCase()}">${st}</span></td>
+        <td>${action}</td>
+      </tr>`;
+    }).join('');
   }
 
   const mtbody = document.getElementById('monthly-tbody');

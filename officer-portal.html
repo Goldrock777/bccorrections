@@ -121,6 +121,23 @@
   .badge-shipped { background: rgba(227,179,65,0.16); color: var(--amber); }
   .badge-pending { background: rgba(110,168,224,0.16); color: var(--blue); }
   .badge-debit { background: rgba(229,115,107,0.16); color: var(--red); }
+  .badge-cancelled { background: rgba(150,170,200,0.14); color: var(--muted); }
+
+  /* CATALOGUE TOOLBAR */
+  .cat-toolbar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+  .cat-search { position: relative; display: flex; align-items: center; flex: 1; min-width: 200px; }
+  .cat-search svg { position: absolute; left: 12px; width: 16px; height: 16px; color: var(--dim); pointer-events: none; }
+  .cat-search input { width: 100%; padding: 10px 14px 10px 38px; background: var(--panel); border: 1px solid var(--line-2); border-radius: 9px; color: var(--text); font-size: 0.9rem; }
+  .cat-search input:focus { outline: none; border-color: var(--blue); }
+  .cat-cats { display: flex; flex-wrap: wrap; gap: 6px; }
+  .cat-pill { background: var(--panel); border: 1px solid var(--line-2); color: var(--muted); border-radius: 999px; padding: 7px 14px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all .15s; }
+  .cat-pill:hover { border-color: var(--blue); color: var(--text); }
+  .cat-pill.active { background: var(--blue); color: #06101f; border-color: var(--blue); }
+  .cat-empty { text-align: center; color: var(--dim); padding: 40px; font-size: 0.9rem; }
+  .ci-image { position: relative; }
+  .ci-cat { position: absolute; top: 8px; right: 8px; font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); background: var(--bg-2); border: 1px solid var(--line); border-radius: 5px; padding: 2px 6px; }
+  .btn-cancel-order { background: transparent; border: 1px solid var(--line-2); color: var(--muted); border-radius: 6px; padding: 4px 11px; font-size: 0.76rem; font-weight: 600; cursor: pointer; transition: all .15s; }
+  .btn-cancel-order:hover { border-color: var(--red); color: var(--red); }
 
   /* ── PAGE HEAD ── */
   .page-head { margin-bottom: 20px; }
@@ -350,7 +367,15 @@
             <button class="fit-btn" data-fit="Women's" onclick="setFit(this.dataset.fit)">Women's</button>
             <span class="fit-toggle-hint">Applies to shirts, trousers, boots &amp; gloves — also adjustable per item when ordering.</span>
           </div>
+          <div class="cat-toolbar">
+            <div class="cat-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input type="text" id="cat-search-input" placeholder="Search items…" oninput="searchCat(this.value)">
+            </div>
+            <div class="cat-cats" id="cat-cats"></div>
+          </div>
           <div class="catalogue-grid" id="catalogue-grid"></div>
+          <div class="cat-empty" id="cat-empty" style="display:none">No items match your search.</div>
         </div>
 
         <!-- ORDERS -->
@@ -358,8 +383,8 @@
           <div class="page-head"><h2>My orders</h2><p>Track the status of all your uniform orders.</p></div>
           <div class="card"><div class="card-body">
             <table>
-              <thead><tr><th>Order</th><th>Item</th><th>Size</th><th>Colour</th><th>Qty</th><th>Points</th><th>Date</th><th>Status</th></tr></thead>
-              <tbody id="orders-tbody"><tr><td colspan="8" style="text-align:center;color:var(--text-light);padding:32px">No orders placed yet.</td></tr></tbody>
+              <thead><tr><th>Order</th><th>Item</th><th>Size</th><th>Colour</th><th>Qty</th><th>Points</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody id="orders-tbody"><tr><td colspan="9" style="text-align:center;color:var(--text-light);padding:32px">No orders placed yet.</td></tr></tbody>
             </table>
           </div></div>
         </div>
@@ -454,17 +479,20 @@
 <script>
 // ─── DATA ─────────────────────────────────────────────────────────────────────
 const CATALOGUE = [
-  { id: 'shirt',    name: 'Uniform Shirt',     pts: 40,  icon: '👕', desc: 'Standard duty shirt, polyester-cotton blend' },
-  { id: 'pants',    name: 'Uniform Pants',     pts: 50,  icon: '👖', desc: 'Tactical cargo pants, ripstop fabric' },
-  { id: 'boots',    name: 'Duty Boots',        pts: 120, icon: '👢', desc: 'Composite toe, slip-resistant, polishable' },
-  { id: 'jacket',   name: 'Outerwear Jacket',  pts: 100, icon: '🧥', desc: 'Waterproof, windproof, fleece-lined' },
-  { id: 'belt',     name: 'Duty Belt',         pts: 80,  icon: '🟫', desc: 'Nylon duty belt with keeper loops' },
-  { id: 'badge',    name: 'Badge & Insignia',  pts: 20,  icon: '🏅', desc: 'Officer badge and rank insignia set' },
-  { id: 'holster',  name: 'Tactical Holster',  pts: 85,  icon: '🔫', desc: 'Level-II retention, adjustable cant' },
-  { id: 'gloves',   name: 'Tactical Gloves',   pts: 25,  icon: '🧤', desc: 'Cut-resistant, touchscreen compatible' },
-  { id: 'cap',      name: 'Duty Cap',          pts: 30,  icon: '🧢', desc: 'Structured cap with embroidered crest' },
-  { id: 'lsshirt',  name: 'Long Sleeve Shirt', pts: 45,  icon: '👔', desc: 'Long-sleeve duty shirt, uniform fabric' },
+  { id: 'shirt',    name: 'Uniform Shirt',     pts: 40,  cat: 'Apparel',     desc: 'Standard duty shirt, polyester-cotton blend' },
+  { id: 'pants',    name: 'Uniform Pants',     pts: 50,  cat: 'Apparel',     desc: 'Tactical cargo pants, ripstop fabric' },
+  { id: 'lsshirt',  name: 'Long Sleeve Shirt', pts: 45,  cat: 'Apparel',     desc: 'Long-sleeve duty shirt, uniform fabric' },
+  { id: 'jacket',   name: 'Outerwear Jacket',  pts: 100, cat: 'Outerwear',   desc: 'Waterproof, windproof, fleece-lined' },
+  { id: 'boots',    name: 'Duty Boots',        pts: 120, cat: 'Footwear',    desc: 'Composite toe, slip-resistant, polishable' },
+  { id: 'belt',     name: 'Duty Belt',         pts: 80,  cat: 'Leather',     desc: 'Nylon duty belt with keeper loops' },
+  { id: 'holster',  name: 'Tactical Holster',  pts: 85,  cat: 'Leather',     desc: 'Level-II retention, adjustable cant' },
+  { id: 'gloves',   name: 'Tactical Gloves',   pts: 25,  cat: 'Accessories', desc: 'Cut-resistant, touchscreen compatible' },
+  { id: 'cap',      name: 'Duty Cap',          pts: 30,  cat: 'Accessories', desc: 'Structured cap with embroidered crest' },
+  { id: 'badge',    name: 'Badge & Insignia',  pts: 20,  cat: 'Accessories', desc: 'Officer badge and rank insignia set' },
 ];
+const CATEGORIES = ['All', 'Apparel', 'Outerwear', 'Footwear', 'Leather', 'Accessories'];
+let catFilter = 'All';
+let catSearch = '';
 
 // Clean line icons per item (replaces emoji). currentColor inherits.
 const I = s => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">${s}</svg>`;
@@ -541,7 +569,14 @@ function deriveStatus(ts) {
   if (elapsed < 25000) return 'Shipped';
   return 'Delivered';
 }
-function statusOf(o) { return o.ts ? deriveStatus(o.ts) : (o.status || 'Pending'); }
+// Shared order-status store (admin can override the timestamp-derived status).
+function getOrderStatus() { return load('order_status', {}); }
+function setOrderStatus(id, status) { const m = getOrderStatus(); m[id] = status; save('order_status', m); }
+function statusOf(o) {
+  const ov = getOrderStatus()[o.id];
+  if (ov) return ov;
+  return o.ts ? deriveStatus(o.ts) : (o.status || 'Pending');
+}
 
 // ─── AUTH ──────────────────────────────────────────────────────────────────────
 function doLogin() {
@@ -573,6 +608,11 @@ function switchTab(name) {
   const link = document.querySelector('.side-link[data-tab="' + name + '"]');
   if (link) link.classList.add('active');
   const t = document.getElementById('page-title'); if (t && TAB_TITLES[name]) t.textContent = TAB_TITLES[name];
+  // Refresh the entered tab so it always shows current data (e.g. admin status changes).
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'catalogue') renderCatalogue();
+  if (name === 'orders') renderOrders();
+  if (name === 'ledger') renderLedger();
   if (name === 'inventory') renderInventory();
 }
 
@@ -613,15 +653,31 @@ function renderDashboard() {
   }
 }
 
+function renderCatBar() {
+  const bar = document.getElementById('cat-cats');
+  if (!bar) return;
+  bar.innerHTML = CATEGORIES.map(c =>
+    `<button class="cat-pill ${catFilter === c ? 'active' : ''}" onclick="setCat('${c}')">${c}</button>`).join('');
+}
+function setCat(c) { catFilter = c; renderCatBar(); renderCatalogue(); }
+function searchCat(v) { catSearch = (v || '').toLowerCase().trim(); renderCatalogue(); }
+
 function renderCatalogue() {
   const avail = pointsAvailable();
   document.getElementById('cat-pts').textContent = avail;
+  renderCatBar();
+  const items = CATALOGUE.filter(it =>
+    (catFilter === 'All' || it.cat === catFilter) &&
+    (!catSearch || it.name.toLowerCase().includes(catSearch) || it.desc.toLowerCase().includes(catSearch) || it.cat.toLowerCase().includes(catSearch))
+  );
   const grid = document.getElementById('catalogue-grid');
-  grid.innerHTML = CATALOGUE.map(item => {
+  const empty = document.getElementById('cat-empty');
+  if (empty) empty.style.display = items.length ? 'none' : 'block';
+  grid.innerHTML = items.map(item => {
     const canAfford = avail >= item.pts;
     return `
     <div class="catalogue-item ${!canAfford ? 'disabled' : ''}" onclick="${canAfford ? `openModal('${item.id}')` : "showToast('Insufficient points for this item.','error')"}">
-      <div class="ci-image">${ITEM_ICONS[item.id] || ''}</div>
+      <div class="ci-image">${ITEM_ICONS[item.id] || ''}<span class="ci-cat">${item.cat}</span></div>
       <div class="ci-body">
         <div class="ci-name">${item.name}</div>
         <div class="ci-desc">${item.desc}</div>
@@ -637,10 +693,12 @@ function renderCatalogue() {
 function renderOrders() {
   const tbody = document.getElementById('orders-tbody');
   if (!currentOfficer.orders.length) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-light);padding:32px">No orders placed yet.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-light);padding:32px">No orders placed yet.</td></tr>';
     return;
   }
-  tbody.innerHTML = [...currentOfficer.orders].reverse().map(o => `
+  tbody.innerHTML = [...currentOfficer.orders].reverse().map(o => {
+    const st = statusOf(o);
+    return `
     <tr>
       <td><code>${o.id}</code></td>
       <td>${o.item}</td>
@@ -649,8 +707,46 @@ function renderOrders() {
       <td>${o.qty}</td>
       <td><strong>${o.totalPts}</strong></td>
       <td class="mono">${o.date}</td>
-      <td><span class="badge badge-${statusOf(o).toLowerCase()}">${statusOf(o)}</span></td>
-    </tr>`).join('');
+      <td><span class="badge badge-${st.toLowerCase()}">${st}</span></td>
+      <td>${st === 'Pending' ? `<button class="btn-cancel-order" onclick="cancelOrder('${o.id}')">Cancel</button>` : '<span style="color:var(--dim)">—</span>'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function cancelOrder(orderId) {
+  const o = currentOfficer.orders.find(x => x.id === orderId);
+  if (!o) return;
+  if (statusOf(o) !== 'Pending') { showToast('Only pending orders can be cancelled.', 'error'); return; }
+  if (!confirm('Cancel this order? Your points will be refunded.')) return;
+
+  // Refund points + ledger credit
+  currentOfficer.pointsUsed = Math.max(0, (currentOfficer.pointsUsed || 0) - o.totalPts);
+  currentOfficer.ledger.push({
+    date: new Date().toISOString().split('T')[0],
+    desc: `Order ${orderId} cancelled — points refunded`,
+    delta: o.totalPts,
+    balance: ANNUAL_POINTS - currentOfficer.pointsUsed,
+    type: 'credit'
+  });
+  saveOfficerData(currentOfficer);
+
+  // Restock the centre's inventory
+  const inv = getInventory();
+  if (inv[o.centre] && inv[o.centre][o.itemId] !== undefined) {
+    inv[o.centre][o.itemId] += o.qty;
+    saveInventory(inv);
+  }
+
+  // Mark cancelled in the shared status store (admin sees it too)
+  setOrderStatus(orderId, 'Cancelled');
+
+  // Reflect refund in admin session stats
+  const stats = load('admin_stats', { totalOrders: 0, totalPtsUsed: 0 });
+  stats.totalPtsUsed = Math.max(0, stats.totalPtsUsed - o.totalPts);
+  save('admin_stats', stats);
+
+  renderAll();
+  showToast('Order cancelled. Points refunded.', 'success');
 }
 
 function renderLedger() {
