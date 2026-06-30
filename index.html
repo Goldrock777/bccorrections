@@ -76,12 +76,25 @@
   .hero-meta .v { font-size: 1.4rem; font-weight: 600; color: #fff; letter-spacing: -0.02em; }
   .hero-meta .l { font-family: var(--mono); font-size: 0.68rem; color: var(--dim); letter-spacing: 0.04em; margin-top: 2px; }
 
-  /* HERO MEDIA */
-  .hero-media { background: var(--panel); border: 1px solid var(--line-2); border-radius: 14px; overflow: hidden; box-shadow: 0 30px 80px -36px rgba(0,0,0,0.8); }
-  .hero-photo { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: var(--panel-2); }
-  .hero-photo-cap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 16px; border-top: 1px solid var(--line); font-size: 0.8rem; color: var(--muted); }
-  .hero-photo-cap .mono { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.06em; color: var(--dim); }
-  @media (max-width: 880px) { .hero-media { max-width: 440px; margin: 0 auto; } }
+  /* HERO ORDER PREVIEW */
+  .op-body { display: grid; grid-template-columns: 142px 1fr; }
+  .op-media { position: relative; background: var(--panel-2); border-right: 1px solid var(--line); min-height: 290px; }
+  .op-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; }
+  .op-cfg { padding: 17px 18px; }
+  .op-name { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 0.98rem; font-weight: 600; color: #fff; margin-bottom: 16px; }
+  .op-pts { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); font-weight: 400; }
+  .op-grp { margin-bottom: 13px; }
+  .op-grp > label { display: block; font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); margin-bottom: 7px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { background: var(--panel-2); border: 1px solid var(--line-2); color: var(--text); border-radius: 6px; padding: 5px 11px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all .15s; }
+  .chip:hover { border-color: var(--blue); }
+  .chip.active { background: var(--blue); color: #06101f; border-color: var(--blue); }
+  .op-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 0.8rem; color: var(--muted); }
+  .op-foot b { color: #fff; }
+  .op-add { background: var(--gold); color: #0a0f18; font-weight: 600; font-size: 0.8rem; padding: 8px 15px; border-radius: 7px; transition: background .15s; }
+  .op-add:hover { background: var(--gold-2); }
+  @media (max-width: 880px) { .order-preview { max-width: 460px; margin: 0 auto; } }
+  @media (max-width: 460px) { .op-body { grid-template-columns: 1fr; } .op-media { min-height: 200px; border-right: none; border-bottom: 1px solid var(--line); } }
 
   /* READOUT PANEL */
   .readout { background: var(--panel); border: 1px solid var(--line-2); border-radius: 12px; overflow: hidden; box-shadow: 0 30px 80px -36px rgba(0,0,0,0.8); }
@@ -306,9 +319,18 @@
       </div>
     </div>
 
-    <div class="hero-media reveal">
-      <img class="hero-photo" src="corrections1.png" alt="BC Corrections Adult Custody uniform">
-      <div class="hero-photo-cap"><span>Standard issue · Adult Custody</span><span class="mono">SHIRT · BELT · TROUSERS · BOOTS</span></div>
+    <div class="window order-preview reveal">
+      <div class="chrome"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">officer portal · place order</span></div>
+      <div class="op-body">
+        <div class="op-media"><img src="corrections1.png" alt="BC Corrections Adult Custody uniform"></div>
+        <div class="op-cfg">
+          <div class="op-name">Standard Uniform <span class="op-pts">Adult Custody</span></div>
+          <div class="op-grp"><label>Fit</label><div class="chips" data-g="fit"><button class="chip active">Men's</button><button class="chip">Women's</button></div></div>
+          <div class="op-grp"><label>Size</label><div class="chips" data-g="size"><button class="chip">XS</button><button class="chip">S</button><button class="chip active">M</button><button class="chip">L</button><button class="chip">XL</button><button class="chip">2XL</button></div></div>
+          <div class="op-grp"><label>Colour</label><div class="chips" data-g="col"><button class="chip active">Navy</button><button class="chip">Black</button></div></div>
+          <div class="op-foot"><span>Annual balance <b>500</b> pts</span><a href="officer-portal.html" class="op-add">Order →</a></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -604,6 +626,15 @@
   document.getElementById('cov').innerHTML =
     ['Surrey','Coquitlam','Maple Ridge','Victoria','Nanaimo','Kamloops','Prince George','Chilliwack','Oliver','Kelowna']
     .map(c => `<div class="c">${PIN}${c}</div>`).join('');
+
+  // Hero order-preview chip selection
+  document.querySelectorAll('.order-preview .chips').forEach(g => {
+    g.addEventListener('click', e => {
+      const b = e.target.closest('.chip'); if (!b) return;
+      [...g.querySelectorAll('.chip')].forEach(c => c.classList.remove('active'));
+      b.classList.add('active');
+    });
+  });
 
   const io = new IntersectionObserver((es) => { es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: 0.1 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
