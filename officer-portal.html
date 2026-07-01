@@ -178,13 +178,22 @@
   .ci-image { height: 158px; display: flex; align-items: center; justify-content: center; background: #ffffff; border-bottom: 1px solid var(--line); }
   .ci-image svg { width: 50px; height: 50px; color: var(--muted); transition: color .18s; }
   .catalogue-item:hover .ci-image svg { color: var(--blue); }
-  .ci-body { padding: 15px 16px 16px; }
-  .ci-name { font-weight: 600; font-size: 0.95rem; }
-  .ci-desc { font-size: 0.8rem; color: var(--dim); margin: 6px 0 14px; line-height: 1.45; }
-  .ci-footer { display: flex; align-items: center; justify-content: space-between; }
-  .ci-points { font-size: 0.8rem; font-weight: 600; color: var(--gold); }
-  .ci-btn { background: rgba(231,181,63,0.12); color: var(--gold); border: 1px solid var(--line-2); border-radius: 7px; padding: 5px 14px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all .15s; }
-  .ci-btn:hover { border-color: var(--gold); color: #fff; }
+  .ci-body { padding: 15px 16px 16px; display: flex; flex-direction: column; height: calc(100% - 158px); }
+  .ci-name { font-weight: 650; font-size: 1rem; letter-spacing: -0.01em; }
+  .ci-desc { font-size: 0.82rem; color: var(--muted); margin: 7px 0 12px; line-height: 1.5; }
+  .ci-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+  .ci-tag { font-size: 0.68rem; font-weight: 600; color: var(--muted); background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; letter-spacing: 0.01em; }
+  .ci-stock { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 600; margin-bottom: 14px; }
+  .ci-stock i { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+  .ci-stock.in { color: var(--green); } .ci-stock.in i { background: var(--green); box-shadow: 0 0 0 3px rgba(46,158,99,0.15); }
+  .ci-stock.low { color: var(--amber); } .ci-stock.low i { background: var(--amber); }
+  .ci-stock.out { color: var(--red); } .ci-stock.out i { background: var(--red); }
+  .ci-stock.made { color: var(--blue); } .ci-stock.made i { background: var(--blue); }
+  .ci-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); }
+  .ci-points { font-size: 1.15rem; font-weight: 750; color: var(--gold); letter-spacing: -0.02em; }
+  .ci-points small { font-size: 0.72rem; font-weight: 600; color: var(--dim); }
+  .ci-btn { background: rgba(231,181,63,0.12); color: var(--gold); border: 1px solid var(--line-2); border-radius: 8px; padding: 7px 14px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all .15s; }
+  .catalogue-item:not(.disabled):hover .ci-btn { background: var(--gold); color: #fff; border-color: var(--gold); }
   .ci-btn:disabled { opacity: .5; }
 
   /* ── FIT TOGGLE ── */
@@ -682,16 +691,36 @@
 <script>
 // ─── DATA ─────────────────────────────────────────────────────────────────────
 const CATALOGUE = [
-  { id: 'shirt',    name: 'Uniform Shirt',     pts: 40,  cat: 'Apparel',     img: 'tshirt.png', desc: 'Standard duty shirt, polyester-cotton blend' },
-  { id: 'pants',    name: 'Uniform Pants',     pts: 50,  cat: 'Apparel',     img: 'trousers.png', desc: 'Tactical cargo pants, ripstop fabric' },
-  { id: 'lsshirt',  name: 'Long Sleeve Shirt', pts: 45,  cat: 'Apparel',     img: 'long%20sleeve1.png', desc: 'Long-sleeve duty shirt, uniform fabric' },
-  { id: 'jacket',   name: 'Outerwear Jacket',  pts: 100, cat: 'Outerwear',   desc: 'Waterproof, windproof, fleece-lined' },
-  { id: 'boots',    name: 'Duty Boots',        pts: 120, cat: 'Footwear',    img: 'boots.png', desc: 'Composite toe, slip-resistant, polishable' },
-  { id: 'belt',     name: 'Duty Belt',         pts: 80,  cat: 'Leather',     desc: 'Nylon duty belt with keeper loops' },
-  { id: 'holster',  name: 'Tactical Holster',  pts: 85,  cat: 'Leather',     img: 'holsterfinal.png', desc: 'Level-II retention, adjustable cant' },
-  { id: 'gloves',   name: 'Tactical Gloves',   pts: 25,  cat: 'Accessories', desc: 'Cut-resistant, touchscreen compatible' },
-  { id: 'cap',      name: 'Duty Cap',          pts: 30,  cat: 'Accessories', desc: 'Structured cap with embroidered crest' },
-  { id: 'badge',    name: 'Badge & Insignia',  pts: 20,  cat: 'Accessories', desc: 'Officer badge and rank insignia set' },
+  { id: 'shirt',    name: 'Uniform Shirt',     pts: 40,  cat: 'Apparel',     img: 'tshirt.png',
+    desc: 'Short-sleeve duty shirt in a breathable poly-cotton blend. Colour-fast, wrinkle-resistant and cut for a full day on shift.',
+    specs: ['65/35 poly-cotton', 'Colour-fast', "Men's & Women's fit"] },
+  { id: 'pants',    name: 'Uniform Pants',     pts: 50,  cat: 'Apparel',     img: 'trousers.png',
+    desc: 'Tactical cargo trousers in tear-resistant ripstop with reinforced knees and a gusseted seat for range of motion.',
+    specs: ['Ripstop weave', 'Reinforced knees', 'Cargo pockets'] },
+  { id: 'lsshirt',  name: 'Long Sleeve Shirt', pts: 45,  cat: 'Apparel',     img: 'long%20sleeve1.png',
+    desc: 'Long-sleeve duty shirt in the same uniform fabric — adjustable cuffs and a tailored fit for cooler shifts and formal duty.',
+    specs: ['Poly-cotton', 'Adjustable cuffs', 'All-season'] },
+  { id: 'jacket',   name: 'Outerwear Jacket',  pts: 100, cat: 'Outerwear',
+    desc: 'Waterproof, windproof duty shell with a zip-out fleece liner and sealed seams. Rated for BC winters, indoors and out.',
+    specs: ['Waterproof', 'Zip-out fleece', 'Sealed seams'] },
+  { id: 'boots',    name: 'Duty Boots',        pts: 120, cat: 'Footwear',    img: 'boots.png',
+    desc: 'Composite-toe duty boots with a slip-resistant sole and cushioned support built for long shifts on hard floors.',
+    specs: ['Composite toe', 'Slip-resistant', 'Polishable leather'] },
+  { id: 'belt',     name: 'Duty Belt',         pts: 80,  cat: 'Leather',
+    desc: 'Reinforced duty belt with keeper loops and a secure buckle, built to carry the full load without sag.',
+    specs: ['Reinforced core', 'Keeper loops', 'Secure buckle'] },
+  { id: 'holster',  name: 'Tactical Holster',  pts: 85,  cat: 'Leather',     img: 'holsterfinal.png',
+    desc: 'Level-II retention holster with adjustable cant and a positive lock — a smooth, secure draw every time.',
+    specs: ['Level-II retention', 'Adjustable cant', 'Positive lock'] },
+  { id: 'gloves',   name: 'Tactical Gloves',   pts: 25,  cat: 'Accessories',
+    desc: 'Cut-resistant duty gloves with reinforced palms and touchscreen-compatible fingertips for reports on the move.',
+    specs: ['Cut-resistant', 'Touchscreen', 'Reinforced palm'] },
+  { id: 'cap',      name: 'Duty Cap',          pts: 30,  cat: 'Accessories',
+    desc: 'Structured duty cap with an embroidered crest and moisture-wicking band, holding shape shift after shift.',
+    specs: ['Embroidered crest', 'Moisture-wicking', 'Structured'] },
+  { id: 'badge',    name: 'Badge & Insignia',  pts: 20,  cat: 'Accessories',
+    desc: 'Complete officer badge and rank insignia set, issued to current ministry specification.',
+    specs: ['Ministry spec', 'Rank insignia', 'Full set'] },
 ];
 const CATEGORIES = ['All', 'Apparel', 'Outerwear', 'Footwear', 'Leather', 'Accessories'];
 let catFilter = 'All';
@@ -920,17 +949,28 @@ function renderCatalogue() {
   const grid = document.getElementById('catalogue-grid');
   const empty = document.getElementById('cat-empty');
   if (empty) empty.style.display = items.length ? 'none' : 'block';
+  const inv = getInventory();
+  const centreStock = inv[currentOfficer.centre] || {};
   grid.innerHTML = items.map(item => {
     const canAfford = avail >= item.pts;
+    const stock = centreStock[item.id];
+    let stockHtml = '';
+    if (stock === undefined) stockHtml = `<span class="ci-stock made"><i></i>Made to order</span>`;
+    else if (stock <= 0) stockHtml = `<span class="ci-stock out"><i></i>Restocking</span>`;
+    else if (stock < 15) stockHtml = `<span class="ci-stock low"><i></i>Low stock</span>`;
+    else stockHtml = `<span class="ci-stock in"><i></i>In stock at ${currentOfficer.centre}</span>`;
+    const specs = (item.specs || []).map(s => `<span class="ci-tag">${s}</span>`).join('');
     return `
     <div class="catalogue-item ${!canAfford ? 'disabled' : ''}" onclick="${canAfford ? `openModal('${item.id}')` : "showToast('Insufficient points for this item.','error')"}">
       <div class="ci-image">${item.img ? `<img class="ci-photo" src="${item.img}" alt="" onerror="this.remove()">` : ''}${ITEM_ICONS[item.id] || ''}<span class="ci-cat">${item.cat}</span></div>
       <div class="ci-body">
         <div class="ci-name">${item.name}</div>
         <div class="ci-desc">${item.desc}</div>
+        <div class="ci-tags">${specs}</div>
+        ${stockHtml}
         <div class="ci-footer">
-          <span class="ci-points">${item.pts} pts</span>
-          <button class="ci-btn" ${!canAfford ? 'disabled' : ''}>Order</button>
+          <span class="ci-points">${item.pts} <small>pts</small></span>
+          <button class="ci-btn" ${!canAfford ? 'disabled' : ''}>${canAfford ? 'Configure &amp; order' : 'Not enough pts'}</button>
         </div>
       </div>
     </div>`;
