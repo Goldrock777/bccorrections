@@ -35,9 +35,12 @@
   .ls-title { font-size: clamp(2.6rem, 6vw, 4.1rem); font-weight: 800; line-height: 0.94; letter-spacing: -0.02em; color: #fff; }
   .ls-title span { display: block; color: var(--gold); }
   .ls-sub { margin-top: 20px; color: rgba(226,232,241,0.82); font-size: 1.02rem; max-width: 400px; }
-  .ls-photos { display: flex; gap: 16px; margin-top: 36px; }
-  .ls-photo { width: 132px; height: 150px; background-size: cover; background-position: center 20%; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); border: 1px solid rgba(255,255,255,0.12); }
-  .ls-photo.two { margin-top: 42px; background-position: center 30%; }
+  .ls-features { display: flex; align-items: center; gap: 12px; margin-top: 22px; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(226,232,241,0.72); flex-wrap: wrap; }
+  .ls-features i { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); display: inline-block; }
+  .ls-photos { display: flex; gap: 14px; margin-top: 34px; }
+  .ls-photo { width: 122px; height: 138px; background-size: cover; background-position: center 20%; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); box-shadow: 0 12px 30px -12px rgba(0,0,0,0.6); }
+  .ls-photo.two { margin-top: 40px; background-position: center 30%; }
+  .ls-photo.three { background-position: center 24%; }
   .login-formpanel { display: flex; align-items: center; justify-content: center; padding: 40px; background: radial-gradient(700px 500px at 80% 0%, rgba(110,168,224,0.06), transparent 60%), var(--bg); }
   @media (max-width: 900px) {
     .login-wrap { grid-template-columns: 1fr; }
@@ -276,6 +279,35 @@
     .officer-fig { max-height: 200px; }
   }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+
+  /* ── LIGHT ORDERING AREA (post-login) ──────────────────────────────────────── */
+  #app, .modal-overlay, .toast {
+    --bg: #eef2f8; --bg-2: #ffffff; --panel: #ffffff; --panel-2: #f5f8fc;
+    --line: rgba(22,42,78,0.10); --line-2: rgba(22,42,78,0.17);
+    --text: #17212f; --muted: #56617a; --dim: #8b95a6;
+    --gold: #a9781a; --blue: #2f6fb0; --green: #2e9e63; --amber: #a9781a; --red: #cf574c;
+  }
+  #app { background: var(--bg); }
+  #app .sidebar { background: #ffffff; }
+  #app .topbar { background: rgba(255,255,255,0.88); }
+  #app .side-link:hover, #app .side-home:hover { background: rgba(22,42,78,0.05); }
+  #app .side-link.active { color: var(--blue); background: rgba(47,111,176,0.10); }
+  #app .side-link.active::before { background: var(--gold); }
+  #app tbody tr:hover td { background: rgba(22,42,78,0.03); }
+  #app .side-brand .name, #app .who strong, #app .dc-val, #app .inv-centre,
+  #app td strong, #app .page-head h2, #app .card-header h3, #app .ci-name { color: var(--text); }
+  #app .ci-btn:hover, #app .fit-btn.active, #app .opt-chip.active, #app .cat-pill.active { color: #ffffff; }
+  #app .modal-total-line strong, .modal-total-line strong { color: var(--text); }
+  #app .dash-card, #app .card, #app .catalogue-item { box-shadow: 0 1px 2px rgba(22,42,78,0.05), 0 10px 26px -20px rgba(22,42,78,0.28); }
+  .modal { box-shadow: 0 40px 100px -28px rgba(22,42,78,0.38); }
+
+  /* Points balance stays a premium dark-navy accent on the light dashboard */
+  #app .points-hero { background: radial-gradient(700px 300px at 90% -40%, rgba(231,181,63,0.16), transparent 60%), linear-gradient(160deg, #0c2650, #0a1f3f); border-color: rgba(255,255,255,0.10); box-shadow: 0 18px 44px -22px rgba(12,38,80,0.55); }
+  #app .points-hero h2 { color: rgba(255,255,255,0.72); }
+  #app .points-hero .points-sub { color: rgba(255,255,255,0.55); }
+  #app .points-hero .points-bar-label { color: rgba(255,255,255,0.72); }
+  #app .points-hero .points-bar-label strong { color: #ffffff; }
+  #app .points-hero .points-bar { background: rgba(255,255,255,0.16); }
 </style>
 </head>
 <body>
@@ -287,12 +319,16 @@
       <div class="hexes"></div>
       <div class="glow"></div>
       <div class="ls-content">
-        <div class="ls-badge">BC Corrections · Adult Custody</div>
+        <div class="ls-badge">Ministry of Public Safety · Adult Custody</div>
         <h1 class="ls-title">UNIFORMS<span>ONLINE</span></h1>
         <p class="ls-sub">Order your issued uniform, track delivery to your centre, and manage your annual points — all in one place.</p>
+        <div class="ls-features">
+          <span>Online catalogue</span><i></i><span>Delivered to your centre</span><i></i><span>Annual points</span>
+        </div>
         <div class="ls-photos">
           <div class="ls-photo" style="background-image:url('corrections1.png')"></div>
           <div class="ls-photo two" style="background-image:url('tshirt.png')"></div>
+          <div class="ls-photo three" style="background-image:url('trousers.png')"></div>
         </div>
       </div>
     </div>
