@@ -558,7 +558,7 @@ function setOrderStatus(id, status) { const m = getOrderStatus(); m[id] = status
 function statusOf(o) {
   const ov = getOrderStatus()[o.id];
   if (ov) return ov;
-  return o.ts ? deriveStatus(o.ts) : (o.status || 'Pending');
+  return o.status || 'Pending';
 }
 const NEXT_STATUS = { Pending: 'Shipped', Shipped: 'Delivered' };
 function advanceOrder(id, status) {

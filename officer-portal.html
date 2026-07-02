@@ -834,9 +834,11 @@ function deriveStatus(ts) {
 function getOrderStatus() { return load('order_status', {}); }
 function setOrderStatus(id, status) { const m = getOrderStatus(); m[id] = status; save('order_status', m); }
 function statusOf(o) {
+  // Status is driven by the administration console (shared order_status store),
+  // not a timer — an order stays Pending until an administrator advances it.
   const ov = getOrderStatus()[o.id];
   if (ov) return ov;
-  return o.ts ? deriveStatus(o.ts) : (o.status || 'Pending');
+  return o.status || 'Pending';
 }
 
 // ─── AUTH ──────────────────────────────────────────────────────────────────────
@@ -1432,9 +1434,6 @@ function confirmOrder() {
   }
 
   broadcastOrder(currentOfficer, orderId, selectedItem, qty, total, size, colour, date, ts, deliverCentre);
-
-  setTimeout(() => { if (currentOfficer) renderAll(); }, 10500);
-  setTimeout(() => { if (currentOfficer) renderAll(); }, 25500);
 
   const itemName = selectedItem.name;
   const centre = deliverCentre;
