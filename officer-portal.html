@@ -144,6 +144,15 @@
   .badge-debit { background: rgba(229,115,107,0.16); color: var(--red); }
   .badge-cancelled { background: rgba(150,170,200,0.14); color: var(--muted); }
 
+  /* DELIVER-TO BAR */
+  .deliver-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 11px 16px; margin-bottom: 14px; }
+  .deliver-icon { display: inline-flex; color: var(--blue); } .deliver-icon svg { width: 18px; height: 18px; }
+  .deliver-bar label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--dim); }
+  .deliver-bar select { background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; font-weight: 600; color: var(--text); cursor: pointer; min-width: 170px; }
+  .deliver-bar select:focus { outline: none; border-color: var(--blue); }
+  .deliver-hint { font-size: 0.75rem; color: var(--dim); flex: 1; min-width: 160px; }
+  @media (max-width: 560px) { .deliver-hint { display: none; } }
+
   /* CATALOGUE TOOLBAR */
   .cat-toolbar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
   .cat-search { position: relative; display: flex; align-items: center; flex: 1; min-width: 200px; }
@@ -244,6 +253,14 @@
   .opt-chip { background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 8px; padding: 6px 12px; font-size: 0.83rem; font-weight: 600; color: var(--text); cursor: pointer; transition: all .15s; }
   .opt-chip:hover { border-color: var(--blue); }
   .opt-chip.active { background: var(--blue); color: #06101f; border-color: var(--blue); }
+  .modal-centre-select { width: 100%; background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 8px; padding: 9px 12px; font-size: 0.9rem; font-weight: 600; color: var(--text); cursor: pointer; }
+  .modal-centre-select:focus { outline: none; border-color: var(--blue); }
+  .modal-stock { display: inline-flex; align-items: center; gap: 7px; font-size: 0.78rem; font-weight: 600; margin-top: 9px; }
+  .modal-stock i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .modal-stock.in { color: var(--green); } .modal-stock.in i { background: var(--green); }
+  .modal-stock.low { color: var(--amber); } .modal-stock.low i { background: var(--amber); }
+  .modal-stock.out { color: var(--red); } .modal-stock.out i { background: var(--red); }
+  .modal-stock.made { color: var(--blue); } .modal-stock.made i { background: var(--blue); }
   .guide-toggle { margin-top: 4px; width: 100%; background: none; border: 1px dashed var(--line-2); border-radius: 8px; padding: 9px 12px; font-size: 0.82rem; font-weight: 600; color: var(--blue); cursor: pointer; transition: all .15s; text-align: left; }
   .guide-toggle:hover { border-color: var(--blue); background: rgba(110,168,224,0.06); }
   .guide-panel { display: none; margin-top: 10px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; padding: 14px; font-size: 0.82rem; }
@@ -569,6 +586,12 @@
             <button class="fit-btn" data-fit="Women's" onclick="setFit(this.dataset.fit)">Women's</button>
             <span class="fit-toggle-hint">Applies to shirts, trousers, boots &amp; gloves — also adjustable per item when ordering.</span>
           </div>
+          <div class="deliver-bar">
+            <span class="deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg></span>
+            <label for="deliver-select">Deliver to</label>
+            <select id="deliver-select" onchange="setCentre(this.value)"></select>
+            <span class="deliver-hint">Stock shown is for your selected centre.</span>
+          </div>
           <div class="cat-toolbar">
             <div class="cat-search">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -658,6 +681,11 @@
         <h2 id="modal-name">Uniform Shirt</h2>
         <div class="modal-pts" id="modal-pts">40 points each</div>
         <div id="option-groups"></div>
+        <div class="opt-group">
+          <label>Deliver to</label>
+          <select id="modal-centre" class="modal-centre-select" onchange="setModalCentre(this.value)"></select>
+          <div class="modal-stock" id="modal-stock"></div>
+        </div>
         <div class="opt-group"><label>Quantity</label><div class="chip-row" id="qty-chips"></div></div>
         <button class="guide-toggle" onclick="toggleGuide()">Quick sizing guide</button>
         <div class="guide-panel" id="guide-panel"></div>
@@ -725,6 +753,7 @@ const CATALOGUE = [
 const CATEGORIES = ['All', 'Apparel', 'Outerwear', 'Footwear', 'Leather', 'Accessories'];
 let catFilter = 'All';
 let catSearch = '';
+let selectedCentre = null;
 
 // Clean line icons per item (replaces emoji). currentColor inherits.
 const I = s => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">${s}</svg>`;
@@ -817,10 +846,12 @@ function doLogin() {
   if (!badge) { document.getElementById('login-error').textContent = 'Please enter your Badge ID.'; return; }
   if (!pw) { document.getElementById('login-error').textContent = 'Please enter your password.'; return; }
   currentOfficer = getOfficerData(badge);
+  selectedCentre = currentOfficer.centre;
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   document.getElementById('hdr-name').textContent = currentOfficer.name;
   document.getElementById('hdr-badge').textContent = 'Badge ' + badge + ' · ' + currentOfficer.centre;
+  populateCentreSelect();
   renderAll();
 }
 document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
@@ -938,6 +969,23 @@ function renderCatBar() {
 function setCat(c) { catFilter = c; renderCatBar(); renderCatalogue(); }
 function searchCat(v) { catSearch = (v || '').toLowerCase().trim(); renderCatalogue(); }
 
+function populateCentreSelect() {
+  const sel = document.getElementById('deliver-select');
+  if (!sel) return;
+  sel.innerHTML = CENTRES.map(c => {
+    const label = c === currentOfficer.centre ? `${c} (your centre)` : c;
+    return `<option value="${c}" ${c === selectedCentre ? 'selected' : ''}>${label}</option>`;
+  }).join('');
+}
+function setCentre(c) { selectedCentre = c; renderCatalogue(); }
+
+function stockBadge(stock) {
+  if (stock === undefined) return `<span class="ci-stock made"><i></i>Made to order</span>`;
+  if (stock <= 0) return `<span class="ci-stock out"><i></i>Restocking soon</span>`;
+  if (stock < 15) return `<span class="ci-stock low"><i></i>Low stock · ${stock} left</span>`;
+  return `<span class="ci-stock in"><i></i>In stock · ${stock} available</span>`;
+}
+
 function renderCatalogue() {
   const avail = pointsAvailable();
   document.getElementById('cat-pts').textContent = avail;
@@ -950,15 +998,9 @@ function renderCatalogue() {
   const empty = document.getElementById('cat-empty');
   if (empty) empty.style.display = items.length ? 'none' : 'block';
   const inv = getInventory();
-  const centreStock = inv[currentOfficer.centre] || {};
+  const centreStock = inv[selectedCentre] || {};
   grid.innerHTML = items.map(item => {
     const canAfford = avail >= item.pts;
-    const stock = centreStock[item.id];
-    let stockHtml = '';
-    if (stock === undefined) stockHtml = `<span class="ci-stock made"><i></i>Made to order</span>`;
-    else if (stock <= 0) stockHtml = `<span class="ci-stock out"><i></i>Restocking</span>`;
-    else if (stock < 15) stockHtml = `<span class="ci-stock low"><i></i>Low stock</span>`;
-    else stockHtml = `<span class="ci-stock in"><i></i>In stock at ${currentOfficer.centre}</span>`;
     const specs = (item.specs || []).map(s => `<span class="ci-tag">${s}</span>`).join('');
     return `
     <div class="catalogue-item ${!canAfford ? 'disabled' : ''}" onclick="${canAfford ? `openModal('${item.id}')` : "showToast('Insufficient points for this item.','error')"}">
@@ -967,7 +1009,7 @@ function renderCatalogue() {
         <div class="ci-name">${item.name}</div>
         <div class="ci-desc">${item.desc}</div>
         <div class="ci-tags">${specs}</div>
-        ${stockHtml}
+        ${stockBadge(centreStock[item.id])}
         <div class="ci-footer">
           <span class="ci-points">${item.pts} <small>pts</small></span>
           <button class="ci-btn" ${!canAfford ? 'disabled' : ''}>${canAfford ? 'Configure &amp; order' : 'Not enough pts'}</button>
@@ -1299,8 +1341,26 @@ function openModal(itemId) {
   const gp = document.getElementById('guide-panel');
   gp.classList.remove('open');
   gp.innerHTML = guideHTML(ITEM_CONFIG[itemId].type, sel.fit);
+  const msel = document.getElementById('modal-centre');
+  msel.innerHTML = CENTRES.map(c => {
+    const label = c === currentOfficer.centre ? `${c} (your centre)` : c;
+    return `<option value="${c}" ${c === selectedCentre ? 'selected' : ''}>${label}</option>`;
+  }).join('');
+  renderModalStock();
   updateModalTotal();
   document.getElementById('modal-overlay').classList.add('open');
+}
+
+function setModalCentre(c) { selectedCentre = c; renderModalStock(); renderCatalogue(); populateCentreSelect(); }
+
+function renderModalStock() {
+  const el = document.getElementById('modal-stock');
+  if (!el || !selectedItem) return;
+  const stock = (getInventory()[selectedCentre] || {})[selectedItem.id];
+  if (stock === undefined) { el.className = 'modal-stock made'; el.innerHTML = `<i></i>Made to order for ${selectedCentre}`; }
+  else if (stock <= 0) { el.className = 'modal-stock out'; el.innerHTML = `<i></i>Restocking soon at ${selectedCentre}`; }
+  else if (stock < 15) { el.className = 'modal-stock low'; el.innerHTML = `<i></i>Low stock at ${selectedCentre} · ${stock} left`; }
+  else { el.className = 'modal-stock in'; el.innerHTML = `<i></i>In stock at ${selectedCentre} · ${stock} available`; }
 }
 
 function toggleGuide() { document.getElementById('guide-panel').classList.toggle('open'); }
@@ -1341,6 +1401,7 @@ function confirmOrder() {
   const date = new Date().toISOString().split('T')[0];
   const orderId = 'ORD-' + Date.now().toString(36).toUpperCase();
 
+  const deliverCentre = selectedCentre || currentOfficer.centre;
   const ts = Date.now();
   currentOfficer.pointsUsed = (currentOfficer.pointsUsed || 0) + total;
   currentOfficer.orders.push({
@@ -1352,7 +1413,7 @@ function confirmOrder() {
     date,
     ts,
     status: 'Pending',
-    centre: currentOfficer.centre
+    centre: deliverCentre
   });
   currentOfficer.ledger.push({
     date,
@@ -1365,18 +1426,18 @@ function confirmOrder() {
   saveOfficerData(currentOfficer);
 
   const inv = getInventory();
-  if (inv[currentOfficer.centre] && inv[currentOfficer.centre][selectedItem.id] !== undefined) {
-    inv[currentOfficer.centre][selectedItem.id] = Math.max(0, inv[currentOfficer.centre][selectedItem.id] - qty);
+  if (inv[deliverCentre] && inv[deliverCentre][selectedItem.id] !== undefined) {
+    inv[deliverCentre][selectedItem.id] = Math.max(0, inv[deliverCentre][selectedItem.id] - qty);
     saveInventory(inv);
   }
 
-  broadcastOrder(currentOfficer, orderId, selectedItem, qty, total, size, colour, date, ts);
+  broadcastOrder(currentOfficer, orderId, selectedItem, qty, total, size, colour, date, ts, deliverCentre);
 
   setTimeout(() => { if (currentOfficer) renderAll(); }, 10500);
   setTimeout(() => { if (currentOfficer) renderAll(); }, 25500);
 
   const itemName = selectedItem.name;
-  const centre = currentOfficer.centre;
+  const centre = deliverCentre;
   const remaining = avail - total;
 
   closeModal();
@@ -1403,13 +1464,13 @@ function reorder(itemId) {
   openModal(itemId);
 }
 
-function broadcastOrder(officer, orderId, item, qty, total, size, colour, date, ts) {
+function broadcastOrder(officer, orderId, item, qty, total, size, colour, date, ts, deliverCentre) {
   const adminOrders = load('admin_orders', []);
   adminOrders.push({
     id: orderId,
     officer: officer.name,
     badgeId: officer.badgeId,
-    centre: officer.centre,
+    centre: deliverCentre || officer.centre,
     item: item.name,
     itemId: item.id,
     qty, total, size, colour, date, ts,
