@@ -255,8 +255,9 @@
   .opt-chip.active { background: var(--blue); color: #06101f; border-color: var(--blue); }
   .modal-centre-select { width: 100%; background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 8px; padding: 9px 12px; font-size: 0.9rem; font-weight: 600; color: var(--text); cursor: pointer; }
   .modal-centre-select:focus { outline: none; border-color: var(--blue); }
-  .modal-stock { display: inline-flex; align-items: center; gap: 7px; font-size: 0.78rem; font-weight: 600; margin-top: 9px; }
-  .modal-stock i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .modal-stock { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; font-weight: 600; margin-top: 9px; flex-wrap: wrap; }
+  .modal-stock i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .modal-ship { color: var(--blue); font-weight: 700; background: rgba(47,111,176,0.10); border-radius: 6px; padding: 3px 9px; margin-left: 2px; }
   .modal-stock.in { color: var(--green); } .modal-stock.in i { background: var(--green); }
   .modal-stock.low { color: var(--amber); } .modal-stock.low i { background: var(--amber); }
   .modal-stock.out { color: var(--red); } .modal-stock.out i { background: var(--red); }
@@ -590,7 +591,7 @@
             <span class="deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg></span>
             <label for="deliver-select">Deliver to</label>
             <select id="deliver-select" onchange="setCentre(this.value)"></select>
-            <span class="deliver-hint">Stock shown is for your selected centre.</span>
+            <span class="deliver-hint" id="deliver-hint">Stock shown is for your selected centre.</span>
           </div>
           <div class="cat-toolbar">
             <div class="cat-search">
@@ -774,6 +775,18 @@ const CENTRES = [
   'Surrey', 'Coquitlam', 'Maple Ridge', 'Victoria', 'Nanaimo',
   'Kamloops', 'Prince George', 'Chilliwack', 'Oliver', 'Kelowna'
 ];
+// Local BC advantage: same-day delivery everywhere except Prince George (next day).
+const NEXT_DAY_CENTRES = ['Prince George'];
+function deliveryEstimate(centre) {
+  const nextDay = NEXT_DAY_CENTRES.includes(centre);
+  const d = new Date(); d.setDate(d.getDate() + (nextDay ? 1 : 0));
+  const dateStr = d.toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' });
+  return {
+    speed: nextDay ? 'Next-day delivery' : 'Same-day delivery',
+    when: nextDay ? 'Tomorrow' : 'Today',
+    dateStr
+  };
+}
 
 const ANNUAL_POINTS = 500;
 let currentOfficer = null;
@@ -1001,6 +1014,11 @@ function renderCatalogue() {
   if (empty) empty.style.display = items.length ? 'none' : 'block';
   const inv = getInventory();
   const centreStock = inv[selectedCentre] || {};
+  const hint = document.getElementById('deliver-hint');
+  if (hint) {
+    const est = deliveryEstimate(selectedCentre);
+    hint.innerHTML = `<b style="color:var(--blue)">${est.speed}</b> to ${selectedCentre} · arrives ${est.when.toLowerCase()}`;
+  }
   grid.innerHTML = items.map(item => {
     const canAfford = avail >= item.pts;
     const specs = (item.specs || []).map(s => `<span class="ci-tag">${s}</span>`).join('');
@@ -1359,10 +1377,14 @@ function renderModalStock() {
   const el = document.getElementById('modal-stock');
   if (!el || !selectedItem) return;
   const stock = (getInventory()[selectedCentre] || {})[selectedItem.id];
-  if (stock === undefined) { el.className = 'modal-stock made'; el.innerHTML = `<i></i>Made to order for ${selectedCentre}`; }
-  else if (stock <= 0) { el.className = 'modal-stock out'; el.innerHTML = `<i></i>Restocking soon at ${selectedCentre}`; }
-  else if (stock < 15) { el.className = 'modal-stock low'; el.innerHTML = `<i></i>Low stock at ${selectedCentre} · ${stock} left`; }
-  else { el.className = 'modal-stock in'; el.innerHTML = `<i></i>In stock at ${selectedCentre} · ${stock} available`; }
+  let cls, txt;
+  if (stock === undefined) { cls = 'made'; txt = `Made to order for ${selectedCentre}`; }
+  else if (stock <= 0) { cls = 'out'; txt = `Restocking soon at ${selectedCentre}`; }
+  else if (stock < 15) { cls = 'low'; txt = `Low stock at ${selectedCentre} · ${stock} left`; }
+  else { cls = 'in'; txt = `In stock at ${selectedCentre} · ${stock} available`; }
+  const est = deliveryEstimate(selectedCentre);
+  el.className = 'modal-stock ' + cls;
+  el.innerHTML = `<i></i>${txt}<span class="modal-ship">${est.speed} · arrives ${est.when.toLowerCase()}</span>`;
 }
 
 function toggleGuide() { document.getElementById('guide-panel').classList.toggle('open'); }
@@ -1442,15 +1464,15 @@ function confirmOrder() {
   closeModal();
   renderAll();
 
-  const eta = new Date(); eta.setDate(eta.getDate() + 5);
-  const etaStr = eta.toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' });
+  const est = deliveryEstimate(centre);
   document.getElementById('success-receipt').innerHTML = `
     <div class="sr-row"><span>Order number</span><b class="sr-id">${orderId}</b></div>
     <div class="sr-row"><span>Item</span><b>${itemName}${qty > 1 ? ' ×' + qty : ''}</b></div>
     <div class="sr-row"><span>Size &amp; fit</span><b>${size}</b></div>
     <div class="sr-row"><span>Deliver to</span><b>${centre}</b></div>
     <div class="sr-row"><span>Points used</span><b>${total} pts · ${remaining} left</b></div>
-    <div class="sr-row"><span>Estimated arrival</span><b class="sr-eta">${etaStr}</b></div>`;
+    <div class="sr-row"><span>Delivery</span><b class="sr-eta">${est.speed}</b></div>
+    <div class="sr-row"><span>Estimated arrival</span><b>${est.when} · ${est.dateStr}</b></div>`;
   document.getElementById('success-overlay').classList.add('open');
 }
 
