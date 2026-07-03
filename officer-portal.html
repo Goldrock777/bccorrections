@@ -912,9 +912,8 @@ function statusStepper(status) {
 }
 function itemThumb(id) {
   const it = CATALOGUE.find(x => x.id === id);
-  const icon = (ITEM_ICONS[id] || '').replace(/'/g, "\\'");
   return (it && it.img)
-    ? `<img src="${it.img}" alt="" onerror="this.outerHTML='${icon}'">`
+    ? `<img src="${it.img}" alt="" onerror="this.remove()">`
     : (ITEM_ICONS[id] || '');
 }
 
