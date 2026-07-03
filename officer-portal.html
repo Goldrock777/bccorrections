@@ -775,17 +775,11 @@ const CENTRES = [
   'Surrey', 'Coquitlam', 'Maple Ridge', 'Victoria', 'Nanaimo',
   'Kamloops', 'Prince George', 'Chilliwack', 'Oliver', 'Kelowna'
 ];
-// Local BC advantage: same-day delivery everywhere except Prince George (next day).
-const NEXT_DAY_CENTRES = ['Prince George'];
+// Local BC advantage: next-day delivery to every correctional centre.
 function deliveryEstimate(centre) {
-  const nextDay = NEXT_DAY_CENTRES.includes(centre);
-  const d = new Date(); d.setDate(d.getDate() + (nextDay ? 1 : 0));
+  const d = new Date(); d.setDate(d.getDate() + 1);
   const dateStr = d.toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' });
-  return {
-    speed: nextDay ? 'Next-day delivery' : 'Same-day delivery',
-    when: nextDay ? 'Tomorrow' : 'Today',
-    dateStr
-  };
+  return { speed: 'Next-day delivery', when: 'Tomorrow', dateStr };
 }
 
 const ANNUAL_POINTS = 500;
