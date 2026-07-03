@@ -37,12 +37,12 @@
   .ls-sub { margin-top: 20px; color: rgba(226,232,241,0.82); font-size: 1.02rem; max-width: 400px; }
   .ls-features { display: flex; align-items: center; gap: 12px; margin-top: 22px; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(226,232,241,0.72); flex-wrap: wrap; }
   .ls-features i { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); display: inline-block; }
-  .ls-hero { position: relative; margin-top: 30px; display: flex; align-items: flex-end; gap: 0; height: 260px; }
-  .ls-hero-glow { position: absolute; left: 150px; top: 50%; width: 360px; height: 360px; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(231,181,63,0.30), rgba(231,181,63,0.07) 42%, transparent 68%); filter: blur(4px); pointer-events: none; }
-  .ls-hero-img { position: relative; height: 260px; filter: drop-shadow(0 26px 34px rgba(0,0,0,0.6)); animation: floaty 5.5s ease-in-out infinite; }
-  .ls-hero-img.mini { height: 150px; align-self: flex-end; margin-left: -26px; opacity: 0.92; animation-delay: .8s; filter: drop-shadow(0 20px 26px rgba(0,0,0,0.55)); }
-  .ls-hero-img.mini2 { height: 122px; margin-left: -22px; opacity: 0.85; animation-delay: 1.6s; }
-  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+  .ls-hero { position: relative; margin-top: 30px; display: flex; align-items: flex-end; justify-content: flex-start; gap: 26px; height: 200px; max-width: 480px; }
+  .ls-hero-glow { position: absolute; left: 46%; top: 46%; width: 460px; height: 300px; transform: translate(-50%, -50%); background: radial-gradient(ellipse at center, rgba(231,181,63,0.20), rgba(231,181,63,0.05) 46%, transparent 70%); filter: blur(6px); pointer-events: none; }
+  .ls-hero-img { position: relative; height: 180px; width: auto; object-fit: contain; filter: drop-shadow(0 22px 30px rgba(0,0,0,0.55)); animation: floaty 6s ease-in-out infinite; }
+  .ls-hero-img.mini { animation-delay: .9s; }
+  .ls-hero-img.mini2 { animation-delay: 1.8s; }
+  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
   @media (prefers-reduced-motion: reduce) { .ls-hero-img { animation: none; } }
   .login-formpanel { display: flex; align-items: center; justify-content: center; padding: 40px; background: radial-gradient(700px 500px at 80% 0%, rgba(110,168,224,0.06), transparent 60%), var(--bg); }
   @media (max-width: 900px) {
