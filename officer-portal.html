@@ -165,7 +165,7 @@
   .cat-pill.active { background: var(--blue); color: #06101f; border-color: var(--blue); }
   .cat-empty { text-align: center; color: var(--dim); padding: 40px; font-size: 0.9rem; }
   .ci-image { position: relative; }
-  .ci-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 10px; background: #ffffff; }
+  .ci-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 0; background: #ffffff; }
   .ci-cat { position: absolute; top: 8px; right: 8px; font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); background: var(--bg-2); border: 1px solid var(--line); border-radius: 5px; padding: 2px 6px; }
   .btn-cancel-order { background: transparent; border: 1px solid var(--line-2); color: var(--muted); border-radius: 6px; padding: 4px 11px; font-size: 0.76rem; font-weight: 600; cursor: pointer; transition: all .15s; }
   .btn-cancel-order:hover { border-color: var(--red); color: var(--red); }
@@ -184,10 +184,10 @@
   .catalogue-item:hover { transform: translateY(-3px); border-color: var(--line-2); box-shadow: 0 16px 40px -20px rgba(0,0,0,0.7); }
   .catalogue-item.disabled { opacity: 0.45; cursor: not-allowed; }
   .catalogue-item.disabled:hover { transform: none; box-shadow: none; border-color: var(--line); }
-  .ci-image { height: 158px; display: flex; align-items: center; justify-content: center; background: #ffffff; border-bottom: 1px solid var(--line); }
+  .ci-image { height: 180px; display: flex; align-items: center; justify-content: center; background: #ffffff; border-bottom: 1px solid var(--line); overflow: hidden; }
   .ci-image svg { width: 50px; height: 50px; color: var(--muted); transition: color .18s; }
   .catalogue-item:hover .ci-image svg { color: var(--blue); }
-  .ci-body { padding: 15px 16px 16px; display: flex; flex-direction: column; height: calc(100% - 158px); }
+  .ci-body { padding: 15px 16px 16px; display: flex; flex-direction: column; height: calc(100% - 180px); }
   .ci-name { font-weight: 650; font-size: 1rem; letter-spacing: -0.01em; }
   .ci-desc { font-size: 0.82rem; color: var(--muted); margin: 7px 0 12px; line-height: 1.5; }
   .ci-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
