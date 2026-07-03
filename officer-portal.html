@@ -37,15 +37,18 @@
   .ls-sub { margin-top: 20px; color: rgba(226,232,241,0.82); font-size: 1.02rem; max-width: 400px; }
   .ls-features { display: flex; align-items: center; gap: 12px; margin-top: 22px; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(226,232,241,0.72); flex-wrap: wrap; }
   .ls-features i { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); display: inline-block; }
-  .ls-photos { display: flex; gap: 14px; margin-top: 34px; }
-  .ls-photo { width: 118px; height: 150px; background-color: #f4f7fb; background-size: 84%; background-repeat: no-repeat; background-position: center; border-radius: 16px; border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 16px 34px -16px rgba(0,0,0,0.65); }
-  .ls-photo.two { margin-top: 22px; }
-  .ls-photo.three { margin-top: 44px; }
+  .ls-hero { position: relative; margin-top: 30px; display: flex; align-items: flex-end; gap: 0; height: 260px; }
+  .ls-hero-glow { position: absolute; left: 150px; top: 50%; width: 360px; height: 360px; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(231,181,63,0.30), rgba(231,181,63,0.07) 42%, transparent 68%); filter: blur(4px); pointer-events: none; }
+  .ls-hero-img { position: relative; height: 260px; filter: drop-shadow(0 26px 34px rgba(0,0,0,0.6)); animation: floaty 5.5s ease-in-out infinite; }
+  .ls-hero-img.mini { height: 150px; align-self: flex-end; margin-left: -26px; opacity: 0.92; animation-delay: .8s; filter: drop-shadow(0 20px 26px rgba(0,0,0,0.55)); }
+  .ls-hero-img.mini2 { height: 122px; margin-left: -22px; opacity: 0.85; animation-delay: 1.6s; }
+  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+  @media (prefers-reduced-motion: reduce) { .ls-hero-img { animation: none; } }
   .login-formpanel { display: flex; align-items: center; justify-content: center; padding: 40px; background: radial-gradient(700px 500px at 80% 0%, rgba(110,168,224,0.06), transparent 60%), var(--bg); }
   @media (max-width: 900px) {
     .login-wrap { grid-template-columns: 1fr; }
     .login-showcase { min-height: 300px; padding: 40px; }
-    .ls-photos { display: none; }
+    .ls-hero { display: none; }
   }
   .login-card { width: 100%; max-width: 400px; background: var(--panel); border: 1px solid var(--line-2); border-radius: 16px; padding: 36px 32px; box-shadow: 0 30px 80px -30px rgba(0,0,0,0.7); }
   .login-logo { display: flex; align-items: center; gap: 11px; margin-bottom: 24px; }
@@ -460,10 +463,11 @@
         <div class="ls-features">
           <span>Online catalogue</span><i></i><span>Delivered to your centre</span><i></i><span>Annual points</span>
         </div>
-        <div class="ls-photos">
-          <div class="ls-photo" style="background-image:url('tshirt.png')"></div>
-          <div class="ls-photo two" style="background-image:url('jacket.png')"></div>
-          <div class="ls-photo three" style="background-image:url('trousers.png')"></div>
+        <div class="ls-hero">
+          <div class="ls-hero-glow"></div>
+          <img class="ls-hero-img" src="long sleeve1.png" alt="BC Corrections duty uniform">
+          <img class="ls-hero-img mini" src="trousers.png" alt="">
+          <img class="ls-hero-img mini2" src="jacket.png" alt="">
         </div>
       </div>
     </div>
