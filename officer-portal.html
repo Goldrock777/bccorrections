@@ -28,7 +28,7 @@
   #login-screen { min-height: 100vh; background: var(--bg); }
   .login-wrap { min-height: 100vh; display: grid; grid-template-columns: 1.05fr 0.95fr; }
   .login-showcase { position: relative; overflow: hidden; display: flex; align-items: center; padding: 56px; background: linear-gradient(155deg, #0a1f3f 0%, #0c2650 55%, #081627 100%); }
-  .login-showcase .hexes { position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg width='28' height='49' viewBox='0 0 28 49' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v11.2l9.99 5.76 9.99-5.76V17.9l-9.99-5.77L3 17.9zM12.99 4.5L26 12v15l-13 7.5L0 27V12L12.99 4.5z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+  .login-showcase .hexes { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.05) 1.1px, transparent 1.1px); background-size: 22px 22px; }
   .login-showcase .glow { position: absolute; inset: 0; background: radial-gradient(620px 420px at 22% 22%, rgba(231,181,63,0.12), transparent 62%); }
   .ls-content { position: relative; max-width: 520px; }
   .ls-badge { display: inline-block; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(231,181,63,0.35); border-radius: 999px; padding: 6px 14px; margin-bottom: 24px; }
@@ -38,9 +38,9 @@
   .ls-features { display: flex; align-items: center; gap: 12px; margin-top: 22px; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(226,232,241,0.72); flex-wrap: wrap; }
   .ls-features i { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); display: inline-block; }
   .ls-photos { display: flex; gap: 14px; margin-top: 34px; }
-  .ls-photo { width: 122px; height: 138px; background-color: #16233f; background-size: cover; background-repeat: no-repeat; background-position: center 20%; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); box-shadow: 0 12px 30px -12px rgba(0,0,0,0.6); }
-  .ls-photo.two { margin-top: 40px; background-position: center 30%; }
-  .ls-photo.three { margin-top: 8px; background-size: 118%; background-position: center 42%; }
+  .ls-photo { width: 118px; height: 150px; background-color: #f4f7fb; background-size: 84%; background-repeat: no-repeat; background-position: center; border-radius: 16px; border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 16px 34px -16px rgba(0,0,0,0.65); }
+  .ls-photo.two { margin-top: 22px; }
+  .ls-photo.three { margin-top: 44px; }
   .login-formpanel { display: flex; align-items: center; justify-content: center; padding: 40px; background: radial-gradient(700px 500px at 80% 0%, rgba(110,168,224,0.06), transparent 60%), var(--bg); }
   @media (max-width: 900px) {
     .login-wrap { grid-template-columns: 1fr; }
@@ -461,8 +461,8 @@
           <span>Online catalogue</span><i></i><span>Delivered to your centre</span><i></i><span>Annual points</span>
         </div>
         <div class="ls-photos">
-          <div class="ls-photo" style="background-image:url('corrections1.png')"></div>
-          <div class="ls-photo two" style="background-image:url('tshirt.png')"></div>
+          <div class="ls-photo" style="background-image:url('tshirt.png')"></div>
+          <div class="ls-photo two" style="background-image:url('jacket.png')"></div>
           <div class="ls-photo three" style="background-image:url('trousers.png')"></div>
         </div>
       </div>
