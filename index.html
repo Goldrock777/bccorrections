@@ -112,6 +112,18 @@
   .sample-stat .l { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); margin-top: 6px; }
   @media (max-width: 720px) { .sample { grid-template-columns: 1fr; } .sample-r { border-left: none; border-top: 1px solid var(--line); } }
 
+  /* CONSTRUCTION TECHNIQUES */
+  .tech-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 860px) { .tech-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .tech-grid { grid-template-columns: 1fr; } }
+  .tech-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; transition: border-color .18s, transform .18s; }
+  .tech-card:hover { border-color: var(--line-2); transform: translateY(-2px); }
+  .tech-img { height: 150px; background: #ffffff; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .tech-img:empty, .tech-img:has(img[style*="display: none"]) { background: linear-gradient(135deg, var(--panel-2), var(--panel)); }
+  .tech-img img { width: 100%; height: 100%; object-fit: cover; }
+  .tech-card h4 { font-size: 0.96rem; font-weight: 600; color: #fff; margin: 15px 16px 0; letter-spacing: -0.01em; }
+  .tech-card p { font-size: 0.84rem; color: var(--muted); line-height: 1.5; margin: 8px 16px 16px; }
+
   /* READOUT PANEL */
   .readout { background: var(--panel); border: 1px solid var(--line-2); border-radius: 12px; overflow: hidden; box-shadow: 0 30px 80px -36px rgba(0,0,0,0.8); }
   .readout .rt { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--panel-2); }
@@ -447,6 +459,41 @@
         <a href="https://goldybrown.com" target="_blank" rel="noopener" class="btn btn-ghost">View goldybrown.com
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
         </a>
+      </div>
+    </div>
+
+    <div class="partner-head reveal" style="margin-top:38px">Built beyond standard issue</div>
+    <p class="reveal" style="color:var(--muted);font-size:0.96rem;max-width:680px;margin:8px 0 20px">Every garment is engineered to outperform a basic issue uniform — in durability, mobility and officer safety. These are the construction upgrades we build in as standard.</p>
+    <div class="tech-grid reveal">
+      <div class="tech-card">
+        <div class="tech-img"><img src="tech-stitch.png" alt="" onerror="this.style.display='none'"></div>
+        <h4>Triple-needle felled seams</h4>
+        <p>Every main seam is triple-stitched and self-enclosed — far stronger than standard single-needle seams, and built to survive institutional laundering without fraying or blowing out.</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-img"><img src="tech-bartack.png" alt="" onerror="this.style.display='none'"></div>
+        <h4>Bar-tacked stress points</h4>
+        <p>Pocket corners, belt loops, plackets and flies are bar-tacked to lock every high-stress point in place — the detail that keeps a duty uniform intact through a physical shift.</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-img"><img src="tech-reinforced.png" alt="" onerror="this.style.display='none'"></div>
+        <h4>Reinforced knees, seat &amp; chest</h4>
+        <p>Double-layer reinforcement at the knees and seat of trousers and the chest and shoulders of shirts — the zones that wear first are built to last longest.</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-img"><img src="tech-gusset.png" alt="" onerror="this.style.display='none'"></div>
+        <h4>Gusseted &amp; articulated fit</h4>
+        <p>Underarm gussets and pre-bent, articulated knees and elbows give officers full range of motion during a use-of-force situation — without seams straining or tearing.</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-img"><img src="tech-badge.png" alt="" onerror="this.style.display='none'"></div>
+        <h4>Detachable badge holder &amp; breakaway epaulettes</h4>
+        <p>A quick-detach badge holder and breakaway epaulettes that release under force — so a uniform cannot be used to grab, control or choke an officer. Safety engineered for the corrections environment.</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-img"><img src="tech-fabric.png" alt="" onerror="this.style.display='none'"></div>
+        <h4>Ripstop fabric &amp; fluid-repellent finish</h4>
+        <p>Tear-resistant ripstop weave with a DWR finish that repels liquids and bodily fluids — a practical, hygienic upgrade for the realities of custody work.</p>
       </div>
     </div>
 
