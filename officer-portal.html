@@ -520,9 +520,9 @@
         <div class="ls-hero">
           <div class="reticle"></div>
           <div class="ls-hero-glow"></div>
-          <img class="ls-hero-img" src="long sleeve1.png" alt="BC Corrections duty uniform">
-          <img class="ls-hero-img mini" src="trousers.png" alt="">
-          <img class="ls-hero-img mini2" src="jacket.png" alt="">
+          <img class="ls-hero-img" src="long sleeve1.png?v=4" alt="BC Corrections duty uniform">
+          <img class="ls-hero-img mini" src="trousers.png?v=4" alt="">
+          <img class="ls-hero-img mini2" src="jacket.png?v=4" alt="">
         </div>
         <div class="hud-stats">
           <div><b>1,725</b><span>Personnel</span></div>
@@ -980,7 +980,7 @@ function statusStepper(status) {
 function itemThumb(id) {
   const it = CATALOGUE.find(x => x.id === id);
   return (it && it.img)
-    ? `<img src="${it.img}" alt="" onerror="this.remove()">`
+    ? `<img src="${it.img}?v=4" alt="" onerror="this.remove()">`
     : (ITEM_ICONS[id] || '');
 }
 
@@ -1084,7 +1084,7 @@ function renderCatalogue() {
     const specs = (item.specs || []).map(s => `<span class="ci-tag">${s}</span>`).join('');
     return `
     <div class="catalogue-item ${!canAfford ? 'disabled' : ''}" onclick="${canAfford ? `openModal('${item.id}')` : "showToast('Insufficient points for this item.','error')"}">
-      <div class="ci-image">${item.img ? `<img class="ci-photo" src="${item.img}" alt="" onerror="this.remove()">` : ''}${ITEM_ICONS[item.id] || ''}<span class="ci-cat">${item.cat}</span></div>
+      <div class="ci-image">${item.img ? `<img class="ci-photo" src="${item.img}?v=4" alt="" onerror="this.remove()">` : ''}${ITEM_ICONS[item.id] || ''}<span class="ci-cat">${item.cat}</span></div>
       <div class="ci-body">
         <div class="ci-name">${item.name}</div>
         <div class="ci-desc">${item.desc}</div>
@@ -1349,13 +1349,13 @@ function setHero(item) {
   if (!img) return;
   if (svg) svg.classList.remove('show');
   img.style.display = '';
-  img.src = item.img || 'corrections1.png';
+  img.src = (item.img || 'corrections1.png') + '?v=4';
 }
 function renderThumbs() {
   const strip = document.getElementById('thumb-strip');
   if (!strip) return;
   strip.innerHTML = CATALOGUE.map(it =>
-    `<button class="thumb ${selectedItem && selectedItem.id === it.id ? 'active' : ''}" title="${it.name}" onclick="openModal('${it.id}')">${it.img ? `<img src="${it.img}" alt="">` : (ITEM_ICONS[it.id] || '')}</button>`
+    `<button class="thumb ${selectedItem && selectedItem.id === it.id ? 'active' : ''}" title="${it.name}" onclick="openModal('${it.id}')">${it.img ? `<img src="${it.img}?v=4" alt="">` : (ITEM_ICONS[it.id] || '')}</button>`
   ).join('');
 }
 
