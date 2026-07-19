@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Officer Portal — UniformIQ | BC Corrections</title>
+<title>Officer Portal, UniformIQ | BC Corrections</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -513,7 +513,7 @@
         </div>
         <div class="ls-badge">Ministry of Public Safety · Adult Custody</div>
         <h1 class="ls-title">UNIFORM<span>IQ</span></h1>
-        <p class="ls-sub">Issued-uniform ordering, centre-routed logistics and annual point administration — one secure operational system.</p>
+        <p class="ls-sub">Issued-uniform ordering, centre-routed logistics and annual point administration, one secure operational system.</p>
         <div class="ls-features">
           <span>Online catalogue</span><i></i><span>Centre-routed delivery</span><i></i><span>Annual points</span>
         </div>
@@ -540,7 +540,7 @@
           <svg class="mark" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 5 5.2v5.3c0 4.3 2.9 8.2 7 9.5 4.1-1.3 7-5.2 7-9.5V5.2L12 2.5Z"/><path d="m9 12 2 2 4-4.5"/></svg>
           <div><h1>Officer Sign-In</h1><p>UniformIQ · Uniform Management</p></div>
         </div>
-        <div class="login-hint">Demo access — Badge <strong>A2847</strong> · any passcode</div>
+        <div class="login-hint">Demo access, Badge <strong>A2847</strong> · any passcode</div>
         <div class="form-group"><label>Badge ID</label><input type="text" id="badge-input" placeholder="e.g. A2847" value="A2847"></div>
         <div class="form-group"><label>Passcode</label><input type="password" id="pw-input" placeholder="Enter passcode" value="password"></div>
         <button class="btn-full" onclick="doLogin()">Authenticate →</button>
@@ -652,7 +652,7 @@
             <span class="fit-toggle-label">Sizing fit</span>
             <button class="fit-btn active" data-fit="Men's" onclick="setFit(this.dataset.fit)">Men's</button>
             <button class="fit-btn" data-fit="Women's" onclick="setFit(this.dataset.fit)">Women's</button>
-            <span class="fit-toggle-hint">Applies to shirts, trousers, boots &amp; gloves — also adjustable per item when ordering.</span>
+            <span class="fit-toggle-hint">Applies to shirts, trousers, boots &amp; gloves, also adjustable per item when ordering.</span>
           </div>
           <div class="deliver-bar">
             <span class="deliver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg></span>
@@ -757,7 +757,7 @@
         <div class="opt-group"><label>Quantity</label><div class="chip-row" id="qty-chips"></div></div>
         <button class="guide-toggle" onclick="toggleGuide()">Quick sizing guide</button>
         <div class="guide-panel" id="guide-panel"></div>
-        <div class="modal-total-line">Total cost: <strong id="modal-total">40 pts</strong> — Remaining after: <strong id="modal-after">460 pts</strong></div>
+        <div class="modal-total-line">Total cost: <strong id="modal-total">40 pts</strong>, Remaining after: <strong id="modal-after">460 pts</strong></div>
         <div class="modal-actions">
           <button class="btn-cancel" onclick="closeModal()">Cancel</button>
           <button class="btn-confirm" onclick="confirmOrder()">Confirm order</button>
@@ -794,7 +794,7 @@ const CATALOGUE = [
     desc: 'Tactical cargo trousers in tear-resistant ripstop with reinforced knees and a gusseted seat for range of motion.',
     specs: ['Ripstop weave', 'Reinforced knees', 'Cargo pockets'] },
   { id: 'lsshirt',  name: 'Long Sleeve Shirt', pts: 45,  cat: 'Apparel',     img: 'long%20sleeve1.png',
-    desc: 'Long-sleeve duty shirt in the same uniform fabric — adjustable cuffs and a tailored fit for cooler shifts and formal duty.',
+    desc: 'Long-sleeve duty shirt in the same uniform fabric, adjustable cuffs and a tailored fit for cooler shifts and formal duty.',
     specs: ['Poly-cotton', 'Adjustable cuffs', 'All-season'] },
   { id: 'jacket',   name: 'Outerwear Jacket',  pts: 100, cat: 'Outerwear',   img: 'jacket.png',
     desc: 'Waterproof, windproof duty shell with a zip-out fleece liner and sealed seams. Rated for BC winters, indoors and out.',
@@ -806,7 +806,7 @@ const CATALOGUE = [
     desc: 'Reinforced duty belt with keeper loops and a secure buckle, built to carry the full load without sag.',
     specs: ['Reinforced core', 'Keeper loops', 'Secure buckle'] },
   { id: 'holster',  name: 'Tactical Holster',  pts: 85,  cat: 'Leather',     img: 'leatherholster.png',
-    desc: 'Level-II retention holster with adjustable cant and a positive lock — a smooth, secure draw every time.',
+    desc: 'Level-II retention holster with adjustable cant and a positive lock, a smooth, secure draw every time.',
     specs: ['Level-II retention', 'Adjustable cant', 'Positive lock'] },
   { id: 'gloves',   name: 'Tactical Gloves',   pts: 25,  cat: 'Accessories',   img: 'tacgloves.png',
     desc: 'Cut-resistant duty gloves with reinforced palms and touchscreen-compatible fingertips for reports on the move.',
@@ -909,7 +909,7 @@ function getOrderStatus() { return load('order_status', {}); }
 function setOrderStatus(id, status) { const m = getOrderStatus(); m[id] = status; save('order_status', m); }
 function statusOf(o) {
   // Status is driven by the administration console (shared order_status store),
-  // not a timer — an order stays Pending until an administrator advances it.
+  // not a timer, an order stays Pending until an administrator advances it.
   const ov = getOrderStatus()[o.id];
   if (ov) return ov;
   return o.status || 'Pending';
@@ -1137,7 +1137,7 @@ function cancelOrder(orderId) {
   currentOfficer.pointsUsed = Math.max(0, (currentOfficer.pointsUsed || 0) - o.totalPts);
   currentOfficer.ledger.push({
     date: new Date().toISOString().split('T')[0],
-    desc: `Order ${orderId} cancelled — points refunded`,
+    desc: `Order ${orderId} cancelled, points refunded`,
     delta: o.totalPts,
     balance: ANNUAL_POINTS - currentOfficer.pointsUsed,
     type: 'credit'
@@ -1282,7 +1282,7 @@ function buildGroups(id) {
 function guideHTML(type, fit) {
   const W = fit === "Women's";
   const hdr = (W ? "Women's" : "Men's");
-  if (type === 'shirt') return `<div class="guide-hdr">${hdr} — Shirt (bust/chest)</div><table>` + (W ? `
+  if (type === 'shirt') return `<div class="guide-hdr">${hdr}, Shirt (bust/chest)</div><table>` + (W ? `
     <tr><td>XS</td><td>Bust 32-33"</td></tr><tr><td>S</td><td>34-35"</td></tr>
     <tr><td>M</td><td>36-37"</td></tr><tr><td>L</td><td>38-40"</td></tr>
     <tr><td>XL</td><td>41-43"</td></tr><tr><td>2XL</td><td>44-46"</td></tr>` : `
@@ -1291,13 +1291,13 @@ function guideHTML(type, fit) {
     <tr><td>XL</td><td>46-48"</td></tr><tr><td>2XL</td><td>50-52"</td></tr>
     <tr><td>3XL</td><td>54-56"</td></tr>`) + `</table>
     <p>Measure around the fullest part of the ${W ? 'bust' : 'chest'}. Order one size up if layering body armour.</p>`;
-  if (type === 'pants') return `<div class="guide-hdr">${hdr} — Trousers</div><table>
+  if (type === 'pants') return `<div class="guide-hdr">${hdr}, Trousers</div><table>
     <tr><td>Waist</td><td>${W ? '24-40"' : '28-44"'} (snug, not tight)</td></tr>
     <tr><td>Short</td><td>${W ? '28"' : '30"'} inseam</td></tr>
     <tr><td>Regular</td><td>${W ? '30"' : '32"'} inseam</td></tr>
     <tr><td>Long</td><td>${W ? '32"' : '34"'} inseam</td></tr></table>
     <p>Inseam is measured from crotch to hem along the inner leg.</p>`;
-  if (type === 'boots') return `<div class="guide-hdr">${hdr} — Boots (US → cm)</div><table>` + (W ? `
+  if (type === 'boots') return `<div class="guide-hdr">${hdr}, Boots (US → cm)</div><table>` + (W ? `
     <tr><td>US 5</td><td>22.0 cm</td></tr><tr><td>US 6</td><td>22.9 cm</td></tr>
     <tr><td>US 7</td><td>23.8 cm</td></tr><tr><td>US 8</td><td>24.6 cm</td></tr>
     <tr><td>US 9</td><td>25.4 cm</td></tr><tr><td>US 10</td><td>26.2 cm</td></tr>
@@ -1311,7 +1311,7 @@ function guideHTML(type, fit) {
     <tr><td>S</td><td>Waist 30-34"</td></tr><tr><td>M</td><td>34-38"</td></tr>
     <tr><td>L</td><td>38-42"</td></tr><tr><td>XL</td><td>42-46"</td></tr></table>
     <p>Match your trouser waist size.</p>`;
-  if (type === 'gloves') return `<div class="guide-hdr">${hdr} — Gloves (palm)</div><table>` + (W ? `
+  if (type === 'gloves') return `<div class="guide-hdr">${hdr}, Gloves (palm)</div><table>` + (W ? `
     <tr><td>XS</td><td>Palm 6-7"</td></tr><tr><td>S</td><td>7-7.5"</td></tr>
     <tr><td>M</td><td>7.5-8"</td></tr><tr><td>L</td><td>8-8.5"</td></tr>` : `
     <tr><td>S</td><td>Palm 7-8"</td></tr><tr><td>M</td><td>8-9"</td></tr>
@@ -1320,7 +1320,7 @@ function guideHTML(type, fit) {
   if (type === 'cap') return `<div class="guide-hdr">Duty Cap (unisex)</div><table>
     <tr><td>S/M</td><td>Head 21-22.5"</td></tr><tr><td>L/XL</td><td>22.5-24"</td></tr></table>
     <p>Measure around the head above the ears.</p>`;
-  return `<p>This item is one-size / issued to standard specification — no sizing required.</p>`;
+  return `<p>This item is one-size / issued to standard specification, no sizing required.</p>`;
 }
 
 function sizeSpec() {
@@ -1333,7 +1333,7 @@ function sizeSpec() {
   if (t === 'belt' || t === 'cap') return sel.size;
   if (t === 'holster') return sel.hand + ' hand';
   if (t === 'badge') return sel.finish;
-  return '—';
+  return '-';
 }
 
 // Headline image (corrections1.png) with graceful fallback to the SVG figure.
@@ -1481,7 +1481,7 @@ function confirmOrder() {
   if (total > avail) { showToast('Insufficient points.', 'error'); return; }
 
   const size = sizeSpec();
-  const colour = sel.colour || '—';
+  const colour = sel.colour || '-';
   const date = new Date().toISOString().split('T')[0];
   const orderId = 'ORD-' + Date.now().toString(36).toUpperCase();
 
@@ -1501,7 +1501,7 @@ function confirmOrder() {
   });
   currentOfficer.ledger.push({
     date,
-    desc: `Order ${orderId} — ${selectedItem.name} ×${qty}`,
+    desc: `Order ${orderId}, ${selectedItem.name} ×${qty}`,
     delta: total,
     balance: ANNUAL_POINTS - currentOfficer.pointsUsed,
     type: 'debit'
